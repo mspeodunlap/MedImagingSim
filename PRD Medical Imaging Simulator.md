@@ -4,6 +4,8 @@
 
 The Medical Imaging Suite Simulator is a comprehensive, web-based educational platform designed to bridge the gap between classroom theory and real-world clinical rotations for medical imaging students, with an initial core focus on **Magnetic Resonance Imaging (MRI)** followed by **Computed Tomography (CT)**. The application provides a hyper-realistic, end-to-end simulated workflow encompassing administrative tasks (RIS), clinical scanning (Console), and image management (PACS).
 
+RIS and PACS are shared applications across all supported modalities. Each modality supplies its exam configuration, safety rules, console, and acquisition engine. MRI is the first modality to use the shared workflow.
+
 ## **2\. User Roles & Detailed Workflows**
 
 ### **2.1 The Clinical Instructor Role (The Orchestrator & Evaluator)**
@@ -50,12 +52,16 @@ The student environment must feel like a real clinical workstation, minimizing "
     * This triggers a message on the instructors dashboard that the student has completed the assignment.  
       
 
+### **2.3 Administrator (Superuser)**
+
+The administrator can use all implemented student and instructor workflows in one session, including viewing and working with orders across users. Normal exam state transitions apply. Use the administrator account to verify each workflow before dedicated role testing.
+
 ## **3\. Core System Modules**
 
 ### **3.1 Radiology Information System (RIS)**
 
 * **Auto-Generation Engine:** One-click generation of randomized clinical scenarios for both the instructor and the student (Sandbox Mode).  
-* **Order & Encounter Management:** Complete digital paper trail mirroring a hospital system for scheduling, safety verification (highly critical for MRI), and post-exam documentation.
+* **Order & Encounter Management:** Use a common worklist, order lifecycle, accession assignment, scheduling, and documentation workflow across modalities. Each order identifies its modality and exam type. The exam configuration determines the screening questions and hold rules, and the modality determines which console opens.
 
 ### **3.2 Imaging Console Simulator (MRI & CT)**
 
@@ -80,6 +86,8 @@ Designed for point-and-click and touchscreen interfaces, mimicking standard cros
   
 
 ### **3.3 Picture Archiving and Communication System (PACS)**
+
+* **Study and Series Routing:** All modality consoles send selected series to the same archive under the original RIS accession. Preserve the images, geometry, modality, technical metadata, and window/level submitted by the student.
 
 * **Diagnostic Viewer:** Web-based DICOM-style viewer with standard cross-sectional tools (scroll/cine, pan, zoom, measure, ROI, annotate).
 
@@ -120,9 +128,4 @@ The engineering and legal teams must audit the usage of public datasets based on
 
 ## **5\. Development Phasing**
 
-* **Milestone 1:** Standalone Authentication, RIS Sandbox generation, and base UI framework.  
-* **Milestone 2:** **MRI Priority** \- MRI Planning Console (Localizer manipulation) and MRI Parameter Engine.  
-* **Milestone 3:** **CT Addition** \- CT Planning Console and CT Parameter Engine.  
-* **Milestone 4:** PACS viewer, W/L saving, and Instructor Grading Portal.  
-* **Milestone 5**: Develop hosting and access strategy   
-* **Milestone 5:** AD and Blackboard/LMS integration architecture setup.
+See the [milestone plan](MILESTONE_PLAN.md) for implementation order and acceptance criteria. The initial release covers MRI, including hosting, pilot access, and institutional identity and LMS integration. CT follows after MRI go-live and reuses the shared RIS and PACS applications.
