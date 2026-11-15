@@ -1,0 +1,36 @@
+import assert from "node:assert/strict";
+import { Readable } from "node:stream";
+
+const base = "http://127.0.0.1:3000";
+
+// Exercise the real request handler in environments that cannot bind a network listener.
+export async function requestThrough(handle, path, { cookie, fields, origin = base } = {}) {
+  const body = fields ? Buffer.from(new URLSearchParams(fields).toString()) : null;
+  const req = Object.assign(Readable.from(body ? [body] : []), {
+    url: path,
+    method: fields ? "POST" : "GET",
+    socket: { localPort: 3000 },
+    headers: { host: "127.0.0.1:3000", cookie },
+  });
+  if (fields) {
+    req.headers.origin = origin;
+    req.headers["content-type"] = "application/x-www-form-urlencoded";
+  }
+
+  let response;
+  const headers = new Headers();
+  await handle(req, {
+    headersSent: false,
+    setHeader(name, value) { headers.set(name, value); },
+    writeHead(status, additional) {
+      this.status = status;
+      this.headersSent = true;
+      for (const [name, value] of Object.entries(additional)) headers.set(name, value);
+    },
+    end(content) {
+      response = new Response(content, { status: this.status, headers });
+    },
+  });
+  assert.ok(response);
+  return response;
+}

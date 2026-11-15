@@ -3,6 +3,7 @@ export const exams = {
     modality: "MR",
     examName: "MRI Brain without contrast",
     consolePath: "/console/mr",
+    consoleLabel: "MRI console",
     questions: [
       { id: "implant", label: "Any implanted device or surgical hardware requiring verification?" },
       { id: "metal", label: "Any history of metallic fragments or an injury involving metal?" },

@@ -54,7 +54,7 @@ The student environment must feel like a real clinical workstation, minimizing "
 
 ### **2.3 Administrator (Superuser)**
 
-The administrator can use all implemented student and instructor workflows in one session, including viewing and working with orders across users. Normal exam state transitions apply. Use the administrator account to verify each workflow before dedicated role testing.
+The administrator can use all implemented student and instructor workflows in one session, including viewing and working with orders across users in the active institution. Normal exam state transitions apply. Use the administrator account to verify each workflow before dedicated role testing.
 
 ## **3\. Core System Modules**
 

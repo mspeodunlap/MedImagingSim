@@ -1,6 +1,6 @@
 # MedImagingSim milestone plan
 
-**Status:** Milestone 1 implemented as of November 15, 2026. Automated superuser verification passed. Verify the workflow in a browser with the superuser before dedicated role testing. The next implementation milestone is Milestone 2.
+**Status:** Milestones 1 and 2 are implemented as of November 15, 2026. Automated checks passed. Complete the local Safari walkthrough with the superuser, then verify dedicated roles. Milestone 3 implements PACS routing and instructor review.
 
 **Source:** [Medical Imaging Suite Simulator PRD v1.3](PRD%20Medical%20Imaging%20Simulator.md). This plan reconstructs the earlier planning handoff and adds scope and completion criteria for each milestone.
 
@@ -11,7 +11,7 @@ MRI is the sole modality for the initial release. Milestones 1–5 deliver the M
 | Milestone | Deliverable | Status |
 | --- | --- | --- |
 | 1 | Standalone sign-in, shared RIS sandbox, and base application | Implemented. Browser smoke test pending. |
-| 2 | MRI planning console and acquisition | Pending |
+| 2 | MRI planning console and acquisition | Implemented. Browser smoke test and educator review pending. |
 | 3 | Shared PACS and instructor assignment, review, and grading, validated with MRI | Pending |
 | 4 | MRI hosting and pilot access | Pending |
 | 5 | Institutional identity and LMS integration for MRI | Pending |
@@ -40,6 +40,7 @@ MRI is the sole modality for the initial release. Milestones 1–5 deliver the M
 
 ## 3. Shared PACS and instructor assignment, review, and grading
 
+- Carry the active institution from the authenticated session through every PACS, assignment, cohort, rubric, submission, and feedback operation. A local admin exercises both roles inside their institution. Require instructor assignment or cohort access for submissions. Test two institutions and multiple memberships before connecting PACS.
 - Route selected series from the MRI console through the common PACS interface to a study using the original RIS accession. Make repeated send attempts for the same acquisition safe. Build the shared viewer with scrolling, window/level, pan, zoom, and the measurement and annotation tools needed by the initial rubric.
 - Open instructor review with the exact selected acquisition, geometry, technical metadata, and student window/level captured at send time. Store subsequent viewer presets and markups separately from the submitted presentation.
 - Add instructor cohort and submission views, scenario and assignment creation, rubric ranges and positioning tolerances, manual grading, and student feedback. Complete the RIS workflow with technologist notes and contrast documentation where applicable. Put completed assignments in the instructor review queue.
@@ -48,6 +49,8 @@ MRI is the sole modality for the initial release. Milestones 1–5 deliver the M
 ## 4. MRI hosting and pilot access
 
 - Decide hosting, pilot size, invite and access model, and deployment environments. Estimate storage and image delivery needs during earlier milestones. Resolve image usage rights and review the data inventory before external pilot access.
+- Use a managed client/server database for overlapping institutional traffic. The proposed hosted architecture uses PostgreSQL with tenant-aware foreign keys, app authorization and row-level isolation, private object storage for immutable acquisition payloads, and at least two app replicas behind an HTTPS entry point. Add paginated worklists and acquisition history, bounded shared scan execution, a shared session and sign-in policy, tenant-aware quotas, encrypted backups, and an operator audit log. Validate feature and database compatibility with the local practice workflow.
+- Load-test with realistic data across two institutions. Start with an explicitly provisional exercise of two concurrent 30-student classes, 60 sign-ins at class start, and 20 coincident scans while instructors review submissions. Initial targets are p95 under 500 ms for routine worklist requests, 2 seconds for sign-in, and 5 seconds for scan completion, with zero cross-institution exposure and zero lost or duplicate committed acquisitions. Confirm the traffic model with pilot hosts and repeat at twice the agreed peak before expanding access.
 - Verify role isolation, backups and restore, telemetry, incident ownership, and deployment rollback in the pilot environment.
 - **Complete when** invited pilot users can run the approved workflows, access is limited to the intended pilot users, and recovery and rollback have been exercised.
 
@@ -79,7 +82,7 @@ MRI is the sole modality for the initial release. Milestones 1–5 deliver the M
 
 ## Milestone handoff log
 
-At the end of each milestone, record the completion date, delivered scope, acceptance checks and results, decisions, remaining issues, and the first task for the next milestone. Use the first pending milestone and latest handoff as the starting point when asked to proceed.
+At the end of each milestone, record the completion date, delivered scope, acceptance checks and results, decisions, remaining issues, and the first task for the next milestone. Use the first pending milestone and latest handoff as the starting point when asked to proceed. Update the [user guide](docs/USER_GUIDE.md) with every new feature or behavior change as required by the [project instructions](AGENTS.md).
 
 | Date | Milestone | Handoff |
 | --- | --- | --- |
@@ -88,9 +91,18 @@ At the end of each milestone, record the completion date, delivered scope, accep
 | 2026-11-15 | Shared applications | Set RIS and PACS as shared across modalities. Start Milestone 1 with a shared RIS order model and MRI exam configuration. Validate PACS with MRI in Milestone 3 and reuse both applications when CT is added. |
 | 2026-11-15 | Milestone 1 | Delivered standalone sign-in, role-specific workspaces, and the shared RIS worklist. Added two fictional MRI scenarios, persistent screening answers, and console eligibility for screened orders. Verified access isolation, launch retries, hold enforcement, sign-out and sign-in, and persistence after reopening SQLite. The execution sandbox denied binding a localhost listener, so the browser smoke test is pending. |
 | 2026-11-15 | Superuser verification | Added a locally provisioned admin role with both workspaces and access to all RIS orders. Automated checks passed for workflow access, screening, and migration of existing accounts and sessions. Start browser verification with one admin account, then move to dedicated student and instructor testing. |
+| 2026-11-15 | Milestone 2 | Linked screened brain MRI orders to the MRI console under the original RIS accession. Added three synthetic localizers, live slice planning, T1/T2/PD spin echo and inversion-recovery presets, slice review, window/level, and selection for PACS. Automated checks passed for role and hold enforcement, contrast effects, scan retries, pixel and metadata persistence, and the saved PACS selection. Safari smoke testing remains pending because the execution sandbox denied a local listener. |
+| 2026-11-15 | Scale review | Added institution membership, institution-bound sessions and orders, scope checks for MRI and PACS selections, asynchronous sign-in hashing, per-account throttling, and a bounded MRI worker pool. A database snapshot migration preserved three accounts, three orders, and five scans. Tests passed for isolation across two institutions and a 30-account request-handler sign-in burst. Hosted capacity remains unverified. |
+| 2026-11-15 | Console expansion | Added modeled GRE flip angle, fast spin echo time estimation, phase and frequency sampling, wrap and oversampling, averages and bandwidth noise, contiguous 3D GRE partitions, and a spatial saturation band. Recorded the [vendor and parameter inventory](docs/MRI_CONSOLE_COVERAGE.md). |
+| 2026-11-15 | Console layout | Grouped patient/exam and protocol/history in the left rail, positioning across the top, and scan parameters beside the lower-right series preview. New scans open in preview. Dragging or selecting a history row loads the preview independently of the scan plan. |
 
 ### Milestone 1 handoff to the MRI console
 
 - Follow the [local run instructions](README.md) to verify both practice scenarios and the instructor workspace in a browser with one admin account. Then verify dedicated student and instructor roles.
-- Start Milestone 2 with the routine brain exam. Connect the MRI console to the ready-order handoff in `src/app.js`, recheck student ownership and screening status server-side, and carry the original RIS accession into acquisition records.
-- The simulated state moves from Ordered to Ready for console or Screening hold. Screening is read-only after submission. Console navigation and acquisition begin in Milestone 2.
+- The simulated state moves from Ordered to Ready for console or Screening hold. Screening is read-only after submission. The ready-order handoff in `src/app.js` rechecks ownership and safety screening before opening the modality console.
+
+### Milestone 2 handoff to shared PACS
+
+- Run the [Safari walkthrough](README.md#walk-through-the-mri-console) with the superuser. Compare T1 and T2 at the same geometry, slice, and presentation. Confirm that a previous series can be selected after a repeat scan and that the selection survives a reload. Then verify student and instructor account boundaries.
+- The console records scans from the versioned synthetic brain phantom (`synthetic-brain-v1`) and idealized signal engine (`analytic-mr-v2`). Earlier scans retain their original image bytes and engine version. Automated checks exercise qualitative contrast and sampling effects. Educator review of the fixture, presets, and image fidelity is pending.
+- Start Milestone 3 by reading the selected series and window/level for an accession from `pacs_selections`. Resolve the referenced immutable acquisition in `acquisitions`, which stores exact 8-bit slice pixels in row-major order, dimensions, slice centers and orientation in patient coordinates, technical parameters, and fixture and engine versions. Capture a distinct presentation snapshot on send, route it through the shared PACS service, and make repeated sends safe.

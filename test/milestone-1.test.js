@@ -1,52 +1,22 @@
 import assert from "node:assert/strict";
+import { createHash, scryptSync } from "node:crypto";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { Readable } from "node:stream";
 import { test } from "node:test";
+import { requestThrough } from "../test-support/request.js";
 import { consoleHandoff, createRequestHandler } from "../src/app.js";
-import { authenticate, createUser, openDatabase, sessionUser, startSession } from "../src/db.js";
+import { authenticate, createUser, openDatabase, sessionUser } from "../src/db.js";
 
 test("superuser exercises both workspaces and ordinary RIS access remains scoped", async () => {
   const directory = mkdtempSync(join(tmpdir(), "medsim-test-"));
   const filename = join(directory, "test.sqlite");
   let db = openDatabase(filename);
   let handle = createRequestHandler(db);
-  const base = "http://127.0.0.1:3000";
   const password = "only-used-by-the-integration-test";
 
-  // Exercise the server's real request handler without requiring a network listener.
-  async function request(path, { cookie, fields, origin = base } = {}) {
-    const body = fields ? Buffer.from(new URLSearchParams(fields).toString()) : null;
-    const req = Object.assign(Readable.from(body ? [body] : []), {
-      url: path,
-      method: fields ? "POST" : "GET",
-      socket: { localPort: 3000 },
-      headers: { host: "127.0.0.1:3000", cookie },
-    });
-    if (fields) {
-      req.headers.origin = origin;
-      req.headers["content-type"] = "application/x-www-form-urlencoded";
-    }
-
-    let response;
-    const headers = new Headers();
-    await handle(req, {
-      headersSent: false,
-      setHeader(name, value) { headers.set(name, value); },
-      writeHead(status, additional) {
-        this.status = status;
-        this.headersSent = true;
-        for (const [name, value] of Object.entries(additional)) headers.set(name, value);
-      },
-      end(content) {
-        response = new Response(content, { status: this.status, headers });
-      },
-    });
-    assert.ok(response);
-    return response;
-  }
+  const request = (path, options) => requestThrough(handle, path, options);
 
   async function signIn(username) {
     const response = await request("/sign-in", { fields: { username, password } });
@@ -97,7 +67,7 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
     assert.equal((await request(routinePath, { cookie: other })).status, 404);
 
     const routineAccession = routinePath.split("/").at(-1);
-    const account = username => db.prepare("SELECT id, role FROM users WHERE username = ?").get(username);
+    const account = username => db.prepare("SELECT u.id, m.role, m.institution_id AS institutionId FROM users u JOIN institution_memberships m ON m.user_id = u.id WHERE u.username = ?").get(username);
     const owner = account("student-a");
     const otherUser = account("student-b");
     const adminUser = account("admin");
@@ -167,7 +137,7 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
   }
 });
 
-test("legacy accounts and active sessions survive migration to the admin role schema", () => {
+test("legacy accounts and active sessions survive role and institution migrations", async () => {
   const directory = mkdtempSync(join(tmpdir(), "medsim-legacy-"));
   const filename = join(directory, "legacy.sqlite");
   let db = new DatabaseSync(filename);
@@ -188,16 +158,19 @@ test("legacy accounts and active sessions survive migration to the admin role sc
         expires_at INTEGER NOT NULL
       ) STRICT;
     `);
-    createUser(db, "existing-student", "student", password);
-    const id = authenticate(db, "existing-student", password);
-    const token = startSession(db, id);
+    const salt = "legacy-test-salt";
+    const { lastInsertRowid: id } = db.prepare("INSERT INTO users VALUES (NULL, ?, ?, ?, ?)")
+      .run("existing-student", "student", salt, scryptSync(password, salt, 64));
+    const token = "legacy-test-token";
+    db.prepare("INSERT INTO sessions VALUES (?, ?, ?)").run(
+      createHash("sha256").update(token).digest("hex"), id, Date.now() + 60000);
     db.close();
 
     db = openDatabase(filename);
-    assert.equal(authenticate(db, "existing-student", password), id);
+    assert.equal(await authenticate(db, "existing-student", password), id);
     assert.equal(sessionUser(db, token).role, "student");
     createUser(db, "new-admin", "admin", password);
-    assert.ok(authenticate(db, "new-admin", password));
+    assert.ok(await authenticate(db, "new-admin", password));
     assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
   } finally {
     if (db.isOpen) db.close();

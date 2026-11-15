@@ -79,3 +79,86 @@ legend { font-weight: 600; padding: 0; margin-bottom: .35rem; }
   .shell-inner { flex-wrap: wrap; }
   .workspace-nav { order: 1; width: 100%; }
 }
+.action { display: inline-block; background: var(--accent); color: #112722; border-radius: .4rem; padding: .6rem .9rem; font-weight: 700; text-decoration: none; }
+.action:hover { background: #b0f6ed; color: #112722; }
+.mr-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: .5rem 1rem; margin-bottom: 1.35rem; }
+.mr-heading p { margin: .4rem 0 0; }
+main:has(.mr-layout) { width: min(106rem, 100%); padding: 1.5rem clamp(.75rem, 2.4vw, 2.5rem) 2.8rem; }
+.mr-heading .back { margin-bottom: .45rem; font-size: .85rem; }
+.mr-heading h1 { font-size: clamp(1.55rem, 3vw, 2.2rem); }
+.mr-layout {
+  display: grid;
+  grid-template-columns: minmax(13rem, 17rem) minmax(0, 1.6fr) minmax(15rem, .9fr);
+  grid-template-areas: "patient localizers localizers" "protocol parameters preview";
+  align-items: start;
+  gap: .85rem;
+}
+.mr-layout .panel { padding: clamp(.85rem, 1.5vw, 1.25rem); }
+.mr-patient { grid-area: patient; align-self: stretch; }
+.mr-patient-name { color: #f2f7fa; font-weight: 700; margin-bottom: .8rem; }
+.mr-patient-name span { color: var(--muted); font-size: .85rem; font-weight: 450; margin-left: .35rem; }
+.mr-patient dl { margin-bottom: .9rem; }
+.mr-protocol { grid-area: protocol; }
+.mr-localizers { grid-area: localizers; }
+.mr-controls { grid-area: parameters; }
+.mr-preview { grid-area: preview; transition: border-color .12s ease, background-color .12s ease; }
+.mr-preview.is-drop-target { border-color: var(--accent); background: #1c3439; outline: 2px dashed var(--accent); outline-offset: -5px; }
+.mr-preview:has(#mr-preview-status:not([hidden])) #mr-preview-status { margin: 0 0 .65rem; }
+.mr-panel-heading { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; margin-bottom: .9rem; }
+.mr-panel-heading h2 { margin-bottom: 0; }
+.mr-panel-heading button { padding: .36rem .7rem; }
+.mr-plan-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1rem; align-items: start; }
+.mr-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem .75rem; }
+.mr-fields label, .mr-controls label, .mr-review label { font-size: .87rem; }
+.mr-fields input:not([type=hidden]), .mr-fields select, .mr-controls select, .mr-protocol select { padding: .4rem .55rem; }
+.mr-fields input:disabled { opacity: .42; }
+.mr-controls fieldset { margin-bottom: 0; }
+.mr-coverage, .mr-hint { margin: .65rem 0 0; font-size: .85rem; }
+.mr-coverage output { color: var(--accent); font-variant-numeric: tabular-nums; margin-left: .35rem; }
+.mr-localizer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+.mr-localizer-grid figure { margin: 0; min-width: 0; }
+.mr-localizer-grid figcaption, .mr-plane, .mr-series span { text-transform: capitalize; }
+.mr-localizer-grid figcaption { color: var(--muted); font-size: .8rem; margin-bottom: .35rem; }
+.mr-viewport { position: relative; }
+.mr-viewport canvas, .mr-image { display: block; width: 100%; height: auto; aspect-ratio: 1; background: #06090c; border: 1px solid var(--border); border-radius: .35rem; }
+.mr-orientation { position: absolute; color: #d5e4eb; font: .73rem ui-monospace, monospace; text-shadow: 0 0 4px #000, 0 0 3px #000; pointer-events: none; }
+.mr-edge-0, .mr-edge-1 { left: 50%; transform: translateX(-50%); }
+.mr-edge-0 { top: .25rem; }
+.mr-edge-1 { bottom: .25rem; }
+.mr-edge-2, .mr-edge-3 { top: 50%; transform: translateY(-50%); }
+.mr-edge-2 { left: .32rem; }
+.mr-edge-3 { right: .32rem; }
+.mr-review { display: grid; gap: .7rem; }
+.mr-preview-empty { display: grid; place-items: center; aspect-ratio: 1; border: 1px dashed var(--border); border-radius: .35rem; background: #101a22; color: var(--muted); padding: .8rem; text-align: center; }
+.mr-series-caption { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .2rem .7rem; }
+.mr-series-caption span { color: var(--muted); font-size: .85rem; }
+.mr-review label:has(input[type=range]) { display: block; margin-top: .5rem; }
+.mr-review output { color: var(--muted); margin-left: .3rem; }
+.mr-review input[type=range] { accent-color: var(--accent); padding: 0; }
+.mr-review-details { font-size: .85rem; }
+.mr-review-details summary { cursor: pointer; }
+.mr-review-details dl { margin: .45rem 0 0; }
+.mr-series { padding-top: .85rem; margin-top: .9rem; border-top: 1px solid var(--border); }
+.mr-series h3 { font-size: .93rem; margin: 0 0 .45rem; }
+.mr-series .notice { font-size: .8rem; margin-bottom: .55rem; }
+.mr-series .mr-hint { margin-bottom: .5rem; }
+.mr-series ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .4rem; }
+.mr-series li a { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .6rem; border: 1px solid var(--border); border-radius: .4rem; padding: .45rem .7rem; text-decoration: none; cursor: grab; }
+.mr-series li a:active { cursor: grabbing; }
+.mr-series li a[aria-current] { border-color: var(--accent); background: #1c3439; }
+.mr-series li span { color: var(--muted); font-size: .85rem; }
+@media (max-width: 1040px) {
+  .mr-layout { grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr); grid-template-areas: "patient localizers" "protocol parameters" "protocol preview"; }
+  #mr-preview-content { max-width: 29rem; }
+}
+@media (max-width: 680px) {
+  .mr-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "patient" "localizers" "protocol" "parameters" "preview"; }
+  .mr-localizer-grid { gap: .35rem; }
+}
+@media (max-width: 460px) {
+  .mr-plan-fields { grid-template-columns: minmax(0, 1fr); }
+}
+.mr-advanced { border-bottom: 1px solid var(--border); padding-bottom: .85rem; }
+.mr-advanced summary { cursor: pointer; font-weight: 600; }
+.mr-advanced .mr-fields { margin-top: .55rem; }
+.mr-image { aspect-ratio: auto; }

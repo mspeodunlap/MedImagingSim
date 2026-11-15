@@ -1,14 +1,14 @@
 import { screeningAnswers, statusLabels } from "./exams.js";
 import { canUseWorkspace } from "./roles.js";
 
-const escape = value => String(value).replace(/[&<>"']/g, char => ({
+export const escape = value => String(value).replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 })[char]);
 
 const status = value => `<span class="status ${value}">${statusLabels[value]}</span>`;
 const title = (label, detail) => `<div class="page-title"><h1>${label}</h1><p>${detail}</p></div>`;
 
-export function page(name, content, user) {
+export function page(name, content, user, { script } = {}) {
   const home = canUseWorkspace(user, "student") ? "/ris" : "/";
   return `<!doctype html>
 <html lang="en">
@@ -17,6 +17,7 @@ export function page(name, content, user) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escape(name)} · MedImagingSim</title>
 <link rel="stylesheet" href="/styles.css">
+${script ? `<script type="module" src="${escape(script)}"></script>` : ""}
 </head>
 <body>
 <header class="shell-header">
@@ -107,7 +108,8 @@ export function orderPage(user, order, exam, message = "") {
           ? `<form method="post" action="/ris/orders/${order.accession}/screening">${questions}<button>Submit screening</button></form>`
           : `${questions}${order.status === "held"
               ? '<p class="notice hold">Screening requires further review. This exam is on hold.</p>'
-              : '<p class="notice cleared">Screening complete. This order is ready for the console.</p><p class="muted">The acquisition console is added in Milestone 2.</p>'}`}
+              : `<p class="notice cleared">Screening complete. This order is ready for the console.</p>
+                 <a class="action" href="${escape(exam.consolePath)}/${order.accession}">Open ${escape(exam.consoleLabel)}</a>`}`}
       </section>
     </div>`, user);
 }
@@ -119,7 +121,7 @@ export function problem(code, user) {
     404: ["Page unavailable", "The requested page or order could not be found."],
     409: ["Screening already saved", "Reopen the order from your worklist to see its current status."],
     413: ["Request too large", "Return to your workspace and try again."],
-    429: ["Too many sign-in attempts", "Wait a minute before trying again."],
+    429: ["Too many sign-in attempts", "Try signing in again shortly."],
     500: ["Something went wrong", "Return to your workspace and try again."],
   };
   const [name, detail] = messages[code];
