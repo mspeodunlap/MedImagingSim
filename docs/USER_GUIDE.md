@@ -1,7 +1,5 @@
 # MedImagingSim user guide
 
-During the temporary deployment check, the sign-in screen displays **Auto-update test · ThinkPad update check 01**. Sign out and refresh the ThinkPad URL to check for this notice. Confirm the notice appears, then sign in and reopen a saved exam to verify persistence. The notice will be removed after confirmation.
-
 Covers standalone sign-in, the shared RIS worklist, and the brain MRI console introduced in Milestones 1 and 2. The examples use fictional patients and a synthetic brain phantom.
 
 - [Open the simulator and sign in](#open-the-simulator-and-sign-in)

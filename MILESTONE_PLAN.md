@@ -102,11 +102,11 @@ At the end of each milestone, record the completion date, delivered scope, accep
 | 2026-11-17 | ThinkPad OS target | Updated the installation target to Ubuntu Server 26.04.1 LTS amd64 and linked the official installer and checksums. ThinkPad installation and live release verification are pending. |
 | 2026-11-17 | First ThinkPad deployment verified | User staged commit `9dfc9ebeca5af59a05d88fdd2f757f8c4cd70ca0` on Ubuntu Server 26.04.1 LTS with Node 24.22.3. All nine tests passed on the ThinkPad. App and Caddy services are running. User confirmed Safari access from the development Mac at `https://192.168.0.180:8443/sign-in`, admin sign-in, and exam launch. Automatic update timer, a subsequent deployment, and persistence across that deployment remain pending. |
 
-The user enabled `medimagingsim-deploy.timer` on November 17, 2026. The manual deployment check returned without an error and systemd listed the next check in 59 seconds. Verification of an updated commit and preservation of the saved exam across that update remain pending.
+The user enabled `medimagingsim-deploy.timer` on November 17, 2026. The manual deployment check returned without an error and systemd listed the next check in 59 seconds. User confirmed the temporary login notice from commit `71cbdfd` (“Testing Server build”) appeared in Safari at the ThinkPad address, verifying automatic publication to a separate LAN host. Preservation of the saved exam across that update remains pending explicit verification.
 
 ### Milestone 1 handoff to the MRI console
 
-Temporary deployment check prepared on November 17, 2026. The sign-in notice reads “Auto-update test · ThinkPad update check 01”. Confirm it appears at the ThinkPad HTTPS address after automatic deployment, then sign in and reopen the existing exam. After user confirmation, remove the notice and its temporary user-guide paragraph and publish the removal. Publication and live verification of this notice are pending.
+Temporary deployment check confirmed on November 17, 2026. Removed “Auto-update test · ThinkPad update check 01” from the sign-in screen and its temporary user-guide paragraph after the user's screenshot confirmed it was visible. Publication of the removal and confirmation that the notice disappears on the ThinkPad remain pending.
 
 - Follow the [local run instructions](README.md) to verify both practice scenarios and the instructor workspace in a browser with one admin account. Then verify dedicated student and instructor roles.
 - The simulated state moves from Ordered to Ready for console or Screening hold. Screening is read-only after submission. The ready-order handoff in `src/app.js` rechecks ownership and safety screening before opening the modality console.
