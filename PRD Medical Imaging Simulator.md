@@ -129,3 +129,7 @@ The engineering and legal teams must audit the usage of public datasets based on
 ## **5\. Development Phasing**
 
 See the [milestone plan](MILESTONE_PLAN.md) for implementation order and acceptance criteria. The initial release covers MRI, including hosting, pilot access, and institutional identity and LMS integration. CT follows after MRI go-live and reuses the shared RIS and PACS applications.
+
+### Private LAN tester release requirement
+
+Publish the current build and every subsequent release build to the dedicated ThinkPad T450s tester host on the private network. GitHub `main` is the release source. The host checks the candidate build before switching and keeps tester accounts, orders, and scans in a persistent database. A release is available to testers when the intended commit is active on the ThinkPad and a separate LAN device can sign in over HTTPS and complete a representative workflow. Record the deployed commit and verification outcome. See the [ThinkPad hosting and publishing runbook](docs/LAN_HOSTING.md).

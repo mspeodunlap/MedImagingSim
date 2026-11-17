@@ -4,6 +4,8 @@ MedImagingSim is a web-based imaging workflow simulator with standalone sign-in,
 
 Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for role-based steps and troubleshooting.
 
+Publish the current build and each new release to the dedicated ThinkPad T450s by following the [LAN hosting and publishing guide](docs/LAN_HOSTING.md).
+
 ## Run locally
 
 Use Node.js 24 or later. The app uses Node's HTTP server and SQLite driver and has no package dependencies.

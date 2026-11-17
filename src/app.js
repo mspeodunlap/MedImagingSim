@@ -139,7 +139,15 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
   return redirect(res, `${base}?series=${id}`);
 }
 
-export function createRequestHandler(db) {
+export function createRequestHandler(db, { publicOrigin } = {}) {
+  let hosted;
+  if (publicOrigin !== undefined) {
+    hosted = new URL(publicOrigin);
+    if (hosted.protocol !== "https:" || hosted.origin !== publicOrigin) {
+      throw new Error("MEDSIM_PUBLIC_ORIGIN must be an HTTPS origin with no trailing slash, path, or credentials.");
+    }
+  }
+  const secureCookie = hosted ? "; Secure" : "";
   let attemptWindow = 0;
   let pendingSignIns = 0;
   const attempts = new Map();
@@ -156,9 +164,12 @@ export function createRequestHandler(db) {
     try {
       const port = req.socket.localPort;
       const host = req.headers.host;
-      if (![ `127.0.0.1:${port}`, `localhost:${port}` ].includes(host)) return reject(403);
-      if (req.method === "POST" && req.headers.origin !== `http://${host}`) return reject(403);
-      const url = new URL(req.url, `http://${host}`);
+      const allowedHosts = hosted ? [hosted.host] : [`127.0.0.1:${port}`, `localhost:${port}`];
+      if (!allowedHosts.includes(host)) return reject(403);
+      const origin = hosted?.origin ?? `http://${host}`;
+      if (req.method === "POST" && req.headers.origin !== origin) return reject(403);
+      const url = new URL(req.url, origin);
+      if (url.origin !== origin) return reject(403);
       const path = url.pathname;
       const asset = assets.get(path);
       if (req.method === "GET" && asset) {
@@ -197,14 +208,14 @@ export function createRequestHandler(db) {
           pendingSignIns--;
         }
         if (!session) return send(res, 401, signIn("Check your username and password."));
-        res.setHeader("Set-Cookie", `medsim_session=${session}; Path=/; HttpOnly; SameSite=Lax; Max-Age=28800`);
+        res.setHeader("Set-Cookie", `medsim_session=${session}; Path=/; HttpOnly; SameSite=Lax; Max-Age=28800${secureCookie}`);
         return redirect(res, "/");
       }
 
       if (!user) return redirect(res, "/sign-in");
       if (req.method === "POST" && path === "/sign-out") {
         endSession(db, token);
-        res.setHeader("Set-Cookie", "medsim_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0");
+        res.setHeader("Set-Cookie", `medsim_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secureCookie}`);
         return redirect(res, "/sign-in");
       }
       if (req.method === "GET" && path === "/") {
@@ -262,6 +273,6 @@ export function createRequestHandler(db) {
   };
 }
 
-export function createApp(db) {
-  return createServer(createRequestHandler(db));
+export function createApp(db, options) {
+  return createServer(createRequestHandler(db, options));
 }

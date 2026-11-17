@@ -54,6 +54,8 @@ MRI is the sole modality for the initial release. Milestones 1–5 deliver the M
 - Verify role isolation, backups and restore, telemetry, incident ownership, and deployment rollback in the pilot environment.
 - **Complete when** invited pilot users can run the approved workflows, access is limited to the intended pilot users, and recovery and rollback have been exercised.
 
+The [ThinkPad LAN runbook](docs/LAN_HOSTING.md) covers invited local testing on the ThinkPad T450s with Ubuntu Server 26.04.1 LTS amd64. The existing build and every subsequent release must be pushed or merged into GitHub `main`, deployed to the ThinkPad, and verified over its private HTTPS address from a separate tester device. Confirm the intended commit, session and workflow behavior, and persistence of test records. Record the deployed commit and outcome in the handoff. Initial machine setup, HTTPS trust, and the first two live release checks are pending. Use the hosted architecture and load acceptance criteria above for a multi-institution pilot.
+
 ## 5. Institutional identity and LMS integration for MRI
 
 - Confirm an institution's identity provider, LMS, provisioning, roster, and grade return requirements. Keep authentication and LMS integrations behind boundaries so standalone access remains supported.
@@ -95,6 +97,9 @@ At the end of each milestone, record the completion date, delivered scope, accep
 | 2026-11-15 | Scale review | Added institution membership, institution-bound sessions and orders, scope checks for MRI and PACS selections, asynchronous sign-in hashing, per-account throttling, and a bounded MRI worker pool. A database snapshot migration preserved three accounts, three orders, and five scans. Tests passed for isolation across two institutions and a 30-account request-handler sign-in burst. Hosted capacity remains unverified. |
 | 2026-11-15 | Console expansion | Added modeled GRE flip angle, fast spin echo time estimation, phase and frequency sampling, wrap and oversampling, averages and bandwidth noise, contiguous 3D GRE partitions, and a spatial saturation band. Recorded the [vendor and parameter inventory](docs/MRI_CONSOLE_COVERAGE.md). |
 | 2026-11-15 | Console layout | Grouped patient/exam and protocol/history in the left rail, positioning across the top, and scan parameters beside the lower-right series preview. New scans open in preview. Dragging or selecting a history row loads the preview independently of the scan plan. |
+| 2026-11-17 | LAN test hosting | Added HTTPS reverse-proxy mode, a macOS LaunchAgent installer and test-gated publisher, and a setup/publishing runbook. The publisher keeps the tester database separate from releases and checks candidate migrations against a snapshot. Hardware setup and tester acceptance remain pending. |
+| 2026-11-17 | ThinkPad release requirement | Designated the ThinkPad T450s as the LAN tester host and selected Ubuntu Server 24.04 LTS as the setup path. Added the Linux publishing entry point and documented host setup, GitHub release checks, and separate-device acceptance. The current build's first live deployment is pending. |
+| 2026-11-17 | ThinkPad OS target | Updated the installation target to Ubuntu Server 26.04.1 LTS amd64 and linked the official installer and checksums. ThinkPad installation and live release verification are pending. |
 
 ### Milestone 1 handoff to the MRI console
 

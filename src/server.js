@@ -7,7 +7,9 @@ if (!Number.isInteger(port) || port < 1024 || port > 65535) {
 }
 
 const db = openDatabase();
-const server = createApp(db);
+const publicOrigin = process.env.MEDSIM_PUBLIC_ORIGIN;
+const server = createApp(db, { publicOrigin });
 server.listen(port, "127.0.0.1", () => {
-  console.log(`MedImagingSim is available at http://127.0.0.1:${port}`);
+  const address = publicOrigin ?? `http://127.0.0.1:${port}`;
+  console.log(`MedImagingSim is available at ${address}`);
 });

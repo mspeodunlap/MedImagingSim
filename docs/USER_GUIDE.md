@@ -11,7 +11,7 @@ Covers standalone sign-in, the shared RIS worklist, and the brain MRI console in
 
 ## Open the simulator and sign in
 
-1. Open the address supplied for your simulator. For the current local Mac setup, open [MedImagingSim](http://127.0.0.1:3000/sign-in) in Safari. The person running the simulator can start it using the [local setup instructions](../README.md#run-locally).
+1. Open the exact address supplied by the host. For LAN testing, use the ThinkPad's HTTPS address, including its port, and follow the host's certificate trust instructions first. For testing on the same Mac that runs the development copy, open [MedImagingSim](http://127.0.0.1:3000/sign-in). See the [LAN tester connection steps](LAN_HOSTING.md#4-connect-a-tester) or [local setup instructions](../README.md#run-locally).
 2. Enter your **Username** and **Password**, then select **Sign in**.
 3. Check the account name and role in the header. Select **Sign out** in the header when you are finished or before testing another role.
 
@@ -109,6 +109,8 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 | What you see | What to check |
 | --- | --- |
 | Safari can't connect | For a local app, confirm the server is running in Terminal and use the address printed at startup. |
+| A LAN address has a certificate warning or is unreachable | Check the HTTPS address and port, confirm you are on the host's private network, and ask the host for its public certificate and connection steps. |
+| A recent update is missing | Wait until the host confirms it has published the update, then refresh the browser. In-progress scans can be interrupted during a host restart. |
 | Sign-in returns to the form | Check the visible error, confirm the username and password, and verify that the account was created in the database used by the running server. If using another account, sign out first. |
 | Too many sign-in attempts | Pause briefly, then retry. If the message persists after repeated attempts for the same account, wait up to a minute. |
 | The MRI console button is missing | Return to the order and check its screening status. The button appears only on an eligible order marked **Ready for console**. If you are running from a local checkout, restart the server after installing a new version. |
