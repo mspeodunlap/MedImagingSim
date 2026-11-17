@@ -100,8 +100,13 @@ At the end of each milestone, record the completion date, delivered scope, accep
 | 2026-11-17 | LAN test hosting | Added HTTPS reverse-proxy mode, a macOS LaunchAgent installer and test-gated publisher, and a setup/publishing runbook. The publisher keeps the tester database separate from releases and checks candidate migrations against a snapshot. Hardware setup and tester acceptance remain pending. |
 | 2026-11-17 | ThinkPad release requirement | Designated the ThinkPad T450s as the LAN tester host and selected Ubuntu Server 24.04 LTS as the setup path. Added the Linux publishing entry point and documented host setup, GitHub release checks, and separate-device acceptance. The current build's first live deployment is pending. |
 | 2026-11-17 | ThinkPad OS target | Updated the installation target to Ubuntu Server 26.04.1 LTS amd64 and linked the official installer and checksums. ThinkPad installation and live release verification are pending. |
+| 2026-11-17 | First ThinkPad deployment verified | User staged commit `9dfc9ebeca5af59a05d88fdd2f757f8c4cd70ca0` on Ubuntu Server 26.04.1 LTS with Node 24.22.3. All nine tests passed on the ThinkPad. App and Caddy services are running. User confirmed Safari access from the development Mac at `https://192.168.0.180:8443/sign-in`, admin sign-in, and exam launch. Automatic update timer, a subsequent deployment, and persistence across that deployment remain pending. |
+
+The user enabled `medimagingsim-deploy.timer` on November 17, 2026. The manual deployment check returned without an error and systemd listed the next check in 59 seconds. Verification of an updated commit and preservation of the saved exam across that update remain pending.
 
 ### Milestone 1 handoff to the MRI console
+
+Temporary deployment check prepared on November 17, 2026. The sign-in notice reads “Auto-update test · ThinkPad update check 01”. Confirm it appears at the ThinkPad HTTPS address after automatic deployment, then sign in and reopen the existing exam. After user confirmation, remove the notice and its temporary user-guide paragraph and publish the removal. Publication and live verification of this notice are pending.
 
 - Follow the [local run instructions](README.md) to verify both practice scenarios and the instructor workspace in a browser with one admin account. Then verify dedicated student and instructor roles.
 - The simulated state moves from Ordered to Ready for console or Screening hold. Screening is read-only after submission. The ready-order handoff in `src/app.js` rechecks ownership and safety screening before opening the modality console.

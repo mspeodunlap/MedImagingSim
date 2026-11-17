@@ -37,6 +37,7 @@ ${script ? `<script type="module" src="${escape(script)}"></script>` : ""}
 export function signIn(message = "") {
   return page("Sign in", `<section class="panel login">
     ${title("Sign in", "Use your simulator account to open your workspace.")}
+    <p class="notice cleared" role="status"><strong>Auto-update test</strong> · ThinkPad update check 01</p>
     ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
     <form method="post" action="/sign-in" class="stack">
       <label>Username<input name="username" autocomplete="username" maxlength="40" required autofocus></label>
