@@ -1,5 +1,7 @@
 # MedImagingSim user guide
 
+Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in), hosted on the ThinkPad T450s at its reserved LAN address. Access requires a connection to the local network and trust for the server’s Caddy certificate.
+
 Covers standalone sign-in, the shared RIS worklist, and the brain MRI console introduced in Milestones 1 and 2. The examples use fictional patients and a synthetic brain phantom.
 
 - [Open the simulator and sign in](#open-the-simulator-and-sign-in)
@@ -117,5 +119,6 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 | Safari flags slice coverage or sequence timing | Read the field message. Reduce coverage or move the stack closer to center. Set TE shorter than TR and, for inversion recovery, keep TI plus TE shorter than TR. |
 | The scanner is busy | Wait a moment and select **Run scan** again. Your scan settings remain in the form. |
 | A localizer or image fails to load | Reload the console. If your session ended, sign in again and reopen the same accession. |
+| The site stops responding after the host lid closes | Ask the host operator to check power, Ethernet, and the lid-close configuration in the [hosting runbook](LAN_HOSTING.md#keep-serving-with-the-lid-closed). |
 | Dragging a series is impractical on a touch screen | Tap the series in **Acquisition history** to open the same preview. |
 | A series or its display settings seem missing | Check that you are using the same account and accession, look in **Acquisition history**, and confirm which series and values appear in **Selected for PACS**. |

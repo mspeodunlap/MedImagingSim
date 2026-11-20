@@ -1,5 +1,7 @@
 # MedImagingSim
 
+Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in), hosted on the ThinkPad T450s at its reserved LAN address. Access requires a connection to the local network and trust for the server’s Caddy certificate.
+
 MedImagingSim is a web-based imaging workflow simulator with standalone sign-in, a shared Radiology Information System (RIS), and a brain MRI planning and acquisition console.
 
 Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for role-based steps and troubleshooting.

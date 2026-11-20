@@ -1,5 +1,7 @@
 # MedImagingSim milestone plan
 
+Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in), hosted on the ThinkPad T450s at its reserved LAN address. Access requires a connection to the local network and trust for the server’s Caddy certificate.
+
 **Status:** Milestones 1 and 2 are implemented as of November 15, 2026. Automated checks passed. Complete the local Safari walkthrough with the superuser, then verify dedicated roles. Milestone 3 implements PACS routing and instructor review.
 
 **Source:** [Medical Imaging Suite Simulator PRD v1.3](PRD%20Medical%20Imaging%20Simulator.md). This plan reconstructs the earlier planning handoff and adds scope and completion criteria for each milestone.
@@ -102,11 +104,13 @@ At the end of each milestone, record the completion date, delivered scope, accep
 | 2026-11-17 | ThinkPad OS target | Updated the installation target to Ubuntu Server 26.04.1 LTS amd64 and linked the official installer and checksums. ThinkPad installation and live release verification are pending. |
 | 2026-11-17 | First ThinkPad deployment verified | User staged commit `9dfc9ebeca5af59a05d88fdd2f757f8c4cd70ca0` on Ubuntu Server 26.04.1 LTS with Node 24.22.3. All nine tests passed on the ThinkPad. App and Caddy services are running. User confirmed Safari access from the development Mac at `https://192.168.0.180:8443/sign-in`, admin sign-in, and exam launch. Automatic update timer, a subsequent deployment, and persistence across that deployment remain pending. |
 
-The user enabled `medimagingsim-deploy.timer` on November 17, 2026. The manual deployment check returned without an error and systemd listed the next check in 59 seconds. User confirmed the temporary login notice from commit `71cbdfd` (“Testing Server build”) appeared in Safari at the ThinkPad address, verifying automatic publication to a separate LAN host. Preservation of the saved exam across that update remains pending explicit verification.
+The user enabled `medimagingsim-deploy.timer` on November 17, 2026. The manual deployment check returned without an error and systemd listed the next check in 59 seconds. User confirmed the temporary login notice from commit `71cbdfd` (“Testing Server build”) appeared in Safari at the ThinkPad address, verifying automatic publication to a separate LAN host. User subsequently confirmed the removal deployment and saved exam check succeeded.
 
 ### Milestone 1 handoff to the MRI console
 
-Temporary deployment check confirmed on November 17, 2026. Removed “Auto-update test · ThinkPad update check 01” from the sign-in screen and its temporary user-guide paragraph after the user's screenshot confirmed it was visible. Publication of the removal and confirmation that the notice disappears on the ThinkPad remain pending.
+November 17, 2026 host operation update. Documented the logind override for lid-closed operation on external power, service checks after reboot, and a two-minute closed-lid availability check. Application of the setting and live verification on the ThinkPad are pending user execution. These documentation changes await publication with the next commit.
+
+Temporary deployment check confirmed on November 17, 2026. Removed “Auto-update test · ThinkPad update check 01” from the sign-in screen and its temporary user-guide paragraph after the user's screenshot confirmed it was visible. User confirmed the notice disappeared and the saved exam check succeeded after publishing removal commit `021b425`. Verification is based on the user’s browser confirmation. The active host SHA was not independently read after this deployment.
 
 - Follow the [local run instructions](README.md) to verify both practice scenarios and the instructor workspace in a browser with one admin account. Then verify dedicated student and instructor roles.
 - The simulated state moves from Ordered to Ready for console or Screening hold. Screening is read-only after submission. The ready-order handoff in `src/app.js` rechecks ownership and safety screening before opening the modality console.

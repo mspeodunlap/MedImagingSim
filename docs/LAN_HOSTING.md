@@ -1,5 +1,7 @@
 # ThinkPad T450s LAN hosting and publishing
 
+Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in). The ThinkPad’s wired IPv4 address `192.168.0.180` is reserved in the router. Administer it from the Mac with `ssh mike@192.168.0.180`.
+
 The development Mac builds and tests MedImagingSim. GitHub `main` carries releases to the **ThinkPad T450s**, which serves the tester URL and owns the tester database. Testers connect only to the ThinkPad. The development Mac can be offline after a push.
 
 Use Ubuntu Server 26.04.1 LTS amd64, Node.js 24 LTS, and Caddy on the ThinkPad. The app and update timer run as an unprivileged Linux user. Caddy exposes HTTPS on the private LAN while Node listens on ThinkPad localhost. Keep router port forwarding disabled.
@@ -9,7 +11,7 @@ Use Ubuntu Server 26.04.1 LTS amd64, Node.js 24 LTS, and Caddy on the ThinkPad. 
 1. Back up Windows files and recovery information first. For a reversible setup, keep the Windows drive and install Ubuntu on a separate drive. If you choose to replace Windows, the installer can erase the selected disk. Confirm the target by model and size before committing.
 2. Download the standard **Ubuntu Server 26.04.1 LTS for 64-bit Intel/AMD** image, `ubuntu-26.04.1-live-server-amd64.iso`. Verify it against the release's `SHA256SUMS` and write it to a spare USB drive. Rufus can write the image from Windows. Plug the ThinkPad into power and connect its built-in Ethernet port. Press **F12** when the ThinkPad logo appears and choose the USB drive.
 3. During installation, use a hostname such as `medsim-thinkpad` and a Linux account such as `medsim`. Install OpenSSH only if you want to administer the ThinkPad from the development Mac. Reboot into Ubuntu and apply updates.
-4. Run `ip -4 -brief address`. Reserve the ThinkPad's wired address in the router's DHCP settings. In the commands below, replace the example address `192.168.1.50` and network `192.168.1.0/24` with your actual values. Keep the ThinkPad connected to power and verify it stays reachable with the lid in your intended position.
+4. Run `ip -4 -brief address`. Reserve the ThinkPad's wired address in the router's DHCP settings. In the commands below, the reserved host address is `192.168.0.180` on network `192.168.0.0/24`. Use these values for this installation. Keep the ThinkPad connected to power and verify it stays reachable with the lid in your intended position.
 
 [Ubuntu 26.04.1 images and checksums](https://releases.ubuntu.com/26.04/) · [Ubuntu Server installer](https://ubuntu.com/tutorials/install-ubuntu-server) · [Lenovo USB boot instructions](https://support.lenovo.com/lk/en/solutions/HT118361) · [Windows 10 lifecycle](https://support.microsoft.com/en-us/windows/deployment/updates-lifecycle/windows-10-support-has-ended-on-october-14-2025)
 
@@ -90,7 +92,7 @@ Description=MedImagingSim application
 [Service]
 Type=exec
 UMask=0077
-Environment=MEDSIM_PUBLIC_ORIGIN=https://192.168.1.50:8443
+Environment=MEDSIM_PUBLIC_ORIGIN=https://192.168.0.180:8443
 Environment=MEDSIM_DB=%h/MedImagingSim-host/data/medimagingsim.sqlite
 Environment=MEDSIM_PORT=3000
 ExecStart=%h/.local/opt/node24/bin/node %h/MedImagingSim-host/current/src/server.js
@@ -126,7 +128,7 @@ UNIT
 sudo loginctl enable-linger "$USER"
 systemctl --user daemon-reload
 systemctl --user enable --now medimagingsim.service medimagingsim-deploy.timer
-curl --fail -H 'Host: 192.168.1.50:8443' http://127.0.0.1:3000/sign-in
+curl --fail -H 'Host: 192.168.0.180:8443' http://127.0.0.1:3000/sign-in
 ```
 
 User lingering keeps the service and timer running after logout and starts them at boot. [systemd loginctl](https://www.freedesktop.org/software/systemd/man/latest/loginctl.html)
@@ -141,8 +143,8 @@ Install the Caddy package following its Debian/Ubuntu instructions. On this dedi
     skip_install_trust
 }
 
-https://192.168.1.50:8443 {
-    bind 192.168.1.50
+https://192.168.0.180:8443 {
+    bind 192.168.0.180
     tls internal
     reverse_proxy 127.0.0.1:3000
 }
@@ -151,7 +153,7 @@ https://192.168.1.50:8443 {
 Before enabling a firewall over SSH, allow your management computer's SSH address first. The following example provides browser access from your private subnet. Use your actual subnet.
 
 ```sh
-sudo ufw allow from 192.168.1.0/24 to any port 8443 proto tcp
+sudo ufw allow from 192.168.0.0/24 to any port 8443 proto tcp
 sudo ufw enable
 sudo -u caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 sudo systemctl enable caddy
@@ -172,7 +174,7 @@ MEDSIM_DB="$HOST/data/medimagingsim.sqlite" "$NODE" "$HOST/current/src/create-us
 ```
 
 1. Share the Caddy public root certificate with authorized testers through a trusted channel. With the packaged Linux service it is normally at `/var/lib/caddy/.local/share/caddy/pki/authorities/local/root.crt`. Copy the certificate only. The same directory contains private keys.
-2. Have testers trust the certificate using their OS/browser controls, or through their device administrator on managed machines. On a Mac, use Keychain Access. From another device, verify HTTPS with `curl --fail --cacert /path/to/root.crt https://192.168.1.50:8443/sign-in`.
+2. Have testers trust the certificate using their OS/browser controls, or through their device administrator on managed machines. On a Mac, use Keychain Access. From another device, verify HTTPS with `curl --fail --cacert /path/to/root.crt https://192.168.0.180:8443/sign-in`.
 3. Open the ThinkPad's HTTPS address in the browser, sign in, run a practice scan, and confirm a saved order still opens after sign-out and sign-in. Keep router port forwarding disabled and use only fictional cases.
 
 [Caddy local HTTPS](https://caddyserver.com/docs/automatic-https#local-https) · [Apple certificate trust](https://support.apple.com/guide/keychain-access/change-the-trust-settings-of-a-certificate-kyca11871/mac) · [MRI user walkthrough](USER_GUIDE.md#plan-and-run-an-mri-scan)
@@ -195,6 +197,28 @@ readlink "$HOME/MedImagingSim-host/current"
 Compare the active SHA with the intended GitHub commit. Reload the tester URL, verify browser sign-in and a changed or representative feature, and confirm a saved order survived. Record the commit and outcome in the project handoff. A push alone does not establish tester availability.
 
 ## 6. Operate and recover
+
+### Keep serving with the lid closed
+
+In the ThinkPad SSH session, create a logind override for operation on external power:
+
+```sh
+sudo mkdir -p /etc/systemd/logind.conf.d
+sudo tee /etc/systemd/logind.conf.d/90-medimagingsim-lid.conf >/dev/null <<'CONFIG'
+[Login]
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=ignore
+HandleLidSwitchDocked=ignore
+IdleAction=ignore
+CONFIG
+sudo reboot
+```
+
+The reboot interrupts current sessions. Reconnect from the Mac using `ssh mike@192.168.0.180` after the ThinkPad starts, then check `systemctl --user is-active medimagingsim.service medimagingsim-deploy.timer` and `sudo systemctl is-active caddy`. With power and Ethernet attached, close the lid, wait two minutes, and confirm the app still loads and a command runs in the SSH session. This enables lid-closed use on external power and keeps the ordinary undocked battery lid action as suspend. Keep the laptop on a hard ventilated surface with its vents clear.
+
+To undo the override, remove `/etc/systemd/logind.conf.d/90-medimagingsim-lid.conf` and reboot in a maintenance window.
+
+[systemd lid and idle settings](https://www.freedesktop.org/software/systemd/man/latest/logind.conf.html)
 
 - Check the application with `journalctl --user -u medimagingsim.service -n 40 --no-pager` and Caddy with `sudo journalctl -u caddy -n 40 --no-pager`.
 - If the URL is unreachable, verify the ThinkPad's reserved IP, Ethernet connection, firewall, and user services. A guest network may block direct connections between devices.
