@@ -142,3 +142,10 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 | The site stops responding after the host lid closes | Ask the host operator to check power, Ethernet, and the lid-close configuration in the [hosting runbook](LAN_HOSTING.md#keep-serving-with-the-lid-closed). |
 | Dragging a series is impractical on a touch screen | Tap the series in **Acquisition history** to open the same preview. |
 | A series or its display settings seem missing | Check that you are using the same account and accession, look in **Acquisition history**, and confirm which series and values appear in **Selected for PACS**. |
+
+
+## Functional references and planned workflow
+
+V 1.2 expands the project guidance to five supplied imaging reference documents and adds a topic index for targeted lookup. Current simulator workflows remain as described in this guide. Future work targets the full student workflow, scanner/room scheduling with availability and conflict checks, and explicit arrival, preparation, exam start/end, and image-handoff stages. Further confirmed targets include instructor-selectable isolated/shared scheduling, separate appointment and exam progress, and a Completed/Recent exams view. These targets are planned and are not yet available as additional controls.
+
+See [the reference topic index](REFERENCE_INDEX.md) for relevant document/page locations and [the reference review and decisions](REFERENCE_WORKFLOWS.md) for resolved gaps and remaining questions. New functionality uses an original interface and implementation, with questions raised when the references do not specify the requested behavior.

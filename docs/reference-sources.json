@@ -1,0 +1,51 @@
+{
+  "indexed_on": "2026-11-22",
+  "page_numbering": "1-based PDF page position",
+  "sources": [
+    {
+      "alias": "OVERVIEW",
+      "path": "Reference Docs/Overview of Radiant.pdf",
+      "pdf_pages": 6,
+      "edition": null,
+      "revision_date": null,
+      "bytes": 261923,
+      "sha256": "b2fa165b8c0682122f898c5d36a8a560af148532dfff007964ab97a0be5f23a4"
+    },
+    {
+      "alias": "SUPPORT",
+      "path": "Reference Docs/Imaging Administration Setup and Support Guide.pdf",
+      "pdf_pages": 146,
+      "edition": null,
+      "revision_date": "2026-10-30",
+      "bytes": 2852409,
+      "sha256": "768462e3805601772e73f35012cd8bdbe6d6e09676ef067f51c63ab9bbfc9d0a"
+    },
+    {
+      "alias": "RAD100",
+      "path": "Reference Docs/RAD100 Radiant Fundamentals (With Answers).pdf",
+      "pdf_pages": 205,
+      "edition": "August 2026",
+      "revision_date": "2026-10-23",
+      "bytes": 14859285,
+      "sha256": "b5a512333df04f610b0141bbfba4227fd5dbab1ea0c58309f6547515a542daf1"
+    },
+    {
+      "alias": "RAD400",
+      "path": "Reference Docs/RAD400 Radiant Administration (With Answers).pdf",
+      "pdf_pages": 407,
+      "edition": "August 2026",
+      "revision_date": "2026-03-27",
+      "bytes": 13867019,
+      "sha256": "37630529bbf67d5cc348218f2ead05b10c4e61d9164a6ae27c98bd40b1a5e714"
+    },
+    {
+      "alias": "CLN",
+      "path": "Reference Docs/CLN251-252 Configuring the Epic End User Clinical_Shared (With Answers).pdf",
+      "pdf_pages": 311,
+      "edition": "August 2026",
+      "revision_date": "2026-04-09",
+      "bytes": 12859415,
+      "sha256": "6d2fabb543fd94b449f95ad49329d03dd28441c6f5217a80978e4115bc27751d"
+    }
+  ]
+}

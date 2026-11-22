@@ -4,7 +4,7 @@ Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.
 
 MedImagingSim is a web-based imaging workflow simulator with standalone sign-in, an incoming order queue, a shared Radiology Information System (RIS), and a brain MRI planning and acquisition console.
 
-Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for role-based steps and troubleshooting.
+Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for role-based steps and troubleshooting. For new functional work, start with the [reference topic index](docs/REFERENCE_INDEX.md) and [review decisions](docs/REFERENCE_WORKFLOWS.md), then consult relevant sections from the five PDFs in `Reference Docs`, following AGENTS.md.
 
 Publish the current build and each new release to the dedicated ThinkPad T450s by following the [LAN hosting and publishing guide](docs/LAN_HOSTING.md).
 
