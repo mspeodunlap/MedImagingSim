@@ -27,9 +27,21 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
   }
 
   async function launchKey(cookie) {
-    const response = await request("/ris", { cookie });
+    const response = await request("/queue", { cookie });
     assert.equal(response.status, 200);
     return (await response.text()).match(/name="launchKey" value="([a-f0-9]+)"/)[1];
+  }
+
+  async function scheduleQueued(response, cookie) {
+    const path = response.headers.get("Location");
+    const id = Number(path.split("/").at(-1));
+    const intake = db.prepare("SELECT details, revision FROM order_requests WHERE id = ?").get(id);
+    const scheduled = await request(path, { cookie, fields: {
+      ...JSON.parse(intake.details), revision: intake.revision, action: "schedule",
+      check_demographics: "verified", check_exam: "verified", check_indication: "verified",
+    } });
+    assert.equal(scheduled.status, 303);
+    return scheduled.headers.get("Location");
   }
 
   try {
@@ -44,11 +56,11 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
     const other = await signIn("student-b");
     const faculty = await signIn("instructor");
     const admin = await signIn("admin");
-    assert.equal((await request("/", { cookie: admin })).headers.get("Location"), "/ris");
+    assert.equal((await request("/", { cookie: admin })).headers.get("Location"), "/queue");
     assert.match(await (await request("/instructor", { cookie: admin })).text(), /<h1>Instructor home<\/h1>/);
     assert.equal((await request("/instructor", { cookie: student })).status, 403);
-    assert.match(await (await request("/", { cookie: faculty })).text(), /Instructor home/);
-    assert.equal((await request("/ris", { cookie: faculty })).status, 403);
+    assert.equal((await request("/", { cookie: faculty })).headers.get("Location"), "/queue");
+    assert.equal((await request("/ris", { cookie: faculty })).status, 200);
 
     const orderFields = { scenario: "routine-brain", launchKey: await launchKey(student) };
     assert.equal((await request("/ris/orders", { cookie: student, fields: orderFields, origin: "http://elsewhere.test" })).status, 403);
@@ -59,9 +71,10 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
       request("/ris/orders", { cookie: student, fields: orderFields }),
     ]);
     assert.equal(launches[0].status, 303);
-    const routinePath = launches[0].headers.get("Location");
+    assert.equal(launches[0].headers.get("Location"), launches[1].headers.get("Location"));
+    const routinePath = await scheduleQueued(launches[0], student);
     assert.match(routinePath, /^\/ris\/orders\/SIM-[A-F0-9]{16}$/);
-    assert.equal(launches[1].headers.get("Location"), routinePath);
+
     assert.match(await (await request(routinePath, { cookie: student })).text(), /Persistent headaches/);
     assert.equal((await request(routinePath, { cookie: faculty })).status, 403);
     assert.equal((await request(routinePath, { cookie: other })).status, 404);
@@ -92,7 +105,7 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
       cookie: student, fields: { scenario: "implant-review", launchKey: await launchKey(student) },
     });
     assert.equal(held.status, 303);
-    const heldPath = held.headers.get("Location");
+    const heldPath = await scheduleQueued(held, student);
     const heldScreen = heldPath + "/screening";
     assert.match(await (await request(heldPath, { cookie: student })).text(), /implanted neurostimulator/);
     assert.equal((await request(heldScreen, { cookie: student, fields: { ...clear, implant: "unsure" } })).status, 303);
@@ -104,7 +117,7 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
       cookie: admin, fields: { scenario: "implant-review", launchKey: await launchKey(admin) },
     });
     assert.equal(adminLaunch.status, 303);
-    const adminPath = adminLaunch.headers.get("Location");
+    const adminPath = await scheduleQueued(adminLaunch, admin);
     assert.equal((await request(adminPath + "/screening", {
       cookie: admin, fields: { ...clear, implant: "yes" },
     })).status, 303);

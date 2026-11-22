@@ -4,6 +4,8 @@ import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { promisify } from "node:util";
 import { canUseWorkspace, roles } from "./roles.js";
+import { ageAtToday } from "./intake.js";
+import { exams } from "./exams.js";
 
 const sessionDurationMs = 8 * 60 * 60 * 1000;
 const sessionDigest = token => createHash("sha256").update(token).digest("hex");
@@ -154,6 +156,34 @@ export function openDatabase(filename = process.env.MEDSIM_DB ?? "data/medimagin
     ) STRICT;
     `);
     migrateInstitutions(db);
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS order_requests (
+        id INTEGER PRIMARY KEY,
+        institution_id INTEGER NOT NULL REFERENCES institutions(id),
+        creator_id INTEGER NOT NULL REFERENCES users(id),
+        request_key TEXT NOT NULL,
+        source TEXT NOT NULL CHECK(source IN ('manual', 'quick', 'scenario')),
+        original_details TEXT NOT NULL,
+        details TEXT NOT NULL,
+        revision INTEGER NOT NULL DEFAULT 0,
+        accession TEXT UNIQUE REFERENCES orders(accession),
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        scheduled_at TEXT,
+        UNIQUE(institution_id, creator_id, request_key)
+      ) STRICT;
+      CREATE INDEX IF NOT EXISTS requests_queue ON order_requests(institution_id, creator_id, accession, id);
+      CREATE TABLE IF NOT EXISTS order_reviews (
+        id INTEGER PRIMARY KEY,
+        request_id INTEGER NOT NULL REFERENCES order_requests(id),
+        reviewer_id INTEGER NOT NULL REFERENCES users(id),
+        action TEXT NOT NULL,
+        details TEXT NOT NULL,
+        checks TEXT NOT NULL,
+        missing TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      ) STRICT;
+      CREATE INDEX IF NOT EXISTS reviews_request ON order_reviews(request_id, id);
+    `);
     return db;
   } catch (error) {
     db.close();
@@ -222,7 +252,7 @@ export function launchOrder(db, user, scenario, exam, launchKey) {
     INSERT INTO orders (accession, student_id, exam_key, modality, exam_name, patient_name,
                         patient_age, indication, history, launch_key, institution_id)
     SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? FROM institution_memberships
-    WHERE institution_id = ? AND user_id = ? AND role IN ('student', 'admin')
+    WHERE institution_id = ? AND user_id = ? AND role IN ('student', 'instructor', 'admin')
     ON CONFLICT (student_id, launch_key) DO NOTHING
   `).run(accession, studentId, scenario.examKey, exam.modality, exam.examName, scenario.patient,
     scenario.age, scenario.indication, scenario.history, scopedKey, institutionId, institutionId, studentId);
@@ -231,9 +261,10 @@ export function launchOrder(db, user, scenario, exam, launchKey) {
 }
 
 export function visibleOrders(db, user) {
-  if (user.role === "admin") {
+  if (user.role !== "student") {
     return db.prepare(`
-      SELECT orders.*, users.username AS owner FROM orders
+      SELECT orders.*, users.username AS owner,
+        (SELECT id FROM order_requests WHERE accession = orders.accession) AS intake_id FROM orders
       JOIN users ON users.id = orders.student_id WHERE orders.institution_id = ? ORDER BY orders.id DESC
     `).all(user.institutionId);
   }
@@ -244,9 +275,17 @@ export function visibleOrders(db, user) {
 export function accessibleOrder(db, user, accession) {
   if (!canUseWorkspace(user, "student")) return undefined;
   if (user.role === "admin") {
-    return db.prepare("SELECT * FROM orders WHERE institution_id = ? AND accession = ?").get(user.institutionId, accession);
+    return db.prepare(`
+      SELECT o.*, r.details AS intake_details, r.id AS intake_id FROM orders o
+      LEFT JOIN order_requests r ON r.accession = o.accession
+      WHERE o.institution_id = ? AND o.accession = ?
+    `).get(user.institutionId, accession);
   }
-  return db.prepare("SELECT * FROM orders WHERE institution_id = ? AND student_id = ? AND accession = ?")
+  return db.prepare(`
+    SELECT o.*, r.details AS intake_details, r.id AS intake_id FROM orders o
+    LEFT JOIN order_requests r ON r.accession = o.accession
+    WHERE o.institution_id = ? AND o.student_id = ? AND o.accession = ?
+  `)
     .get(user.institutionId, user.id, accession);
 }
 
@@ -319,4 +358,80 @@ export function savePacsSelection(db, institutionId, accession, id, { width, lev
     ON CONFLICT (accession) DO UPDATE SET acquisition_id = excluded.acquisition_id,
       window_width = excluded.window_width, window_level = excluded.window_level
   `).run(width, level, institutionId, accession, id).changes > 0;
+}
+
+export function createOrderRequest(db, user, details, key, source) {
+  const payload = JSON.stringify(details);
+  db.prepare(`
+    INSERT INTO order_requests (institution_id, creator_id, request_key, source, original_details, details)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(institution_id, creator_id, request_key) DO NOTHING
+  `).run(user.institutionId, user.id, key, source, payload, payload);
+  return db.prepare("SELECT id FROM order_requests WHERE institution_id = ? AND creator_id = ? AND request_key = ?")
+    .get(user.institutionId, user.id, key).id;
+}
+
+export function visibleRequests(db, user) {
+  return db.prepare(`
+    SELECT r.*, u.username AS owner,
+      (SELECT action FROM order_reviews WHERE request_id = r.id ORDER BY id DESC LIMIT 1) AS last_action
+    FROM order_requests r JOIN users u ON u.id = r.creator_id
+    WHERE r.institution_id = ? AND r.accession IS NULL AND (? <> 'student' OR r.creator_id = ?)
+    ORDER BY r.id DESC
+  `).all(user.institutionId, user.role, user.id);
+}
+
+export function accessibleRequest(db, user, id) {
+  return db.prepare(`
+    SELECT * FROM order_requests WHERE institution_id = ? AND id = ? AND (? <> 'student' OR creator_id = ?)
+  `).get(user.institutionId, id, user.role, user.id);
+}
+
+export function requestReviews(db, requestId) {
+  return db.prepare(`
+    SELECT r.*, u.username FROM order_reviews r JOIN users u ON u.id = r.reviewer_id
+    WHERE r.request_id = ? ORDER BY r.id DESC
+  `).all(requestId);
+}
+
+export function reviewOrderRequest(db, user, id, revision, details, checks, missing, action) {
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    const request = accessibleRequest(db, user, id);
+    if (request?.accession && action === "schedule") {
+      db.exec("ROLLBACK");
+      return { accession: request.accession, result: "scheduled" };
+    }
+    if (!request || request.accession || request.revision !== revision) {
+      db.exec("ROLLBACK");
+      return null;
+    }
+    let accession = null;
+    let result = action;
+    if (action === "schedule") {
+      result = missing.length === 0 && Object.values(checks).every(Boolean) ? "scheduled" : "schedule_blocked";
+    }
+    if (result === "scheduled") {
+      const owner = { ...user, id: request.creator_id };
+      const exam = exams[details.examKey];
+      accession = launchOrder(db, owner, {
+        examKey: details.examKey, patient: details.patientName, age: ageAtToday(details.dob),
+        indication: details.indication, history: details.history,
+      }, exam, `intake:${id}`);
+      if (!accession) throw new Error("Order owner no longer has an eligible membership.");
+    }
+    db.prepare(`
+      UPDATE order_requests SET details = ?, revision = revision + 1, accession = ?,
+        scheduled_at = CASE WHEN ? IS NOT NULL THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id = ?
+    `).run(JSON.stringify(details), accession, accession, id);
+    db.prepare(`
+      INSERT INTO order_reviews (request_id, reviewer_id, action, details, checks, missing)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(id, user.id, result, JSON.stringify(details), JSON.stringify(checks), JSON.stringify(missing));
+    db.exec("COMMIT");
+    return { accession, result };
+  } catch (error) {
+    if (db.isTransaction) db.exec("ROLLBACK");
+    throw error;
+  }
 }

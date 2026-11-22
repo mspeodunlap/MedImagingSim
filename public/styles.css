@@ -162,3 +162,19 @@ main:has(.mr-layout) { width: min(106rem, 100%); padding: 1.5rem clamp(.75rem, 2
 .mr-advanced summary { cursor: pointer; font-weight: 600; }
 .mr-advanced .mr-fields { margin-top: .55rem; }
 .mr-image { aspect-ratio: auto; }
+.queue-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, .65fr); gap: 1.25rem; align-items: start; }
+.intake-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }
+textarea { display: block; width: 100%; margin-top: .3rem; padding: .6rem .7rem; border: 1px solid #5d7380; border-radius: .4rem; background: #101a22; color: inherit; font: inherit; resize: vertical; }
+.intake-checks { display: grid; gap: .6rem; }
+.intake-checks input { width: auto !important; display: inline-block !important; accent-color: var(--accent); }
+.intake-actions { display: flex; gap: .65rem; flex-wrap: wrap; align-items: center; }
+.intake-actions .secondary { padding: .6rem .8rem; }
+.intake-history { margin-top: 1rem; }
+.intake-history li { margin-bottom: .85rem; }
+.intake-history li p { font-size: .85rem; color: var(--muted); margin: .25rem 0; }
+.intake-history details dl { margin-top: .8rem; }
+.intake-help { margin-top: .7rem; font-size: .9rem; }
+.queue-layout details summary { cursor: pointer; margin-bottom: .85rem; }
+.queue-layout .intake-fields { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 850px) { .queue-layout { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .intake-fields { grid-template-columns: minmax(0, 1fr); } }

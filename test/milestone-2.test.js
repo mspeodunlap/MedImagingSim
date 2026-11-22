@@ -66,7 +66,7 @@ test("a screened order retains repeat scan bytes, geometry and the PACS selectio
     assert.equal((await request(consolePath, admin.cookie)).status, 200);
     assert.equal((await request(consolePath, secondAdmin.cookie)).status, 404);
     assert.equal((await request(order, secondAdmin.cookie)).status, 404);
-    assert.equal((await request("/ris", adminAtSecondSchool)).status, 403);
+    assert.equal((await request("/ris", adminAtSecondSchool)).status, 200);
     assert.equal((await request("/instructor", adminAtSecondSchool)).status, 200);
     const secondWorklist = await (await request("/ris", secondAdmin.cookie)).text();
     assert.ok(secondWorklist.includes(secondSchoolAccession));

@@ -5,6 +5,7 @@ Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.
 Covers standalone sign-in, the shared RIS worklist, and the brain MRI console introduced in Milestones 1 and 2. The examples use fictional patients and a synthetic brain phantom.
 
 - [Open the simulator and sign in](#open-the-simulator-and-sign-in)
+- [Review and schedule an incoming order](#review-and-schedule-an-incoming-order)
 - [Find and screen an exam in RIS](#find-and-screen-an-exam-in-ris)
 - [Plan and run an MRI scan](#plan-and-run-an-mri-scan)
 - [Review, repeat, and select a series](#review-repeat-and-select-a-series)
@@ -19,13 +20,25 @@ Covers standalone sign-in, the shared RIS worklist, and the brain MRI console in
 
 | Role | First screen | What you can do today |
 | --- | --- | --- |
-| Student | **RIS worklist** | Launch sandbox exams and work with your own orders. Screen an exam, run approved training scans, and save a series for the PACS handoff. |
-| Instructor | **Instructor home** | View the **Submissions** area. Assignments, submissions, and grading are scheduled for Milestone 3. |
-| Admin | **RIS worklist** | Use both workspaces in one session. View and work with orders across users in your institution. The local install starts with one practice institution. |
+| Student | **Order queue** | Create, review, correct, and schedule your own orders. Continue to screening, scanning, and PACS selection in RIS. |
+| Instructor | **Order queue** | Review and schedule incoming orders in your institution. View the RIS worklist and open the scheduled intake review from its patient row. Use **Instructor home** for the submissions workspace. |
+| Admin | **Order queue** | Review and schedule all incoming orders in your institution, and use the student and instructor workspaces. |
+
+## Review and schedule an incoming order
+
+1. After signing in, open **Order queue**. All newly created orders appear here before scheduling.
+2. Select **Quick order** to generate a fictional patient and MRI order. Each generated order has an 80% chance of being complete and a 20% chance of deliberately omitting required details. Consecutive orders are independent, so small batches may have a different mix. Alternatively expand **Manual order**, enter the supplied information, and select **Create order**. You may leave unavailable information blank so it can be reviewed.
+3. Open an order by its number. Check **Patient name**, **Patient ID / MRN**, **Date of birth**, **Recorded sex**, **Requested exam**, and **Reason for exam**. **Clinical history** is optional in the initial completeness check. This release offers the configured brain MRI exam.
+4. If required information is missing, select **Return for missing information**. The order stays in the queue as **Needs information** and the decision appears in **Review history**. Use fictional information supplied for the exercise to correct the fields, then select **Save corrections**. The original received details remain available under **Original order as received**.
+5. When the order is complete, check each item under **Completeness review**, then select **Schedule order**. All three checks must be verified. The server blocks scheduling if any required information is absent and records the attempt for assessment. After a correction or blocked attempt, review the fields and verify the checks again.
+6. Scheduling removes the order from the pending queue and adds it to **RIS worklist** with a stable accession and **Ordered** status. Students and admins can continue to safety screening. Instructors return to the worklist and can inspect the scheduled intake record.
+7. **Review history** records the reviewer, timestamp, decision, missing fields at that review, and checked categories. Instructors and admins can inspect student reviews within the same institution. Student access is limited to their own orders.
+
+An instructor or admin reviewing a student's order preserves its original owner, so the scheduled exam appears in that student's worklist. Assignment dispatch and cohort grading remain planned for Milestone 3. Existing exams created before the order queue keep their accession, screening answers, and scan history.
 
 ## Find and screen an exam in RIS
 
-1. From **RIS worklist**, select an existing patient's name or create an exam in **Practice sandbox**. Choose a **Scenario**, then select **Launch exam**. Each new exam gets an accession beginning with `SIM-`. It identifies the same exam in the RIS and MRI console.
+1. From **RIS worklist**, select a scheduled patient. To create one of the earlier practice cases, open **Order queue → Practice scenarios**, choose a scenario, and select **Create scenario order**. Review and schedule it first. Scheduling assigns an accession beginning with `SIM-` that identifies the same exam in RIS and the console.
 2. Read **Patient history**, including the indication and clinical history. Under **Safety screening**, answer all three questions, then select **Submit screening**. Submitted answers are read-only.
 3. Check the order status.
 
@@ -104,7 +117,7 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 
 - As **admin**, complete both practice scenarios and the repeat-scan exercise. Select **Instructor home** in the header, then return to **RIS worklist**. Confirm the app keeps you signed in and the worklist shows the **Owner** column.
 - As **student**, launch a practice order. Confirm you can see and resume your own order. Use a second student account to check that the order is absent from that student's worklist.
-- As **instructor**, confirm sign-in opens **Instructor home** and the **Submissions** area is available. The local test accounts and provisioning commands are described in the [README](../README.md#dedicated-role-testing).
+- As **instructor**, confirm sign-in opens **Order queue**. Create or review an order, schedule it, and confirm it appears on **RIS worklist**. Select **Instructor home** to reach **Submissions**. The local test accounts and provisioning commands are described in the [README](../README.md#dedicated-role-testing).
 
 ## Troubleshoot an issue
 
@@ -115,6 +128,8 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 | A recent update is missing | Wait until the host confirms it has published the update, then refresh the browser. In-progress scans can be interrupted during a host restart. |
 | Sign-in returns to the form | Check the visible error, confirm the username and password, and verify that the account was created in the database used by the running server. If using another account, sign out first. |
 | Too many sign-in attempts | Pause briefly, then retry. If the message persists after repeated attempts for the same account, wait up to a minute. |
+| An incoming order is absent from RIS | Review it in **Order queue** and schedule it after correcting required information and checking the three completeness confirmations. |
+| The order changed while you were reviewing it | Reopen the order to load the latest revision before submitting another review. |
 | The MRI console button is missing | Return to the order and check its screening status. The button appears only on an eligible order marked **Ready for console**. If you are running from a local checkout, restart the server after installing a new version. |
 | Safari flags slice coverage or sequence timing | Read the field message. Reduce coverage or move the stack closer to center. Set TE shorter than TR and, for inversion recovery, keep TI plus TE shorter than TR. |
 | The scanner is busy | Wait a moment and select **Run scan** again. Your scan settings remain in the form. |

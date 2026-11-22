@@ -2,7 +2,7 @@
 
 Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in), hosted on the ThinkPad T450s at its reserved LAN address. Access requires a connection to the local network and trust for the server’s Caddy certificate.
 
-MedImagingSim is a web-based imaging workflow simulator with standalone sign-in, a shared Radiology Information System (RIS), and a brain MRI planning and acquisition console.
+MedImagingSim is a web-based imaging workflow simulator with standalone sign-in, an incoming order queue, a shared Radiology Information System (RIS), and a brain MRI planning and acquisition console.
 
 Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for role-based steps and troubleshooting.
 
@@ -21,8 +21,8 @@ The account command prints a generated password. Open [MedImagingSim](http://127
 
 ## Verify with the superuser
 
-1. As admin, launch **Routine brain MRI** from **RIS worklist**. Review the history and submit **No** for all three answers. The order shows **Ready for console**.
-2. Return to the worklist and launch **Implant review**. Review the history and select **Yes** or **Unsure** for the implant question. The order shows **Screening hold**.
+1. As admin, open **Order queue → Practice scenarios**, choose **Routine brain MRI**, and select **Create scenario order**. Verify the order fields, check all three completeness confirmations, and select **Schedule order**. Review the history and submit **No** for all three answers. The order shows **Ready for console**.
+2. Return to **Order queue → Practice scenarios**, create **Implant review**, and review and schedule it. Review the history and select **Yes** or **Unsure** for the implant question. The order shows **Screening hold**.
 3. Select **Instructor home** in the header, then return to **RIS worklist** with the same session. The admin worklist includes orders and their owners from the current practice institution.
 4. Sign out and back in as admin. Both orders retain their accession, status, and submitted answers.
 
@@ -38,6 +38,6 @@ See the [MRI console parameter inventory](docs/MRI_CONSOLE_COVERAGE.md) for mode
 
 After the admin walkthrough passes, create separate test accounts with `npm run create-user -- student1 student` and `npm run create-user -- instructor1 instructor`.
 
-Run `npm test` for automated coverage of roles, migration, screening, console access, simulated contrast, repeat scan persistence, and PACS selection through the request handler and an on-disk SQLite database.
+Run `npm test` for automated coverage of intake completeness and review history, scheduling retries, roles, migration, screening, console access, simulated contrast, repeat scan persistence, and PACS selection through the request handler and an on-disk SQLite database.
 
 See the [milestone plan](MILESTONE_PLAN.md) for the implementation sequence and handoff notes.

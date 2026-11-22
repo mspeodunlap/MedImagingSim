@@ -2,7 +2,8 @@ import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import {
-  accessibleOrder, acquisitionDetails, acquisitionPixels, authenticate, endSession, findScan, launchOrder, listAcquisitions,
+  accessibleOrder, accessibleRequest, acquisitionDetails, acquisitionPixels, authenticate, createOrderRequest,
+  endSession, findScan, listAcquisitions, requestReviews, reviewOrderRequest, visibleRequests,
   pacsSelection, saveAcquisition, savePacsSelection, saveScreening,
   sessionUser, startSession, visibleOrders,
 } from "./db.js";
@@ -11,6 +12,8 @@ import { generateMr, ScanQueueFull } from "./mr-executor.js";
 import { makeLocalizers, mrExamKey, readPlan, readPresentation } from "./mr.js";
 import { acquisitionViewer, mrConsole } from "./mr-view.js";
 import { canUseWorkspace } from "./roles.js";
+import { intakeFields, missingIntake, quickOrder, readIntake, reviewGroups } from "./intake.js";
+import { intakeReview, orderQueue } from "./intake-view.js";
 import { instructor, orderPage, problem, signIn, worklist } from "./views.js";
 
 const assets = new Map([
@@ -38,16 +41,16 @@ function redirect(res, path) {
   res.end();
 }
 
-async function readForm(req) {
+async function readForm(req, limit = 8192) {
   if (req.headers["content-type"]?.split(";")[0] !== "application/x-www-form-urlencoded") {
     return { error: 400 };
   }
-  if (Number(req.headers["content-length"]) > 8192) return { error: 413 };
+  if (Number(req.headers["content-length"]) > limit) return { error: 413 };
   const chunks = [];
   let size = 0;
   for await (const chunk of req.iterator({ destroyOnReturn: false })) {
     size += chunk.length;
-    if (size > 8192) return { error: 413 };
+    if (size > limit) return { error: 413 };
     chunks.push(chunk);
   }
   return { form: new URLSearchParams(Buffer.concat(chunks).toString("utf8")) };
@@ -219,19 +222,64 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
         return redirect(res, "/sign-in");
       }
       if (req.method === "GET" && path === "/") {
-        return canUseWorkspace(user, "student") ? redirect(res, "/ris") : send(res, 200, instructor(user));
+        return redirect(res, "/queue");
       }
       if (req.method === "GET" && path === "/instructor") {
         return canUseWorkspace(user, "instructor") ? send(res, 200, instructor(user)) : reject(403);
       }
+      if (path === "/queue" || path.startsWith("/queue/")) {
+        if (req.method === "GET" && path === "/queue") {
+          return send(res, 200, orderQueue(user, visibleRequests(db, user), randomBytes(16).toString("hex")));
+        }
+        const queueMatch = path.match(/^\/queue\/([1-9][0-9]{0,12})$/);
+        const requestId = queueMatch ? Number(queueMatch[1]) : null;
+        const intake = requestId && accessibleRequest(db, user, requestId);
+        const render = (code, message, draft) => send(res, code, intakeReview(user,
+          accessibleRequest(db, user, requestId), requestReviews(db, requestId), message, draft));
+        if (req.method === "GET" && intake) return render(200);
+        if (req.method !== "POST") return reject(404);
+        const { form, error } = await readForm(req, 65536);
+        if (error) return reject(error);
+        user = sessionUser(db, token);
+        if (!user) return redirect(res, "/sign-in");
+        if (path === "/queue" || path === "/queue/quick") {
+          const key = form.get("requestKey");
+          if (form.getAll("requestKey").length !== 1 || !/^[a-f0-9]{32}$/.test(key)) return reject(400);
+          const details = path === "/queue/quick" ? quickOrder() : readIntake(form);
+          if (!details) return send(res, 400, orderQueue(user, visibleRequests(db, user), key,
+            "Check field lengths, the supplied date of birth, recorded sex, and requested exam.",
+            Object.fromEntries(Object.keys(intakeFields).map(field => [field, form.get(field) ?? ""]))));
+          const id = createOrderRequest(db, user, details, key, path === "/queue/quick" ? "quick" : "manual");
+          return redirect(res, `/queue/${id}`);
+        }
+        if (!intake || !accessibleRequest(db, user, requestId)) return reject(404);
+        const details = readIntake(form);
+        const revision = form.get("revision");
+        const action = form.get("action");
+        if (form.getAll("revision").length !== 1 || !/^\d+$/.test(revision) ||
+            form.getAll("action").length !== 1 || !["schedule", "needs_information", "save"].includes(action)) return reject(400);
+        if (!details) return render(400, "Check field lengths, the supplied date of birth, recorded sex, and requested exam.",
+          Object.fromEntries(Object.keys(intakeFields).map(field => [field, form.get(field) ?? ""])));
+        const checks = Object.fromEntries(Object.keys(reviewGroups).map(key =>
+          [key, form.getAll(`check_${key}`).length === 1 && form.get(`check_${key}`) === "verified"]));
+        const missing = missingIntake(details);
+        const result = reviewOrderRequest(db, user, requestId, Number(revision), details, checks, missing, action);
+        if (!result) return render(409, "This order changed or was scheduled. Reopen it before reviewing.");
+        if (result.result === "schedule_blocked") {
+          const feedback = missing.length ? `Required information is missing — ${missing.map(key => intakeFields[key][0]).join(", ")}.`
+            : "Verify all three completeness checks before scheduling.";
+          return render(400, feedback);
+        }
+        if (result.accession) return redirect(res, user.role === "instructor" ? "/ris" : `/ris/orders/${result.accession}`);
+        return render(200, action === "needs_information" ? "Missing information review recorded. The order remains in the queue." : "Corrections saved.");
+      }
       const mrMatch = path.match(mrPattern);
       if (mrMatch) return await handleMr(db, req, res, url, mrMatch, user, token, reject);
       if (path !== "/ris" && !path.startsWith("/ris/")) return reject(404);
-      if (!canUseWorkspace(user, "student")) return reject(403);
-
       if (req.method === "GET" && path === "/ris") {
-        return send(res, 200, worklist(user, visibleOrders(db, user), scenarios, randomBytes(16).toString("hex")));
+        return send(res, 200, worklist(user, visibleOrders(db, user)));
       }
+      if (!canUseWorkspace(user, "student")) return reject(403);
       if (req.method === "POST" && path === "/ris/orders") {
         const { form, error } = await readForm(req);
         if (error) return reject(error);
@@ -240,9 +288,12 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
         if (!Object.hasOwn(scenarios, key) || !/^[a-f0-9]{32}$/.test(launchKey)) return reject(400);
         if (!sessionUser(db, token)) return redirect(res, "/sign-in");
         const scenario = scenarios[key];
-        const accession = launchOrder(db, user, scenario, exams[scenario.examKey], `${key}:${launchKey}`);
-        if (!accession) return reject(403);
-        return redirect(res, `/ris/orders/${accession}`);
+        const id = createOrderRequest(db, user, {
+          patientName: scenario.patient, patientId: "SIM-" + randomBytes(4).toString("hex").toUpperCase(),
+          dob: `${new Date().getUTCFullYear() - scenario.age}-01-01`, sex: "Unknown",
+          examKey: scenario.examKey, indication: scenario.indication, history: scenario.history,
+        }, `scenario:${key}:${launchKey}`, "scenario");
+        return redirect(res, `/queue/${id}`);
       }
 
       const match = path.match(orderPattern);

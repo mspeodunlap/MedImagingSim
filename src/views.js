@@ -9,7 +9,7 @@ const status = value => `<span class="status ${value}">${statusLabels[value]}</s
 const title = (label, detail) => `<div class="page-title"><h1>${label}</h1><p>${detail}</p></div>`;
 
 export function page(name, content, user, { script } = {}) {
-  const home = canUseWorkspace(user, "student") ? "/ris" : "/";
+  const home = "/queue";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -23,8 +23,9 @@ ${script ? `<script type="module" src="${escape(script)}"></script>` : ""}
 <header class="shell-header">
   <div class="shell-inner">
     <a class="wordmark" href="${home}"><span class="brand-mark" aria-hidden="true"></span>MedImagingSim</a>
-    ${user?.role === "admin" ? `<nav class="workspace-nav" aria-label="Workspaces">
-      <a href="/ris">RIS worklist</a><a href="/instructor">Instructor home</a></nav>` : ""}
+    ${user ? `<nav class="workspace-nav" aria-label="Workspaces">
+      <a href="/queue">Order queue</a><a href="/ris">RIS worklist</a>
+      ${canUseWorkspace(user, "instructor") ? '<a href="/instructor">Instructor home</a>' : ""}</nav>` : ""}
     ${user ? `<div class="account"><span>${escape(user.username)} <small>${user.role}</small></span>
       <form method="post" action="/sign-out"><button class="secondary">Sign out</button></form></div>` : ""}
   </div>
@@ -51,37 +52,35 @@ export function instructor(user) {
     <section class="panel"><h2>Submissions</h2><p class="muted">No submissions to review.</p></section>`, user);
 }
 
-export function worklist(user, orders, scenarios, launchKey) {
-  const showOwner = user.role === "admin";
-  const rows = orders.map(order => `<tr>
-    <td><a href="/ris/orders/${order.accession}">${escape(order.patient_name)}</a></td>
+export function worklist(user, orders) {
+  const showOwner = user.role !== "student";
+  const rows = orders.map(order => {
+    let patient = `<a href="/ris/orders/${order.accession}">${escape(order.patient_name)}</a>`;
+    if (user.role === "instructor") {
+      patient = order.intake_id ? `<a href="/queue/${order.intake_id}">${escape(order.patient_name)}</a>` : escape(order.patient_name);
+    }
+    return `<tr>
+    <td>${patient}</td>
     ${showOwner ? `<td>${escape(order.owner)}</td>` : ""}
     <td>${escape(order.exam_name)}</td>
     <td class="accession">${order.accession}</td>
     <td>${status(order.status)}</td>
-  </tr>`).join("");
+  </tr>`;
+  }).join("");
   return page("RIS worklist", `${title("RIS worklist", "Open an imaging order to review the patient history and record screening.")}
     <div class="worklist-layout">
       <section class="panel"><h2>Orders <span class="count">${orders.length}</span></h2>
         ${orders.length ? `<div class="table-wrap" tabindex="0" role="region" aria-label="Imaging orders"><table>
           <thead><tr><th scope="col">Patient</th>${showOwner ? '<th scope="col">Owner</th>' : ""}<th scope="col">Exam</th><th scope="col">Accession</th><th scope="col">Status</th></tr></thead>
           <tbody>${rows}</tbody>
-        </table></div>` : '<p class="muted">Your worklist is empty. Launch a sandbox exam to get started.</p>'}
+        </table></div>` : '<p class="muted">Your worklist is empty. Schedule an order from the order queue to get started.</p>'}
       </section>
-      <aside class="panel sandbox"><h2>Practice sandbox</h2><p class="muted">Launch a fictional patient and order.</p>
-        <form method="post" action="/ris/orders" class="stack">
-          <input type="hidden" name="launchKey" value="${launchKey}">
-          <label for="scenario">Scenario</label>
-          <select name="scenario" id="scenario">
-            ${Object.entries(scenarios).map(([id, scenario]) => `<option value="${id}">${escape(scenario.title)}</option>`).join("")}
-          </select>
-          <button>Launch exam</button>
-        </form>
-      </aside>
+      <aside class="panel"><h2>Incoming orders</h2><p>Review and schedule new orders from the order queue.</p><a class="action" href="/queue">Open order queue</a></aside>
     </div>`, user);
 }
 
 export function orderPage(user, order, exam, message = "") {
+  const demographics = order.intake_details && JSON.parse(order.intake_details);
   const savedAnswers = order.answers ? JSON.parse(order.answers) : null;
   const questions = exam.questions.map(({ id, label }) => `
     <fieldset>
@@ -99,6 +98,9 @@ export function orderPage(user, order, exam, message = "") {
     <div class="order-layout">
       <section class="panel"><h2>Patient history</h2>
         <dl><dt>Fictional patient</dt><dd>${escape(order.patient_name)} · ${order.patient_age} years</dd>
+        ${demographics ? `<dt>Patient ID / MRN</dt><dd>${escape(demographics.patientId)}</dd>
+        <dt>Date of birth</dt><dd>${escape(demographics.dob)}</dd><dt>Recorded sex</dt><dd>${escape(demographics.sex)}</dd>
+        <dt>Order review</dt><dd><a href="/queue/${order.intake_id}">View completeness review</a></dd>` : ""}
         <dt>Indication</dt><dd>${escape(order.indication)}</dd>
         <dt>Clinical history</dt><dd>${escape(order.history)}</dd></dl>
       </section>
