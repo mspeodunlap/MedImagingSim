@@ -15,6 +15,7 @@ Covers standalone sign-in, the shared RIS worklist, and the brain MRI console in
 ## Open the simulator and sign in
 
 1. Open the exact address supplied by the host. For LAN testing, use the ThinkPad's HTTPS address, including its port, and follow the host's certificate trust instructions first. For testing on the same Mac that runs the development copy, open [MedImagingSim](http://127.0.0.1:3000/sign-in). See the [LAN tester connection steps](LAN_HOSTING.md#4-connect-a-tester) or [local setup instructions](../README.md#run-locally).
+   The application version appears centered below the sign-in box, starting at **V 1.0**. It increases with each delivered change so you can identify the build running on your device.
 2. Enter your **Username** and **Password**, then select **Sign in**.
 3. Check the account name and role in the header. Select **Sign out** in the header when you are finished or before testing another role.
 

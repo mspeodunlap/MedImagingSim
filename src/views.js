@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { defaultTimeZone, futureOrder, localAppointment } from "./scheduling.js";
 import { screeningAnswers, statusLabels } from "./exams.js";
 import { canUseWorkspace } from "./roles.js";
@@ -5,6 +6,8 @@ import { canUseWorkspace } from "./roles.js";
 export const escape = value => String(value).replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 })[char]);
+
+const version = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version.split(".").slice(0, 2).join(".");
 
 const status = value => `<span class="status ${value}">${statusLabels[value]}</span>`;
 const title = (label, detail) => `<div class="page-title"><h1>${label}</h1><p>${detail}</p></div>`;
@@ -45,7 +48,7 @@ export function signIn(message = "") {
       <label>Password<input type="password" name="password" autocomplete="current-password" maxlength="256" required></label>
       <button>Sign in</button>
     </form>
-  </section>`);
+  </section><p class="login-version">V ${escape(version)}</p>`);
 }
 
 export function instructor(user) {

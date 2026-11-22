@@ -30,6 +30,7 @@ h2 { font-size: 1.15rem; letter-spacing: -.02em; margin-bottom: .95rem; }
 .page-title p { color: var(--muted); margin: .5rem 0 0; }
 .panel { min-width: 0; border: 1px solid var(--border); border-radius: .75rem; background: var(--panel); padding: clamp(1rem, 2vw, 1.5rem); }
 .login { padding: clamp(1.2rem, 5vw, 2rem); }
+.login-version { text-align: center; color: var(--muted); font-size: .85rem; margin: .85rem 0 0; }
 .worklist-layout, .order-layout { display: grid; gap: 1.25rem; align-items: start; }
 .worklist-layout { grid-template-columns: minmax(0, 1fr) minmax(14rem, 19rem); }
 .order-layout { grid-template-columns: minmax(14rem, .75fr) minmax(0, 1.25fr); }
