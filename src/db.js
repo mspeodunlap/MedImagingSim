@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { canUseWorkspace, roles } from "./roles.js";
 import { ageAtToday } from "./intake.js";
 import { exams } from "./exams.js";
+import { defaultTimeZone, futureOrder, localAppointment } from "./scheduling.js";
 
 const sessionDurationMs = 8 * 60 * 60 * 1000;
 const sessionDigest = token => createHash("sha256").update(token).digest("hex");
@@ -99,6 +100,46 @@ function migrateInstitutions(db) {
   }
 }
 
+function migrateAppointments(db) {
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    if (!db.prepare("PRAGMA table_info(institutions)").all().some(column => column.name === "time_zone")) {
+      db.exec(`ALTER TABLE institutions ADD COLUMN time_zone TEXT NOT NULL DEFAULT '${defaultTimeZone}'`);
+    }
+    if (!db.prepare("PRAGMA table_info(orders)").all().some(column => column.name === "appointment_date")) {
+      db.exec(`ALTER TABLE orders ADD COLUMN appointment_date TEXT;
+        ALTER TABLE orders ADD COLUMN appointment_time TEXT;
+        ALTER TABLE orders ADD COLUMN schedule_revision INTEGER NOT NULL DEFAULT 0;`);
+      const update = db.prepare("UPDATE orders SET appointment_date = ?, appointment_time = ? WHERE id = ?");
+      for (const order of db.prepare(`SELECT o.id, o.created_at, i.time_zone FROM orders o
+        JOIN institutions i ON i.id = o.institution_id`).all()) {
+        const appointment = localAppointment(new Date(order.created_at.replace(" ", "T") + "Z"), order.time_zone);
+        update.run(appointment.date, appointment.time, order.id);
+      }
+    }
+    db.exec(`CREATE INDEX IF NOT EXISTS orders_appointment ON orders(institution_id, appointment_date, appointment_time);
+      CREATE INDEX IF NOT EXISTS orders_student_appointment ON orders(institution_id, student_id, appointment_date, appointment_time);
+      CREATE TABLE IF NOT EXISTS appointment_changes (
+        id INTEGER PRIMARY KEY,
+        accession TEXT NOT NULL REFERENCES orders(accession),
+        actor_id INTEGER NOT NULL REFERENCES users(id),
+        previous_date TEXT, previous_time TEXT,
+        appointment_date TEXT NOT NULL, appointment_time TEXT NOT NULL,
+        time_zone TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      ) STRICT;
+      CREATE INDEX IF NOT EXISTS appointment_changes_order ON appointment_changes(accession, id);`);
+    db.exec("COMMIT");
+  } catch (error) {
+    if (db.isTransaction) db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
+export function institutionTimeZone(db, institutionId) {
+  return db.prepare("SELECT time_zone FROM institutions WHERE id = ?").get(institutionId).time_zone;
+}
+
 export function openDatabase(filename = process.env.MEDSIM_DB ?? "data/medimagingsim.sqlite") {
   if (filename !== ":memory:") mkdirSync(dirname(filename), { recursive: true, mode: 0o700 });
   const db = new DatabaseSync(filename);
@@ -156,6 +197,7 @@ export function openDatabase(filename = process.env.MEDSIM_DB ?? "data/medimagin
     ) STRICT;
     `);
     migrateInstitutions(db);
+    migrateAppointments(db);
     db.exec(`
       CREATE TABLE IF NOT EXISTS order_requests (
         id INTEGER PRIMARY KEY,
@@ -244,45 +286,44 @@ export function endSession(db, token) {
   if (token) db.prepare("DELETE FROM sessions WHERE token_hash = ?").run(sessionDigest(token));
 }
 
-export function launchOrder(db, user, scenario, exam, launchKey) {
+export function launchOrder(db, user, scenario, exam, launchKey, appointment = localAppointment(new Date(), institutionTimeZone(db, user.institutionId))) {
   const { id: studentId, institutionId } = user;
   const scopedKey = `${institutionId}:${launchKey}`;
   const accession = `SIM-${randomBytes(8).toString("hex").toUpperCase()}`;
   db.prepare(`
     INSERT INTO orders (accession, student_id, exam_key, modality, exam_name, patient_name,
-                        patient_age, indication, history, launch_key, institution_id)
-    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? FROM institution_memberships
+                        patient_age, indication, history, launch_key, institution_id, appointment_date, appointment_time)
+    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? FROM institution_memberships
     WHERE institution_id = ? AND user_id = ? AND role IN ('student', 'instructor', 'admin')
     ON CONFLICT (student_id, launch_key) DO NOTHING
   `).run(accession, studentId, scenario.examKey, exam.modality, exam.examName, scenario.patient,
-    scenario.age, scenario.indication, scenario.history, scopedKey, institutionId, institutionId, studentId);
+    scenario.age, scenario.indication, scenario.history, scopedKey, institutionId, appointment.date, appointment.time, institutionId, studentId);
   return db.prepare("SELECT accession FROM orders WHERE institution_id = ? AND student_id = ? AND launch_key = ?")
     .get(institutionId, studentId, scopedKey)?.accession;
 }
 
-export function visibleOrders(db, user) {
-  if (user.role !== "student") {
-    return db.prepare(`
-      SELECT orders.*, users.username AS owner,
-        (SELECT id FROM order_requests WHERE accession = orders.accession) AS intake_id FROM orders
-      JOIN users ON users.id = orders.student_id WHERE orders.institution_id = ? ORDER BY orders.id DESC
-    `).all(user.institutionId);
-  }
-  return db.prepare("SELECT * FROM orders WHERE institution_id = ? AND student_id = ? ORDER BY id DESC")
-    .all(user.institutionId, user.id);
+export function visibleOrders(db, user, date = localAppointment(new Date(), institutionTimeZone(db, user.institutionId)).date) {
+  return db.prepare(`SELECT o.*, u.username AS owner,
+    (SELECT id FROM order_requests WHERE accession = o.accession) AS intake_id
+    FROM orders o JOIN users u ON u.id = o.student_id
+    WHERE o.institution_id = ? AND (? <> 'student' OR o.student_id = ?) AND o.appointment_date = ?
+    ORDER BY o.appointment_time, o.id
+  `).all(user.institutionId, user.role, user.id, date);
 }
 
 export function accessibleOrder(db, user, accession) {
   if (!canUseWorkspace(user, "student")) return undefined;
   if (user.role === "admin") {
     return db.prepare(`
-      SELECT o.*, r.details AS intake_details, r.id AS intake_id FROM orders o
+      SELECT o.*, (SELECT time_zone FROM institutions WHERE id = o.institution_id) AS time_zone,
+        r.details AS intake_details, r.id AS intake_id FROM orders o
       LEFT JOIN order_requests r ON r.accession = o.accession
       WHERE o.institution_id = ? AND o.accession = ?
     `).get(user.institutionId, accession);
   }
   return db.prepare(`
-    SELECT o.*, r.details AS intake_details, r.id AS intake_id FROM orders o
+    SELECT o.*, (SELECT time_zone FROM institutions WHERE id = o.institution_id) AS time_zone,
+        r.details AS intake_details, r.id AS intake_id FROM orders o
     LEFT JOIN order_requests r ON r.accession = o.accession
     WHERE o.institution_id = ? AND o.student_id = ? AND o.accession = ?
   `)
@@ -290,6 +331,7 @@ export function accessibleOrder(db, user, accession) {
 }
 
 export function saveScreening(db, order, screening) {
+  if (futureOrder(order)) return { changes: 0 };
   return db.prepare(`
     UPDATE orders SET status = ?, answers = ?, screened_at = CURRENT_TIMESTAMP
     WHERE institution_id = ? AND accession = ? AND status = 'ordered'
@@ -320,6 +362,8 @@ export function findScan(db, institutionId, accession, scanKey) {
 }
 
 export function saveAcquisition(db, user, accession, scanKey, acquisition) {
+  const current = accessibleOrder(db, user, accession);
+  if (!current || futureOrder(current)) return undefined;
   db.prepare(`
     INSERT INTO acquisitions (accession, scan_key, operator_id, source_version, engine_version,
                               geometry, parameters, pixels)
@@ -383,7 +427,10 @@ export function visibleRequests(db, user) {
 
 export function accessibleRequest(db, user, id) {
   return db.prepare(`
-    SELECT * FROM order_requests WHERE institution_id = ? AND id = ? AND (? <> 'student' OR creator_id = ?)
+    SELECT *,
+      (SELECT appointment_date FROM orders WHERE orders.accession = order_requests.accession) AS appointment_date,
+      (SELECT appointment_time FROM orders WHERE orders.accession = order_requests.accession) AS appointment_time
+    FROM order_requests WHERE institution_id = ? AND id = ? AND (? <> 'student' OR creator_id = ?)
   `).get(user.institutionId, id, user.role, user.id);
 }
 
@@ -394,7 +441,7 @@ export function requestReviews(db, requestId) {
   `).all(requestId);
 }
 
-export function reviewOrderRequest(db, user, id, revision, details, checks, missing, action) {
+export function reviewOrderRequest(db, user, id, revision, details, checks, missing, action, appointment) {
   db.exec("BEGIN IMMEDIATE");
   try {
     const request = accessibleRequest(db, user, id);
@@ -409,7 +456,7 @@ export function reviewOrderRequest(db, user, id, revision, details, checks, miss
     let accession = null;
     let result = action;
     if (action === "schedule") {
-      result = missing.length === 0 && Object.values(checks).every(Boolean) ? "scheduled" : "schedule_blocked";
+      result = appointment && missing.length === 0 && Object.values(checks).every(Boolean) ? "scheduled" : "schedule_blocked";
     }
     if (result === "scheduled") {
       const owner = { ...user, id: request.creator_id };
@@ -417,8 +464,10 @@ export function reviewOrderRequest(db, user, id, revision, details, checks, miss
       accession = launchOrder(db, owner, {
         examKey: details.examKey, patient: details.patientName, age: ageAtToday(details.dob),
         indication: details.indication, history: details.history,
-      }, exam, `intake:${id}`);
+      }, exam, `intake:${id}`, appointment);
       if (!accession) throw new Error("Order owner no longer has an eligible membership.");
+      db.prepare(`INSERT INTO appointment_changes (accession, actor_id, appointment_date, appointment_time, time_zone)
+        VALUES (?, ?, ?, ?, ?)`).run(accession, user.id, appointment.date, appointment.time, institutionTimeZone(db, user.institutionId));
     }
     db.prepare(`
       UPDATE order_requests SET details = ?, revision = revision + 1, accession = ?,
@@ -427,9 +476,37 @@ export function reviewOrderRequest(db, user, id, revision, details, checks, miss
     db.prepare(`
       INSERT INTO order_reviews (request_id, reviewer_id, action, details, checks, missing)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(id, user.id, result, JSON.stringify(details), JSON.stringify(checks), JSON.stringify(missing));
+    `).run(id, user.id, result, JSON.stringify({ ...details, ...(appointment ? { appointment: { ...appointment, timeZone: institutionTimeZone(db, user.institutionId) } } : {}) }),
+      JSON.stringify(checks), JSON.stringify(action === "schedule" && !appointment ? [...missing, "appointment"] : missing));
     db.exec("COMMIT");
     return { accession, result };
+  } catch (error) {
+    if (db.isTransaction) db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
+export function appointmentHistory(db, accession) {
+  return db.prepare(`SELECT a.*, u.username FROM appointment_changes a
+    JOIN users u ON u.id = a.actor_id WHERE a.accession = ? ORDER BY a.id DESC`).all(accession);
+}
+
+export function rescheduleOrder(db, user, accession, revision, appointment) {
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    const order = accessibleOrder(db, user, accession);
+    if (!order || order.schedule_revision !== revision || order.status !== "ordered" || order.answers !== null ||
+        db.prepare("SELECT 1 FROM acquisitions WHERE accession = ? LIMIT 1").get(accession)) {
+      db.exec("ROLLBACK");
+      return false;
+    }
+    db.prepare(`UPDATE orders SET appointment_date = ?, appointment_time = ?, schedule_revision = schedule_revision + 1
+      WHERE accession = ?`).run(appointment.date, appointment.time, accession);
+    db.prepare(`INSERT INTO appointment_changes (accession, actor_id, previous_date, previous_time, appointment_date, appointment_time, time_zone)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`).run(accession, user.id, order.appointment_date, order.appointment_time,
+        appointment.date, appointment.time, order.time_zone);
+    db.exec("COMMIT");
+    return true;
   } catch (error) {
     if (db.isTransaction) db.exec("ROLLBACK");
     throw error;

@@ -5,15 +5,17 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { createRequestHandler } from "../src/app.js";
-import { createUser, openDatabase, startSession } from "../src/db.js";
-import { missingIntake, quickOrder } from "../src/intake.js";
+import { createOrderRequest, createUser, openDatabase, startSession } from "../src/db.js";
+import { missingIntake, quickOrder, readIntake } from "../src/intake.js";
+import { localAppointment } from "../src/scheduling.js";
 import { requestThrough } from "../test-support/request.js";
 
 const complete = {
-  patientName: "Jamie Example", patientId: "SIM-12345", dob: "1990-03-04", sex: "Female",
+  firstName: "Jamie", lastName: "Example", patientName: "Jamie Example", patientId: "SIM-12345", dob: "1990-03-04", sex: "Female",
   examKey: "mr-brain-v1", indication: "Fictional headache exercise", history: "No reported devices.",
 };
-const verified = { check_demographics: "verified", check_exam: "verified", check_indication: "verified" };
+const appointment = { appointmentDate: localAppointment().date, appointmentTime: "09:30" };
+const verified = { ...appointment, check_demographics: "verified", check_exam: "verified", check_indication: "verified" };
 const key = () => randomBytes(16).toString("hex");
 
 test("intake requires completeness review, keeps an assessment trail, and schedules once across retries", async () => {
@@ -63,7 +65,7 @@ test("intake requires completeness review, keeps an assessment trail, and schedu
     assert.equal((await request(path, student, { ...complete, action: "save", revision: 0 })).status, 409);
     assert.equal((await request(path, student, { ...incomplete, action: "needs_information", revision: 1 })).status, 200);
     assert.match(await (await request("/queue", student)).text(), /Needs information/);
-    const unchecked = await request(path, student, { ...complete, action: "schedule", revision: 2 });
+    const unchecked = await request(path, student, { ...complete, ...appointment, action: "schedule", revision: 2 });
     assert.equal(unchecked.status, 400);
     assert.match(await unchecked.text(), /Verify all three/);
     assert.equal(db.prepare("SELECT count(*) AS n FROM orders").get().n, 0);
@@ -73,7 +75,7 @@ test("intake requires completeness review, keeps an assessment trail, and schedu
     const scheduled = await Promise.all([
       request(path, instructor, schedule), request(path, admin, schedule),
     ]);
-    assert.ok(scheduled.every(response => response.status === 303));
+    assert.ok(scheduled.every(response => response.status === 303 && response.headers.get("location") === "/queue"));
     const order = db.prepare("SELECT * FROM orders").get();
     assert.equal(order.status, "ordered");
     assert.equal(order.patient_name, complete.patientName);
@@ -102,6 +104,30 @@ test("intake requires completeness review, keeps an assessment trail, and schedu
     assert.equal((await request(instructorPath, instructor, { ...complete, ...verified, action: "schedule", revision: 0 })).status, 303);
     const instructorWorklist = await (await request("/ris", instructor)).text();
     assert.match(instructorWorklist, /View|Jamie Example/);
+
+    // Older queued names remain visible and must be confirmed without guessing their parts.
+    const legacyDetails = { ...complete, patientName: "de la Cruz, Jamie" };
+    delete legacyDetails.firstName;
+    delete legacyDetails.lastName;
+    const owner = db.prepare("SELECT id, 1 AS institutionId FROM users WHERE username = 'student'").get();
+    const legacyId = createOrderRequest(db, owner, legacyDetails, key(), "manual");
+    const legacyPath = `/queue/${legacyId}`;
+    db.prepare(`INSERT INTO order_reviews (request_id, reviewer_id, action, details, checks, missing)
+      VALUES (?, ?, 'schedule_blocked', ?, '{}', '["patientName"]')`).run(legacyId, owner.id, JSON.stringify(legacyDetails));
+    const legacyPage = await (await request(legacyPath, student)).text();
+    assert.match(legacyPage, /Previously entered patient name: de la Cruz, Jamie/);
+    assert.match(legacyPage, /Patient name \(original\)/);
+    assert.match(legacyPage, /Missing at review — Patient name/);
+    assert.equal((await request(legacyPath, student, { ...legacyDetails, ...verified, action: "schedule", revision: 0 })).status, 400);
+    const blankParts = { ...complete, firstName: "", lastName: "", ...verified, action: "schedule", revision: 0 };
+    assert.equal((await request(legacyPath, student, blankParts)).status, 400);
+    assert.equal(db.prepare("SELECT accession FROM order_requests WHERE id = ?").get(legacyId).accession, null);
+    const confirmed = { ...complete, firstName: "Jamie", lastName: "de la Cruz", ...verified, action: "schedule", revision: 1 };
+    const studentScheduled = await request(legacyPath, student, confirmed);
+    assert.equal(studentScheduled.status, 303);
+    assert.equal(studentScheduled.headers.get("location"), "/queue");
+    assert.equal(db.prepare("SELECT patient_name FROM orders WHERE accession = (SELECT accession FROM order_requests WHERE id = ?)").get(legacyId).patient_name, "Jamie de la Cruz");
+    assert.deepEqual(JSON.parse(db.prepare("SELECT original_details FROM order_requests WHERE id = ?").get(legacyId).original_details), legacyDetails);
 
     db.close();
     db = openDatabase(filename);
@@ -135,4 +161,23 @@ test("quick orders use an 80% complete and 20% incomplete probability", () => {
   }
   assert.equal(missing, 20);
   assert.equal(full, 80);
+});
+
+test("names use separate required components and derive the First Last display on the server", () => {
+  const parsed = readIntake(new URLSearchParams({ ...complete, firstName: "  Jamie   Lee ", lastName: " de   la Cruz ", patientName: "Untrusted display" }));
+  assert.equal(parsed.firstName, "Jamie Lee");
+  assert.equal(parsed.lastName, "de la Cruz");
+  assert.equal(parsed.patientName, "Jamie Lee de la Cruz");
+  for (const missing of ["firstName", "lastName"]) {
+    const details = readIntake(new URLSearchParams({ ...complete, [missing]: "  " }));
+    assert.deepEqual(missingIntake(details), [missing]);
+  }
+  const legacy = { ...complete };
+  delete legacy.firstName;
+  delete legacy.lastName;
+  assert.equal(readIntake(new URLSearchParams(legacy)), null);
+  assert.equal(readIntake(new URLSearchParams({ ...complete, firstName: "Zoë", lastName: "O’Neill-Smith" })).patientName, "Zoë O’Neill-Smith");
+  const duplicate = new URLSearchParams(complete);
+  duplicate.append("firstName", "Other");
+  assert.equal(readIntake(duplicate), null);
 });

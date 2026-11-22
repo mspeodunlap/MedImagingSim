@@ -1,3 +1,4 @@
+import { defaultTimeZone, futureOrder, localAppointment } from "./scheduling.js";
 import { screeningAnswers, statusLabels } from "./exams.js";
 import { canUseWorkspace } from "./roles.js";
 
@@ -52,7 +53,21 @@ export function instructor(user) {
     <section class="panel"><h2>Submissions</h2><p class="muted">No submissions to review.</p></section>`, user);
 }
 
-export function worklist(user, orders) {
+function rescheduleForm(order, today) {
+  if (order.status !== "ordered" || order.answers !== null) return "";
+  return `<details><summary>Reschedule appointment</summary>
+    <p>The date defaults to today. Confirm the intended date and time before saving.</p>
+    <form method="post" action="/ris/orders/${order.accession}/reschedule" class="stack">
+      <input type="hidden" name="scheduleRevision" value="${order.schedule_revision}">
+      <label>Appointment date<input type="date" name="appointmentDate" min="1900-01-01" value="${today}" required></label>
+      <label>Appointment time<input type="time" name="appointmentTime" value="${escape(order.appointment_time)}" required></label>
+      <button>Save appointment</button>
+    </form></details>`;
+}
+
+export function worklist(user, orders, { date, timeZone = defaultTimeZone } = {}) {
+  const today = localAppointment(new Date(), timeZone).date;
+  date ??= today;
   const showOwner = user.role !== "student";
   const rows = orders.map(order => {
     let patient = `<a href="/ris/orders/${order.accession}">${escape(order.patient_name)}</a>`;
@@ -64,22 +79,31 @@ export function worklist(user, orders) {
     ${showOwner ? `<td>${escape(order.owner)}</td>` : ""}
     <td>${escape(order.exam_name)}</td>
     <td class="accession">${order.accession}</td>
+    <td>${escape(order.appointment_date)} ${escape(order.appointment_time)}</td>
     <td>${status(order.status)}</td>
+    <td>${order.appointment_date > today ? "Future date — cannot start" : ""}
+      ${user.role !== "instructor" ? rescheduleForm(order, today) : ""}</td>
   </tr>`;
   }).join("");
   return page("RIS worklist", `${title("RIS worklist", "Open an imaging order to review the patient history and record screening.")}
+    <section class="panel"><form method="get" action="/ris" class="intake-actions">
+      <label>Appointment date<input type="date" name="date" value="${escape(date)}" min="1900-01-01" required></label>
+      <button>Show appointments</button><a class="action" href="/ris">Today</a>
+    </form><p>Appointments for ${escape(date)} · ${escape(timeZone)}. Future-dated exams cannot be started.</p></section>
     <div class="worklist-layout">
       <section class="panel"><h2>Orders <span class="count">${orders.length}</span></h2>
         ${orders.length ? `<div class="table-wrap" tabindex="0" role="region" aria-label="Imaging orders"><table>
-          <thead><tr><th scope="col">Patient</th>${showOwner ? '<th scope="col">Owner</th>' : ""}<th scope="col">Exam</th><th scope="col">Accession</th><th scope="col">Status</th></tr></thead>
+          <thead><tr><th scope="col">Patient</th>${showOwner ? '<th scope="col">Owner</th>' : ""}<th scope="col">Exam</th><th scope="col">Accession</th><th scope="col">Appointment</th><th scope="col">Status</th><th scope="col">Scheduling</th></tr></thead>
           <tbody>${rows}</tbody>
-        </table></div>` : '<p class="muted">Your worklist is empty. Schedule an order from the order queue to get started.</p>'}
+        </table></div>` : '<p class="muted">No exams are scheduled for this date. Check another appointment date or schedule an order from the order queue.</p>'}
       </section>
       <aside class="panel"><h2>Incoming orders</h2><p>Review and schedule new orders from the order queue.</p><a class="action" href="/queue">Open order queue</a></aside>
     </div>`, user);
 }
 
-export function orderPage(user, order, exam, message = "") {
+export function orderPage(user, order, exam, message = "", appointments = []) {
+  const future = futureOrder(order);
+  const today = localAppointment(new Date(), order.time_zone).date;
   const demographics = order.intake_details && JSON.parse(order.intake_details);
   const savedAnswers = order.answers ? JSON.parse(order.answers) : null;
   const questions = exam.questions.map(({ id, label }) => `
@@ -95,6 +119,11 @@ export function orderPage(user, order, exam, message = "") {
       ${title(escape(order.exam_name), `<span class="accession">${order.accession}</span>`)}
       ${status(order.status)}
     </div>
+    <section class="panel"><h2>Appointment</h2><p>${escape(order.appointment_date)} ${escape(order.appointment_time)} · ${escape(order.time_zone)}</p>
+      ${rescheduleForm(order, today)}
+      ${appointments.length ? `<details><summary>Appointment history</summary><ul>${appointments.map(change =>
+        `<li>${escape(change.username)} · ${escape(change.created_at)} UTC · ${change.previous_date ? `${escape(change.previous_date)} ${escape(change.previous_time)} → ` : "Scheduled: "}${escape(change.appointment_date)} ${escape(change.appointment_time)} (${escape(change.time_zone)})</li>`).join("")}</ul></details>` : ""}
+    </section>
     <div class="order-layout">
       <section class="panel"><h2>Patient history</h2>
         <dl><dt>Fictional patient</dt><dd>${escape(order.patient_name)} · ${order.patient_age} years</dd>
@@ -106,7 +135,7 @@ export function orderPage(user, order, exam, message = "") {
       </section>
       <section class="panel"><h2>Safety screening</h2>
         ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
-        ${order.status === "ordered"
+        ${future ? `<p class="notice hold">This exam is scheduled for a future date and cannot be started. Confirm the intended appointment and use Reschedule appointment to correct it to today if needed.</p>` : order.status === "ordered"
           ? `<form method="post" action="/ris/orders/${order.accession}/screening">${questions}<button>Submit screening</button></form>`
           : `${questions}${order.status === "held"
               ? '<p class="notice hold">Screening requires further review. This exam is on hold.</p>'

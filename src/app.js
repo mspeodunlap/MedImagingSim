@@ -5,7 +5,7 @@ import {
   accessibleOrder, accessibleRequest, acquisitionDetails, acquisitionPixels, authenticate, createOrderRequest,
   endSession, findScan, listAcquisitions, requestReviews, reviewOrderRequest, visibleRequests,
   pacsSelection, saveAcquisition, savePacsSelection, saveScreening,
-  sessionUser, startSession, visibleOrders,
+  sessionUser, startSession, visibleOrders, institutionTimeZone, appointmentHistory, rescheduleOrder,
 } from "./db.js";
 import { exams, readScreening, scenarios } from "./exams.js";
 import { generateMr, ScanQueueFull } from "./mr-executor.js";
@@ -14,6 +14,7 @@ import { acquisitionViewer, mrConsole } from "./mr-view.js";
 import { canUseWorkspace } from "./roles.js";
 import { intakeFields, missingIntake, quickOrder, readIntake, reviewGroups } from "./intake.js";
 import { intakeReview, orderQueue } from "./intake-view.js";
+import { futureOrder, localAppointment, readAppointment, validDate } from "./scheduling.js";
 import { instructor, orderPage, problem, signIn, worklist } from "./views.js";
 
 const assets = new Map([
@@ -21,7 +22,7 @@ const assets = new Map([
   ["/mr-console.js", "text/javascript; charset=utf-8"],
   ["/mr-geometry.js", "text/javascript; charset=utf-8"],
 ].map(([path, type]) => [path, { type, bytes: readFileSync(new URL(`../public${path}`, import.meta.url)) }]));
-const orderPattern = /^\/ris\/orders\/(SIM-[A-F0-9]{16})(\/screening)?$/;
+const orderPattern = /^\/ris\/orders\/(SIM-[A-F0-9]{16})(\/(?:screening|reschedule))?$/;
 const mrPattern = /^\/console\/mr\/(SIM-[A-F0-9]{16})(?:\/(?:(scan|localizers)|(pixels|selection|preview)\/([1-9][0-9]{0,15})))?$/;
 const tokenPattern = /(?:^|; *)medsim_session=([0-9a-f]{64})(?:;|$)/;
 let mrLocalizers;
@@ -58,7 +59,7 @@ async function readForm(req, limit = 8192) {
 
 function readyConsole(order) {
   const exam = order && exams[order.exam_key];
-  if (order?.status !== "ready" || !exam?.consolePath) return null;
+  if (order?.status !== "ready" || !exam?.consolePath || futureOrder(order)) return null;
   return {
     accession: order.accession,
     examKey: order.exam_key,
@@ -234,8 +235,9 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
         const queueMatch = path.match(/^\/queue\/([1-9][0-9]{0,12})$/);
         const requestId = queueMatch ? Number(queueMatch[1]) : null;
         const intake = requestId && accessibleRequest(db, user, requestId);
+        let appointmentDraft;
         const render = (code, message, draft) => send(res, code, intakeReview(user,
-          accessibleRequest(db, user, requestId), requestReviews(db, requestId), message, draft));
+          accessibleRequest(db, user, requestId), requestReviews(db, requestId), message, draft, { timeZone: institutionTimeZone(db, user.institutionId), appointment: appointmentDraft }));
         if (req.method === "GET" && intake) return render(200);
         if (req.method !== "POST") return reject(404);
         const { form, error } = await readForm(req, 65536);
@@ -253,6 +255,7 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
           return redirect(res, `/queue/${id}`);
         }
         if (!intake || !accessibleRequest(db, user, requestId)) return reject(404);
+        appointmentDraft = { date: form.get("appointmentDate") ?? "", time: form.get("appointmentTime") ?? "" };
         const details = readIntake(form);
         const revision = form.get("revision");
         const action = form.get("action");
@@ -260,24 +263,29 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
             form.getAll("action").length !== 1 || !["schedule", "needs_information", "save"].includes(action)) return reject(400);
         if (!details) return render(400, "Check field lengths, the supplied date of birth, recorded sex, and requested exam.",
           Object.fromEntries(Object.keys(intakeFields).map(field => [field, form.get(field) ?? ""])));
+        const appointment = readAppointment(form);
         const checks = Object.fromEntries(Object.keys(reviewGroups).map(key =>
           [key, form.getAll(`check_${key}`).length === 1 && form.get(`check_${key}`) === "verified"]));
         const missing = missingIntake(details);
-        const result = reviewOrderRequest(db, user, requestId, Number(revision), details, checks, missing, action);
+        const result = reviewOrderRequest(db, user, requestId, Number(revision), details, checks, missing, action, appointment);
         if (!result) return render(409, "This order changed or was scheduled. Reopen it before reviewing.");
         if (result.result === "schedule_blocked") {
           const feedback = missing.length ? `Required information is missing — ${missing.map(key => intakeFields[key][0]).join(", ")}.`
-            : "Verify all three completeness checks before scheduling.";
+            : !appointment ? "Select a valid appointment date and time before scheduling."
+              : "Verify all three completeness checks before scheduling.";
           return render(400, feedback);
         }
-        if (result.accession) return redirect(res, user.role === "instructor" ? "/ris" : `/ris/orders/${result.accession}`);
+        if (result.accession) return redirect(res, "/queue");
         return render(200, action === "needs_information" ? "Missing information review recorded. The order remains in the queue." : "Corrections saved.");
       }
       const mrMatch = path.match(mrPattern);
       if (mrMatch) return await handleMr(db, req, res, url, mrMatch, user, token, reject);
       if (path !== "/ris" && !path.startsWith("/ris/")) return reject(404);
       if (req.method === "GET" && path === "/ris") {
-        return send(res, 200, worklist(user, visibleOrders(db, user)));
+        const timeZone = institutionTimeZone(db, user.institutionId);
+        const date = url.searchParams.get("date") ?? localAppointment(new Date(), timeZone).date;
+        if (url.searchParams.getAll("date").length > 1 || !validDate(date)) return reject(400);
+        return send(res, 200, worklist(user, visibleOrders(db, user, date), { date, timeZone }));
       }
       if (!canUseWorkspace(user, "student")) return reject(403);
       if (req.method === "POST" && path === "/ris/orders") {
@@ -289,6 +297,7 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
         if (!sessionUser(db, token)) return redirect(res, "/sign-in");
         const scenario = scenarios[key];
         const id = createOrderRequest(db, user, {
+          firstName: scenario.firstName, lastName: scenario.lastName,
           patientName: scenario.patient, patientId: "SIM-" + randomBytes(4).toString("hex").toUpperCase(),
           dob: `${new Date().getUTCFullYear() - scenario.age}-01-01`, sex: "Unknown",
           examKey: scenario.examKey, indication: scenario.indication, history: scenario.history,
@@ -302,7 +311,7 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
       const order = accessibleOrder(db, user, accession);
       if (!order) return reject(404);
       const exam = exams[order.exam_key];
-      if (req.method === "GET" && !screeningRoute) return send(res, 200, orderPage(user, order, exam));
+      if (req.method === "GET" && !screeningRoute) return send(res, 200, orderPage(user, order, exam, "", appointmentHistory(db, accession)));
       if (req.method !== "POST" || !screeningRoute) return reject(404);
 
       const { form, error } = await readForm(req);
@@ -311,6 +320,18 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
       if (!currentUser) return redirect(res, "/sign-in");
       const currentOrder = accessibleOrder(db, currentUser, accession);
       if (!currentOrder) return reject(404);
+      if (screeningRoute === "/reschedule") {
+        const appointment = readAppointment(form);
+        const revision = form.get("scheduleRevision");
+        if (!appointment || form.getAll("scheduleRevision").length !== 1 || !/^\d+$/.test(revision)) return reject(400);
+        if (!rescheduleOrder(db, currentUser, accession, Number(revision), appointment)) {
+          return send(res, 409, orderPage(currentUser, currentOrder, exam,
+            "This appointment changed or screening has started. Reopen the order before rescheduling.", appointmentHistory(db, accession)));
+        }
+        return redirect(res, `/ris?date=${appointment.date}`);
+      }
+      if (futureOrder(currentOrder)) return send(res, 403, orderPage(currentUser, currentOrder, exam,
+        "Future-dated exams cannot be started. Check the appointment and reschedule if necessary.", appointmentHistory(db, accession)));
       if (currentOrder.status !== "ordered") return reject(409);
       const screening = readScreening(exam, form);
       if (!screening) return send(res, 400, orderPage(user, order, exam, "Answer each screening question."));

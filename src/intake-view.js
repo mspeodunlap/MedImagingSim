@@ -1,9 +1,12 @@
+import { defaultTimeZone } from "./scheduling.js";
 import { exams, scenarios } from "./exams.js";
 import { intakeFields, reviewGroups, sexOptions } from "./intake.js";
 import { escape, page } from "./views.js";
 
 function detailsForm(details = {}) {
-  return `<div class="intake-fields">${Object.entries(intakeFields).map(([key, [label, max]]) => {
+  const legacy = details.patientName && details.firstName === undefined && details.lastName === undefined;
+  return `${legacy ? `<p class="notice">Previously entered patient name: ${escape(details.patientName)}. Confirm the first and last names separately before scheduling.</p>` : ""}
+    <p class="muted">Enter first and last names in their labeled fields. Names display as First Last, separated by one space.</p><div class="intake-fields">${Object.entries(intakeFields).map(([key, [label, max]]) => {
     const value = details[key] ?? "";
     let control;
     if (key === "examKey" || key === "sex") {
@@ -55,25 +58,31 @@ export function orderQueue(user, requests, key, message = "", draft) {
     </aside></div>`, user);
 }
 
-export function intakeReview(user, request, reviews, message = "", draft) {
+export function intakeReview(user, request, reviews, message = "", draft, { timeZone = defaultTimeZone, appointment = {} } = {}) {
   const details = draft ?? JSON.parse(request.details);
   const original = JSON.parse(request.original_details);
   const scheduled = Boolean(request.accession);
   const history = reviews.map(review => {
-    const missing = JSON.parse(review.missing).map(key => intakeFields[key][0]).join(", ");
+    const missing = JSON.parse(review.missing).map(key => intakeFields[key]?.[0] ?? (key === "patientName" ? "Patient name" : key === "appointment" ? "Appointment date and time" : key)).join(", ");
+    const reviewedAppointment = JSON.parse(review.details).appointment;
     const checked = Object.entries(JSON.parse(review.checks)).filter(([, value]) => value)
       .map(([key]) => reviewGroups[key]).join("; ");
     return `<li><strong>${escape(review.username)}</strong> · ${escape(review.action.replaceAll("_", " "))} · ${review.created_at} UTC
+      ${reviewedAppointment ? `<p>Appointment — ${escape(reviewedAppointment.date)} ${escape(reviewedAppointment.time)} (${escape(reviewedAppointment.timeZone ?? timeZone)})</p>` : ""}
       ${missing ? `<p>Missing at review — ${escape(missing)}</p>` : ""}
       ${checked ? `<p>Verified — ${escape(checked)}</p>` : ""}</li>`;
   }).join("");
   return page("Order review", `<a class="back" href="/queue">← Back to order queue</a>
     <div class="page-title"><h1>Order review</h1><p>Order ${request.id} · ${scheduled ? "Scheduled" : "Awaiting review"}</p></div>
     ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
-    ${scheduled ? `<section class="panel"><p>Scheduled under ${request.accession}.</p><a href="/ris">Open RIS worklist</a></section>`
+    ${scheduled ? `<section class="panel"><p>Scheduled under ${request.accession}.</p><p>Appointment: ${escape(request.appointment_date)} ${escape(request.appointment_time)} (${escape(timeZone)})</p><a href="/ris?date=${escape(request.appointment_date)}">Open RIS worklist</a></section>`
     : `<form method="post" action="/queue/${request.id}" class="panel stack">
       <input type="hidden" name="revision" value="${request.revision}">
       ${detailsForm(details)}
+      <fieldset><legend>Appointment</legend><p>Choose the appointment date and time (${escape(timeZone)}).</p>
+        <label>Appointment date<input type="date" name="appointmentDate" min="1900-01-01" value="${escape(appointment.date ?? "")}"></label>
+        <label>Appointment time<input type="time" name="appointmentTime" value="${escape(appointment.time ?? "")}"></label>
+      </fieldset>
       <fieldset><legend>Completeness review</legend>
         <div class="intake-checks">${Object.entries(reviewGroups).map(([key, label]) =>
           `<label><input type="checkbox" name="check_${key}" value="verified"> ${label}</label>`).join("")}</div>
@@ -84,7 +93,7 @@ export function intakeReview(user, request, reviews, message = "", draft) {
     </form>`}
     <section class="panel intake-history"><h2>Review history</h2>
       ${history ? `<ul>${history}</ul>` : '<p class="muted">No review recorded.</p>'}
-      <details><summary>Original order as received</summary><dl>${Object.entries(intakeFields).map(([key, [label]]) =>
+      <details><summary>Original order as received</summary><dl>${original.firstName === undefined && original.lastName === undefined ? `<dt>Patient name (original)</dt><dd>${escape(original.patientName || "Not supplied")}</dd>` : ""}${Object.entries(intakeFields).map(([key, [label]]) =>
         `<dt>${label}</dt><dd>${escape(key === "examKey" ? exams[original[key]]?.examName ?? "Not supplied"
           : original[key] || "Not supplied")}</dd>`).join("")}</dl></details>
     </section>`, user);

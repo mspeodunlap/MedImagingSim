@@ -2,7 +2,8 @@ import { randomInt } from "node:crypto";
 import { exams } from "./exams.js";
 
 export const intakeFields = {
-  patientName: ["Patient name", 100],
+  firstName: ["First name", 100],
+  lastName: ["Last name", 100],
   patientId: ["Patient ID / MRN", 40],
   dob: ["Date of birth", 10],
   sex: ["Recorded sex", 20],
@@ -24,6 +25,8 @@ export function readIntake(form) {
     values[key] = form.get(key).trim();
     if (values[key].length > limit) return null;
   }
+  for (const key of ["firstName", "lastName"]) values[key] = values[key].replace(/\s+/g, " ");
+  values.patientName = [values.firstName, values.lastName].filter(Boolean).join(" ");
   if (values.examKey && !Object.hasOwn(exams, values.examKey)) return null;
   if (values.sex && !sexOptions.includes(values.sex)) return null;
   if (values.dob && !validDob(values.dob)) return null;
@@ -54,7 +57,8 @@ export function quickOrder(randomInteger = randomInt) {
   const last = ["Ellis", "Patel", "Chen", "Rivera", "Reed", "Brooks"];
   const reasons = ["Persistent headaches", "New onset dizziness", "Follow-up for visual changes", "Memory changes"];
   const details = {
-    patientName: first[randomInteger(first.length)] + " " + last[randomInteger(last.length)],
+    firstName: first[randomInteger(first.length)],
+    lastName: last[randomInteger(last.length)],
     patientId: "SIM-" + randomInteger(100000, 1000000),
     dob: `${randomInteger(1945, 2009)}-${String(randomInteger(1, 13)).padStart(2, "0")}-${String(randomInteger(1, 29)).padStart(2, "0")}`,
     sex: sexOptions[randomInteger(sexOptions.length)],
@@ -69,5 +73,6 @@ export function quickOrder(randomInteger = randomInt) {
       details[key] = "";
     }
   }
+  details.patientName = [details.firstName, details.lastName].filter(Boolean).join(" ");
   return details;
 }

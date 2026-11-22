@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { test } from "node:test";
+import { localAppointment } from "../src/scheduling.js";
 import { requestThrough } from "../test-support/request.js";
 import { consoleHandoff, createRequestHandler } from "../src/app.js";
 import { authenticate, createUser, openDatabase, sessionUser } from "../src/db.js";
@@ -37,11 +38,21 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
     const id = Number(path.split("/").at(-1));
     const intake = db.prepare("SELECT details, revision FROM order_requests WHERE id = ?").get(id);
     const scheduled = await request(path, { cookie, fields: {
-      ...JSON.parse(intake.details), revision: intake.revision, action: "schedule",
+      ...JSON.parse(intake.details), appointmentDate: localAppointment().date, appointmentTime: "09:30", revision: intake.revision, action: "schedule",
       check_demographics: "verified", check_exam: "verified", check_indication: "verified",
     } });
     assert.equal(scheduled.status, 303);
-    return scheduled.headers.get("Location");
+    assert.equal(scheduled.headers.get("Location"), "/queue");
+    const queue = await (await request("/queue", { cookie })).text();
+    assert.match(queue, /<h1>Order queue/);
+    assert.ok(!queue.includes(`href="${path}"`));
+    const { accession, answers, status } = db.prepare("SELECT accession, answers, status FROM orders WHERE accession = (SELECT accession FROM order_requests WHERE id = ?)").get(id);
+    assert.equal(status, "ordered");
+    assert.equal(answers, null);
+    const worklist = await (await request("/ris", { cookie })).text();
+    assert.ok(worklist.includes(`href="/ris/orders/${accession}"`));
+    assert.ok(!worklist.includes("Submit screening"));
+    return `/ris/orders/${accession}`;
   }
 
   try {
