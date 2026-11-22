@@ -15,6 +15,7 @@ import { canUseWorkspace } from "./roles.js";
 import { intakeFields, missingIntake, quickOrder, readIntake, reviewGroups } from "./intake.js";
 import { intakeReview, orderQueue } from "./intake-view.js";
 import { futureOrder, localAppointment, readAppointment, validDate } from "./scheduling.js";
+import { trainingDocuments } from "./training.js";
 import { instructor, orderPage, problem, signIn, worklist } from "./views.js";
 
 const assets = new Map([
@@ -175,6 +176,11 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
       const url = new URL(req.url, origin);
       if (url.origin !== origin) return reject(403);
       const path = url.pathname;
+      const training = trainingDocuments.get(path);
+      if (req.method === "GET" && training) {
+        res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; frame-ancestors 'none'");
+        return sendBytes(res, training, "text/html; charset=utf-8");
+      }
       const asset = assets.get(path);
       if (req.method === "GET" && asset) {
         return sendBytes(res, asset.bytes, asset.type);

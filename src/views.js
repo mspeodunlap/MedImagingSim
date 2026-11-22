@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { applicationVersion } from "./version.js";
+import { trainingHelp } from "./training.js";
 import { defaultTimeZone, futureOrder, localAppointment } from "./scheduling.js";
 import { screeningAnswers, statusLabels } from "./exams.js";
 import { canUseWorkspace } from "./roles.js";
@@ -7,12 +8,12 @@ export const escape = value => String(value).replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 })[char]);
 
-const version = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version.split(".").slice(0, 2).join(".");
+const version = applicationVersion;
 
 const status = value => `<span class="status ${value}">${statusLabels[value]}</span>`;
 const title = (label, detail) => `<div class="page-title"><h1>${label}</h1><p>${detail}</p></div>`;
 
-export function page(name, content, user, { script } = {}) {
+export function page(name, content, user, { script, helpTopic = name } = {}) {
   const home = "/queue";
   return `<!doctype html>
 <html lang="en">
@@ -34,7 +35,7 @@ ${script ? `<script type="module" src="${escape(script)}"></script>` : ""}
       <form method="post" action="/sign-out"><button class="secondary">Sign out</button></form></div>` : ""}
   </div>
 </header>
-<main class="${user ? "workspace" : "guest"}">${content}</main>
+<main class="${user ? "workspace" : "guest"}">${user ? trainingHelp(user, helpTopic) : ""}${content}${!user && name === "Sign in" ? trainingHelp(user, helpTopic) : ""}</main>
 </body>
 </html>`;
 }
@@ -145,7 +146,7 @@ export function orderPage(user, order, exam, message = "", appointments = []) {
               : `<p class="notice cleared">Screening complete. This order is ready for the console.</p>
                  <a class="action" href="${escape(exam.consolePath)}/${order.accession}">Open ${escape(exam.consoleLabel)}</a>`}`}
       </section>
-    </div>`, user);
+    </div>`, user, { helpTopic: "screening" });
 }
 
 export function problem(code, user) {

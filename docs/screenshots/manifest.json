@@ -1,0 +1,180 @@
+{
+  "screenshots": [
+    {
+      "file": "sign-in.jpg",
+      "role": "all",
+      "route": "/sign-in",
+      "purpose": "Version below sign-in box",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "e7bd437b40e1d3931d92187588bae83d60855e7dec17a4d6e32e0d9b85d35ee5"
+    },
+    {
+      "file": "student-queue.jpg",
+      "role": "student",
+      "route": "/queue",
+      "purpose": "Pending requests and creation paths",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "76d2a9453debe4f1a576c94dcc265a680541986524faa5c1a884e9397f85d818"
+    },
+    {
+      "file": "order-review.jpg",
+      "role": "student",
+      "route": "/queue/:id",
+      "purpose": "Complete review with appointment and confirmations",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "bd11ddd7af220e661d2f3be430ca64940837af6f16a5d134abc6444f7d95b5c7"
+    },
+    {
+      "file": "missing-information.jpg",
+      "role": "student",
+      "route": "/queue/:id",
+      "purpose": "Missing demographics/indication and review history",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "491bfee9b2db26fe7f76ec35e51bd5694ce6f6fc79004367c5e72f5f0fdab999"
+    },
+    {
+      "file": "ris-today.jpg",
+      "role": "student",
+      "route": "/ris",
+      "purpose": "Today filter with ordered and held exams",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "bea05cd8a5840dc8a75e6105004dddbbddfe07d3d998d79127c09e5b46e21258"
+    },
+    {
+      "file": "reschedule.jpg",
+      "role": "student",
+      "route": "/ris?date=\u2026",
+      "purpose": "Future-date list and expanded correction",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "ed18e7ee9eaca954e5ca9f9b9e749b80330feb5b30f49bd3e55afe866b4aad1f"
+    },
+    {
+      "file": "future-exam.jpg",
+      "role": "student",
+      "route": "/ris/orders/:accession",
+      "purpose": "Future exam blocked from screening",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "31a903b2274cd2ea97b446ae28091cefd7fc4ab540ecfe108999143457624ef9"
+    },
+    {
+      "file": "screening.jpg",
+      "role": "student",
+      "route": "/ris/orders/:accession",
+      "purpose": "Unsubmitted screening questions",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "0117ab9e72ff6df8ebe74a530e413239c5834985cbe8a1a005c63002702bbb31"
+    },
+    {
+      "file": "screening-ready.jpg",
+      "role": "student",
+      "route": "/ris/orders/:accession",
+      "purpose": "Clear read-only result and console link",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "b061ad036140fcf252407c7bdc5d389866415cc04e77e4a517a51771f415eb52"
+    },
+    {
+      "file": "screening-hold.jpg",
+      "role": "student",
+      "route": "/ris/orders/:accession",
+      "purpose": "Held read-only screening result",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "646b1d5c3bfc97c093de293189057a750d7a0cca074baba30847691eee31b30e"
+    },
+    {
+      "file": "mri-planning.jpg",
+      "role": "student",
+      "route": "/console/mr/:accession",
+      "purpose": "Localizers, sequence controls, and empty preview",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "ea20033873ae65d8c48424a2e9520eca34dfb291e5f23cff151ec5f729000e4d"
+    },
+    {
+      "file": "mri-series.jpg",
+      "role": "student",
+      "route": "/console/mr/:accession?series=\u2026",
+      "purpose": "Two scans, earlier series preview, saved PACS selection",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "0629557324527e4a49deb2bc21c8a84b2de342f36d978ee4f25820a7c98ae35c"
+    },
+    {
+      "file": "instructor-queue.jpg",
+      "role": "instructor",
+      "route": "/queue",
+      "purpose": "Institution requests with creator attribution",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "9e5f40123594387690a33d34a43abda72bb044ef952458c605d35567d4e478a5"
+    },
+    {
+      "file": "instructor-review.jpg",
+      "role": "instructor",
+      "route": "/queue/:id",
+      "purpose": "Student request and review evidence",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "18f6f1ea7c1276b0d336847ca034b957752def024c272e10e27c7408e164211d"
+    },
+    {
+      "file": "instructor-home.jpg",
+      "role": "instructor",
+      "route": "/instructor",
+      "purpose": "Submissions placeholder",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "7838406fbdd46e1b57efbf1199452ad76b978eeb5d91c7e6609fc24995785638"
+    },
+    {
+      "file": "admin-worklist.jpg",
+      "role": "admin",
+      "route": "/ris",
+      "purpose": "Institution exams with multiple owners",
+      "captured_version": "1.0.3",
+      "last_verified_version": "1.0.3",
+      "captured_on": "2026-11-22",
+      "environment": "isolated localhost demo; fictional data",
+      "sha256": "7ca1b719b5e8aaadbd3dedbffa0a710e0723d4ca9c0fedebfb58885ed564db80"
+    }
+  ]
+}

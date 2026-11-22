@@ -4,7 +4,7 @@ Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.
 
 MedImagingSim is a web-based imaging workflow simulator with standalone sign-in, an incoming order queue, a shared Radiology Information System (RIS), and a brain MRI planning and acquisition console.
 
-Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for role-based steps and troubleshooting. For new functional work, start with the [reference topic index](docs/REFERENCE_INDEX.md) and [review decisions](docs/REFERENCE_WORKFLOWS.md), then consult relevant sections from the five PDFs in `Reference Docs`, following AGENTS.md.
+Read the [illustrated MedImagingSim user guide](docs/USER_GUIDE.md) for detailed role-based steps, screenshots, and troubleshooting. Quick references: [student](docs/quick-start/STUDENT.md), [instructor](docs/quick-start/INSTRUCTOR.md), and [admin](docs/quick-start/ADMIN.md). In the simulator, **Training help** opens the relevant guide section and role tips in a separate tab/window. Browser/print copies are in [docs/print](docs/print/USER_GUIDE.html); open an HTML file in a browser to print or save as PDF. For new functional work, start with the [reference topic index](docs/REFERENCE_INDEX.md) and [review decisions](docs/REFERENCE_WORKFLOWS.md), then consult relevant sections from the five PDFs in `Reference Docs`, following AGENTS.md.
 
 Publish the current build and each new release to the dedicated ThinkPad T450s by following the [LAN hosting and publishing guide](docs/LAN_HOSTING.md).
 
@@ -41,3 +41,5 @@ After the admin walkthrough passes, create separate test accounts with `npm run 
 Run `npm test` for automated coverage of intake completeness and review history, dated scheduling, RIS date filters, rescheduling history, future-date restrictions, scheduling retries, roles, migration, screening, console access, simulated contrast, repeat scan persistence, and PACS selection through the request handler and an on-disk SQLite database.
 
 See the [milestone plan](MILESTONE_PLAN.md) for the implementation sequence and handoff notes.
+
+Versioning starts at `1.0.3` for the current numbering scheme. Run `npm run version:next` for `1.0.4`, through `1.0.9`, then `1.1.0`; include documentation updates in that change set.
