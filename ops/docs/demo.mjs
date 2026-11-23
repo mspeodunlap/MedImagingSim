@@ -5,6 +5,7 @@ import { createOrderRequest, createUser, openDatabase, reviewOrderRequest, saveS
 import { localAppointment } from "../../src/scheduling.js";
 import { transitionExam } from "../../src/lifecycle.js";
 import { acquireMr, defaultPlan } from "../../src/mr.js";
+import { saveProtocolVersion } from "../../src/protocols.js";
 const filename = process.argv[2];
 if (!filename || existsSync(resolve(filename))) throw new Error("Supply a new, disposable SQLite filename. Existing files are never reused.");
 const db = openDatabase(resolve(filename));
@@ -13,6 +14,16 @@ try {
   for (const [name, role] of accounts) createUser(db, name, role, "demo-docs-only");
   const student = { ...db.prepare("SELECT id FROM users WHERE username = 'demo-student'").get(), institutionId: 1, role: "student" };
   const classmate = { ...db.prepare("SELECT id FROM users WHERE username = 'demo-classmate'").get(), institutionId: 1, role: "student" };
+  const teacher = { ...db.prepare("SELECT id FROM users WHERE username = 'demo-instructor'").get(), institutionId: 1, role: "instructor" };
+  const starter = { sequences: [
+    { name: "Axial T1", plan: { ...defaultPlan } },
+    { name: "Coronal T2", plan: { ...defaultPlan, plane: "coronal", preset: "t2", tr: 3500, te: 95 } },
+  ] };
+  const published = saveProtocolVersion(db, teacher, "default", "Brain teaching starter", starter);
+  if (published.error) throw new Error("Unable to seed the documentation-only protocol.");
+  const practice = structuredClone(starter);
+  practice.sequences[0].plan.tr = 650; practice.sequences[1].plan.te = 110;
+  if (saveProtocolVersion(db, student, "personal", "My brain practice", practice, published.id).error) throw new Error("Unable to seed the personal documentation protocol.");
   const details = { firstName: "Avery", lastName: "Morgan", patientName: "Avery Morgan", patientId: "SIM-1042", dob: "1990-03-04", sex: "Female", examKey: "mr-brain-v1", indication: "Persistent headaches — fictional training case", history: "Fictional patient reports no implanted devices or metal injury and can tolerate the scan." };
   createOrderRequest(db, student, details, "docs-review", "manual");
   createOrderRequest(db, student, { ...details, firstName: "Casey", lastName: "Rivera", patientName: "Casey Rivera", patientId: "", indication: "" }, "docs-incomplete", "manual");

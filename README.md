@@ -4,9 +4,9 @@ Internal test server — [https://192.168.0.180:8443/sign-in](https://192.168.0.
 
 MedImagingSim is a web-based imaging workflow simulator with standalone sign-in, an incoming order queue, a shared Radiology Information System (RIS), and a brain MRI planning and acquisition console.
 
-Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for detailed role-based steps and troubleshooting (V 1.0.6 screenshot refresh is pending). Quick references: [student](docs/quick-start/STUDENT.md), [instructor](docs/quick-start/INSTRUCTOR.md), and [admin](docs/quick-start/ADMIN.md). In the simulator, **Training help** opens the relevant guide section and role tips in a separate tab/window. Browser/print copies are in [docs/print](docs/print/USER_GUIDE.html); open an HTML file in a browser to print or save as PDF. For new functional work, start with the [reference topic index](docs/REFERENCE_INDEX.md) and [review decisions](docs/REFERENCE_WORKFLOWS.md), then consult relevant sections from the five PDFs in `Reference Docs`, following AGENTS.md.
+Read the [MedImagingSim user guide](docs/USER_GUIDE.md) for detailed role-based steps and troubleshooting (V 1.0.7 screenshot refresh is pending). Quick references: [student](docs/quick-start/STUDENT.md), [instructor](docs/quick-start/INSTRUCTOR.md), and [admin](docs/quick-start/ADMIN.md). In the simulator, **Training help** opens the relevant guide section and role tips in a separate tab/window. Browser/print copies are in [docs/print](docs/print/USER_GUIDE.html); open an HTML file in a browser to print or save as PDF. For new functional work, start with the [reference topic index](docs/REFERENCE_INDEX.md) and [review decisions](docs/REFERENCE_WORKFLOWS.md), then consult relevant sections from the five PDFs in `Reference Docs`, following AGENTS.md.
 
-**Current local release: V 1.0.6.** Classroom and regression checks are recorded in the milestone handoff. The user will handle the pending commit/push; a release commit, successful push, deployed SHA, and live ThinkPad version have not been verified in this session. Screenshot refresh and rendered-browser/print/LAN checks remain pending.
+**Current local release: V 1.0.7.** Classroom and regression checks are recorded in the milestone handoff. The user will handle the pending commit/push; a release commit, successful push, deployed SHA, and live ThinkPad version have not been verified in this session. The protocol browser walkthrough passed and new protocol/sign-in screenshots are current. Other workflow screenshot refresh, print and live LAN checks remain pending.
 
 Publish the current build and each new release to the dedicated ThinkPad T450s by following the [LAN hosting and publishing guide](docs/LAN_HOSTING.md).
 
@@ -45,15 +45,22 @@ Run `npm test` for automated coverage of intake completeness and review history,
 
 See the [milestone plan](MILESTONE_PLAN.md) for the implementation sequence and handoff notes.
 
-Versioning starts at `1.0.3` for the current numbering scheme. Run `npm run version:next` for the next release (currently `1.0.7`), through `1.0.9`, then `1.1.0`; include documentation updates in that change set.
+Versioning starts at `1.0.3` for the current numbering scheme. Run `npm run version:next` for the next release (currently `1.0.8`), through `1.0.9`, then `1.1.0`; include documentation updates in that change set.
 
 
 ## Concurrent classroom use
 
-V 1.0.6 is configured for 30-user classrooms with headroom and has passed disposable-database request-handler and real localhost HTTP exercises with 60 independently authenticated students performing the full workflow and simultaneous scans. Each learner needs a distinct student account and browser profile/device. Tabs in the same profile share the session cookie; using the same account shares saved cases. Signing out one session does not sign out others. This is application-level validation, not a ThinkPad/network capacity guarantee.
+V 1.0.7 is configured for 30-user classrooms with headroom and has passed disposable-database request-handler and real localhost HTTP exercises with 60 independently authenticated students performing the full workflow and simultaneous scans. Each learner needs a distinct student account and browser profile/device. Tabs in the same profile share the session cookie; using the same account shares saved cases. Signing out one session does not sign out others. This is application-level validation, not a ThinkPad/network capacity guarantee.
 
 The default MRI pool uses `min(4, max(1, availableParallelism() - 1))` worker threads with 64 additional waiting scans. `MEDSIM_SCAN_WORKERS` accepts 1–8 and `MEDSIM_SCAN_QUEUE_LIMIT` accepts 1–256; unset variables use the defaults, and invalid values fail startup. Keep defaults until measured host results justify tuning. Queue overflow returns a temporary busy response with Retry-After; it does not change ownership or another user's case. Authentication permits 64 in-flight checks and limits repeated attempts per username; neither is a cap on active sessions.
 
 Disk databases use SQLite WAL, FULL durability and a five-second busy timeout. Keep the database on local storage and run one application service for this classroom configuration. Use SQLite online backup (as the existing deployment updater does), rather than copying a live database file alone. See [classroom hosting checks](docs/LAN_HOSTING.md#concurrent-classroom-operation).
 
 Run `npm run test:classroom` for configuration, bounded-queue, WAL/online-backup and 60-user isolation/workflow coverage. Both transports also check same-account token independence, restart persistence and unauthorized cross-user/institution access. Synthetic local results do not replace a separate-client HTTPS classroom test on the ThinkPad. Scheduling resources/cohort availability, multiple app replicas and large institutional scaling remain separate planned work.
+
+
+## Saved MRI protocol library — V 1.0.7
+
+Instructors/admins create ordered multi-sequence defaults in MRI protocols without opening a patient. Each sequence retains all supported acquisition settings. Staff publish immutable institution-default versions; students explicitly Load protocol copy at Exam Begin and save their own personal versions, never replacing a default. A case copy can be edited sequence by sequence, and full definitions can be added/reordered in the library editor. Library saves never run acquisitions or alter already-loaded case copies. Successful scans retain the plan in an unchanged loaded case copy without publishing a reusable version.
+
+Defaults are visible only inside the institution; personal versions are visible to their creator. Staff can inspect accessible case working copies without gaining browse access to private libraries. New saves under an existing name require the latest base; conflicting edits do not silently replace newer versions. Case protocol mutations retain the exam's role/ownership, future-date, begin/end and review-lock constraints. See [user instructions](docs/USER_GUIDE.md#create-load-and-save-mri-protocols). Original screenshots for this workflow and sign-in are current; unrelated screen refresh and live ThinkPad/print checks remain pending.

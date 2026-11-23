@@ -1,12 +1,22 @@
 # Instructor quick tips
 
-**MedImagingSim V 1.0.6 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
+**MedImagingSim V 1.0.7 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
 
 **Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Confirm Instructor in the header. You start in Order queue and see requests in your institution.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Release status:** instructions match local V 1.0.6. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.6.** Current screen images are omitted; browser/print verification remains pending.
+**Release status:** instructions match local V 1.0.7. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.7.** Current protocol screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the new protocol workflow was checked in a disposable browser environment.
+
+## Create institution-default MRI protocols
+
+1. Open MRI protocols from the header, without needing a patient or instructor acquisition access. Select New protocol or load the latest Institution default version.
+2. Enter Protocol name and each Sequence name. Choose Preset first, then set all supported geometry, timing, sampling/encoding and saturation controls.
+3. Add sequence to build the ordered set; Move up/down or Remove sequence as needed. The editor supports 1–32 sequences. These list actions are not a published save.
+4. Select Save institution default version. Students in your institution can explicitly load that version from the console as a separate case copy; nothing runs automatically.
+5. To revise, load the latest default, keep its name and save again. Earlier versions and existing student copies are unchanged. A stale-version/name conflict requires loading the latest or choosing a new name.
+
+You may also save personal definitions with Save my protocol version. Each personal library belongs to its creator; inspecting an accessible student's case still shows the case working copy and acquired metadata. Library editing never changes a reviewed case, and review-lock/correction permissions remain in force. See [full protocol instructions and current screenshots](../USER_GUIDE.md#create-load-and-save-mri-protocols).
 
 ## Concurrent classroom use
 

@@ -14,11 +14,12 @@ function option(value, label, selected) {
   return `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`;
 }
 
-function planner(base, plan, scanKey) {
+function planner(base, plan, scanKey, protocolRevision = 0) {
   return `<section class="panel mr-controls">
     <div class="mr-panel-heading"><h2>Scan parameters</h2><button form="mr-plan">Run scan</button></div>
     <form id="mr-plan" action="${base}/scan" method="post" class="mr-plan-fields">
       <input type="hidden" name="scanKey" value="${scanKey}">
+      <input type="hidden" name="protocolRevision" value="${protocolRevision}">
       <fieldset><legend>Slice geometry</legend><div class="mr-fields">
         <label>Plane<select name="plane">
           ${Object.keys(planes).map(plane => option(plane, plane, plan.plane)).join("")}
@@ -154,10 +155,30 @@ function protocolPanel(base, plan, acquisitions, viewed, selection, readOnly) {
   </section>`;
 }
 
-export function mrConsole(user, handoff, order, { acquisitions, selection, viewed, scanKey, message, plan, readOnly = false }) {
+function savedProtocols(base, protocols, working, readOnly) {
+  const document = working && JSON.parse(working.payload);
+  return `<section class="panel"><h2>Saved MRI protocols</h2><p><a href="/protocols/mr">Open protocol library</a> · <a href="/protocols/mr?exam=${base.split("/").at(-1)}">Edit full protocol</a></p>
+    ${working ? `<p>Case working copy: ${escape(working.protocol_name || "Unsaved protocol")} ${working.source_version ? `· source version ${working.source_version}` : ""}. Sequence ${working.selected_sequence + 1} of ${document.sequences.length}. Changes never overwrite an institution default.</p>` : '<p>No library protocol loaded. Choose a saved version, or save your current plan as a personal starting point. Save sequence settings before opening the full editor to copy the current plan.</p>'}
+    ${readOnly ? '<p>Ended studies are read-only. Reopen for correction before changing the case protocol.</p>' : `
+    <form method="post" action="${base}/protocol" class="intake-actions">
+      <input type="hidden" name="protocolRevision" value="${working?.revision ?? 0}">
+      <input type="hidden" name="protocolAction" value="load">
+      <label>Saved protocol version<select name="protocolVersion" required><option value="">Choose a protocol</option>
+        ${protocols.map(v => `<option value="${v.id}">${escape(v.name)} · ${v.kind === "default" ? "Institution default" : "My version"} ${v.version}</option>`).join("")}</select></label>
+      <button>Load protocol copy</button></form>
+    <p>Loading replaces this case's protocol copy with the saved version; save your personal version first to keep edits. It does not run scans or change acquired images.</p>
+    ${document ? `<div class="intake-actions">${document.sequences.map((s, index) => `<button form="mr-plan" name="protocolAction" value="select:${index}" formaction="${base}/protocol"${index === working.selected_sequence ? ' aria-current="true"' : ""}>${index + 1}. ${escape(s.name)}</button>`).join("")}</div>` : ""}
+    <p>Changing sequences saves the displayed settings into this case copy. Running a scan alone does not save a protocol version.</p>
+    <div class="intake-actions"><button form="mr-plan" name="protocolAction" value="update" formaction="${base}/protocol">Save sequence settings</button>
+      <label>Personal protocol name<input name="protocolName" form="mr-plan" maxlength="120" value="${escape(working?.protocol_name || "My MRI protocol")}"></label>
+      <button form="mr-plan" name="protocolAction" value="save" formaction="${base}/protocol">Save my protocol version</button></div>`}
+  </section>`;
+}
+
+export function mrConsole(user, handoff, order, { acquisitions, selection, viewed, scanKey, message, plan, readOnly = false, protocols = [], workingProtocol }) {
   const { accession, consolePath } = handoff;
   const base = `${consolePath}/${accession}`;
-  const scanPlan = plan ?? planFromAcquisition(viewed);
+  const scanPlan = plan ?? (workingProtocol ? JSON.parse(workingProtocol.payload).sequences[workingProtocol.selected_sequence].plan : planFromAcquisition(viewed));
   return page("MRI console", `
     <header class="mr-heading">
       <div><a class="back" href="/ris/orders/${accession}">← Back to RIS order</a><h1>MRI console</h1></div>
@@ -165,11 +186,12 @@ export function mrConsole(user, handoff, order, { acquisitions, selection, viewe
     </header>
     ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
     ${readOnly ? '<p class="notice">Image review only. Reopen the study for correction to acquire images or save a PACS selection. Instructor review locks the study until it is sent back.</p>' : ""}
+    ${savedProtocols(base, protocols, workingProtocol, readOnly)}
     <div class="mr-layout">
       ${patientExam(order)}
       ${readOnly ? "" : localizers(base)}
       ${protocolPanel(base, scanPlan, acquisitions, viewed, selection, readOnly)}
-      ${readOnly ? "" : planner(base, scanPlan, scanKey)}
+      ${readOnly ? "" : planner(base, scanPlan, scanKey, workingProtocol?.revision ?? 0)}
       <section class="panel mr-preview" id="mr-preview" aria-labelledby="mr-preview-title" data-base="${base}">
         <h2 id="mr-preview-title">Series preview</h2>
         <p class="mr-hint" id="mr-preview-status" role="status" hidden></p>

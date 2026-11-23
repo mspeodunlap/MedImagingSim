@@ -30,7 +30,7 @@ ${script ? `<script type="module" src="${escape(script)}"></script>` : ""}
   <div class="shell-inner">
     <a class="wordmark" href="${home}"><span class="brand-mark" aria-hidden="true"></span>MedImagingSim</a>
     ${user ? `<nav class="workspace-nav" aria-label="Workspaces">
-      <a href="/queue">Order queue</a><a href="/ris">RIS worklist</a><a href="/ris/recent">Completed/Recent</a>
+      <a href="/queue">Order queue</a><a href="/ris">RIS worklist</a><a href="/ris/recent">Completed/Recent</a><a href="/protocols/mr">MRI protocols</a>
       ${canUseWorkspace(user, "instructor") ? '<a href="/instructor">Instructor home</a>' : ""}</nav>` : ""}
     ${user ? `<div class="account"><span>${escape(user.username)} <small>${user.role}</small></span>
       <form method="post" action="/sign-out"><button class="secondary">Sign out</button></form></div>` : ""}
@@ -117,7 +117,8 @@ function workflowPanel(user, order, acquisitions, selection, events) {
   const editable = canOperate(user, order);
   const base = `/console/mr/${order.accession}`;
   const eventLabels = { screening: "Screening submitted", screening_hold: "Screening hold", begin: "Begin exam",
-    end: "End exam", complete: "Mark completed", reopen: "Reopen for correction", review: "Opened for instructor review", return: "Send back for correction" };
+    end: "End exam", complete: "Mark completed", reopen: "Reopen for correction", review: "Opened for instructor review", return: "Send back for correction",
+    protocol_load: "Loaded protocol copy", protocol_update: "Saved sequence settings", protocol_select: "Changed protocol sequence", protocol_save: "Saved personal protocol version" };
   return `<section class="panel"><h2>Exam workflow</h2>
     <p>Ordered → Scheduled → Screened → Exam Begin → Exam End → Completed</p>
     <p>Current stage: <strong>${workflowLabels[order.workflow_status]}</strong></p>

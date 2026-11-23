@@ -1,12 +1,22 @@
 # Administrator quick tips
 
-**MedImagingSim V 1.0.6 · November 23, 2026** · [Full guide](../USER_GUIDE.md#administrator-instructions)
+**MedImagingSim V 1.0.7 · November 23, 2026** · [Full guide](../USER_GUIDE.md#administrator-instructions)
 
 **Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Confirm Admin in the header. Admin actions span accessible orders within the current institution.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Release status:** instructions match local V 1.0.6. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.6.** Current screen images are omitted; browser/print verification remains pending.
+**Release status:** instructions match local V 1.0.7. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.7.** Current protocol screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the new protocol workflow was checked in a disposable browser environment.
+
+## Manage protected MRI protocol defaults
+
+1. Open MRI protocols from the header or Open protocol library in the console. Create a named ordered sequence set using Preset, complete scan settings, Add sequence and Move up/down/Remove sequence.
+2. Select Save institution default version to publish within the current institution. Defaults are versioned; loading the latest and saving the same name adds a revision, while changing the name creates a separate definition.
+3. Students use Saved protocol version → Load protocol copy in a begun exam. Their sequence edits and Save my protocol version never write to institution defaults. Existing case copies and prior library versions remain unchanged by publication.
+4. Save sequence settings preserves the console plan; a successful scan also retains it in an unchanged loaded case copy. Saving a named personal version captures all sequences. Full-editor changes must be saved, then explicitly loaded back into the case.
+5. For conflicts, use the latest version or a different name. Ended/locked cases cannot load or edit their working copies; library management does not override review locks. No protocol definition contains patient details, images, window/level or a PACS transfer.
+
+See [protocol instructions and current screenshots](../USER_GUIDE.md#create-load-and-save-mri-protocols). Only instructors/admins may publish defaults; personal libraries remain creator-private and all scopes stay within the institution.
 
 ## Concurrent classroom use
 
@@ -34,7 +44,7 @@ See the [detailed lifecycle steps](../USER_GUIDE.md#end-complete-review-and-corr
 | Check | Evidence |
 | --- | --- |
 | Deployment finished | Active ThinkPad commit matches the intended GitHub commit. |
-| Correct build | Version below sign-in matches the release; this guide is V 1.0.6. |
+| Correct build | Version below sign-in matches the release; this guide is V 1.0.7. |
 | LAN access | A separate network device can sign in over HTTPS. |
 | Workflow works | Changed feature behaves as documented under the appropriate roles. |
 | Saved work survives | Existing order, screening, scans, and PACS selection still open; check the appointment date. |

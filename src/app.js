@@ -9,24 +9,27 @@ import {
 } from "./db.js";
 import { exams, readScreening, scenarios } from "./exams.js";
 import { generateMr, ScanQueueFull } from "./mr-executor.js";
-import { makeLocalizers, mrExamKey, readPlan, readPresentation } from "./mr.js";
+import { defaultPlan, makeLocalizers, mrExamKey, readPlan, readPresentation } from "./mr.js";
 import { acquisitionViewer, mrConsole } from "./mr-view.js";
 import { canUseWorkspace } from "./roles.js";
 import { intakeFields, missingIntake, quickOrder, readIntake, reviewGroups } from "./intake.js";
 import { intakeReview, orderQueue } from "./intake-view.js";
 import { futureOrder, localAppointment, readAppointment, validDate } from "./scheduling.js";
 import { trainingDocuments } from "./training.js";
+import { accessibleProtocol, changeExamProtocol, examProtocol, protocolVersions, saveProtocolVersion, sequenceFromPlan, validateProtocol } from "./protocols.js";
+import { protocolLibrary, readProtocolDraft } from "./protocol-view.js";
 import { canOperate, ended, examHistory, transitionExam } from "./lifecycle.js";
 import { instructor, orderPage, problem, signIn, worklist } from "./views.js";
 
 const assets = new Map([
   ["/styles.css", "text/css; charset=utf-8"],
   ["/mr-console.js", "text/javascript; charset=utf-8"],
+  ["/mr-protocol-editor.js", "text/javascript; charset=utf-8"],
   ["/ris-worklist.js", "text/javascript; charset=utf-8"],
   ["/mr-geometry.js", "text/javascript; charset=utf-8"],
 ].map(([path, type]) => [path, { type, bytes: readFileSync(new URL(`../public${path}`, import.meta.url)) }]));
 const orderPattern = /^\/ris\/orders\/(SIM-[A-F0-9]{16})(\/(?:screening|reschedule|begin|end|complete|reopen|return))?$/;
-const mrPattern = /^\/console\/mr\/(SIM-[A-F0-9]{16})(?:\/(?:(scan|localizers)|(pixels|selection|preview)\/([1-9][0-9]{0,15})))?$/;
+const mrPattern = /^\/console\/mr\/(SIM-[A-F0-9]{16})(?:\/(?:(scan|localizers|protocol)|(pixels|selection|preview)\/([1-9][0-9]{0,15})))?$/;
 const tokenPattern = /(?:^|; *)medsim_session=([0-9a-f]{64})(?:;|$)/;
 let mrLocalizers;
 
@@ -58,6 +61,68 @@ async function readForm(req, limit = 8192) {
     chunks.push(chunk);
   }
   return { form: new URLSearchParams(Buffer.concat(chunks).toString("utf8")) };
+}
+
+async function handleProtocols(db, req, res, url, user, token, reject) {
+  if (!["/protocols/mr", "/protocols/mr/edit", "/protocols/mr/save"].includes(url.pathname)) return reject(404);
+  let document = { sequences: [sequenceFromPlan({ ...defaultPlan })] };
+  let name = "", sourceId = "";
+  const render = (code, message = "", saved = false) => send(res, code, protocolLibrary(user, protocolVersions(db, user), document, { name, sourceId, message, saved }));
+  if (req.method === "GET" && url.pathname === "/protocols/mr") {
+    const id = url.searchParams.get("version"), accession = url.searchParams.get("exam");
+    if (url.searchParams.getAll("version").length > 1 || url.searchParams.getAll("exam").length > 1 || (id && accession)) return reject(400);
+    if (id !== null) {
+      if (!/^[1-9]\d{0,14}$/.test(id)) return reject(400);
+      const version = accessibleProtocol(db, user, Number(id));
+      if (!version) return reject(404);
+      document = JSON.parse(version.payload); name = version.name; sourceId = version.id;
+    } else if (accession !== null) {
+      const order = accessibleOrder(db, user, accession);
+      if (!order) return reject(404);
+      const copy = examProtocol(db, user.institutionId, accession);
+      if (copy) {
+        document = JSON.parse(copy.payload); name = copy.protocol_name ?? "";
+        sourceId = copy.source_version_id && accessibleProtocol(db, user, copy.source_version_id) ? copy.source_version_id : "";
+      }
+    }
+    return render(200, url.searchParams.get("saved") === "1" ? "Protocol version saved. Earlier versions are unchanged." : "", url.searchParams.get("saved") === "1");
+  }
+  if (req.method !== "POST" || url.pathname === "/protocols/mr") return reject(404);
+  const { form, error } = await readForm(req, 131072);
+  if (error) return reject(error);
+  user = sessionUser(db, token);
+  if (!user) return redirect(res, "/sign-in");
+  document = readProtocolDraft(form);
+  if (!document || form.getAll("name").length !== 1 || form.getAll("sourceVersion").length !== 1) return reject(400);
+  name = form.get("name"); sourceId = form.get("sourceVersion");
+  if (sourceId && !/^[1-9]\d{0,14}$/.test(sourceId)) return reject(400);
+  if (sourceId && !accessibleProtocol(db, user, Number(sourceId))) return reject(404);
+  const valid = validateProtocol(document);
+  if (!valid) return render(400, "Check every sequence name, coverage, timing and parameter range. Unsaved fields are retained.");
+  document = valid;
+  if (url.pathname === "/protocols/mr/edit") {
+    if (form.getAll("editAction").length !== 1) return reject(400);
+    const action = form.get("editAction");
+    if (action === "add" && document.sequences.length < 32) {
+      document.sequences.push({ name: `Sequence ${document.sequences.length + 1}`, plan: { ...defaultPlan } });
+    } else {
+      const match = action?.match(/^(up|down|remove):(\d+)$/);
+      if (!match) return reject(400);
+      const index = Number(match[2]), count = document.sequences.length;
+      if (index >= count || (match[1] === "remove" && count === 1) ||
+        (match[1] === "up" && index === 0) || (match[1] === "down" && index === count - 1)) return reject(400);
+      if (match[1] === "remove") document.sequences.splice(index, 1);
+      else { const other = index + (match[1] === "up" ? -1 : 1); [document.sequences[index], document.sequences[other]] = [document.sequences[other], document.sequences[index]]; }
+    }
+    return render(200, "Sequence list updated in this editor. Save a protocol version to keep these changes.", true);
+  }
+  if (form.getAll("kind").length !== 1) return reject(400);
+  const result = saveProtocolVersion(db, user, form.get("kind"), name, document, sourceId ? Number(sourceId) : null);
+  if (result.error === "forbidden") return reject(403);
+  if (result.error) return render(result.error === "conflict" ? 409 : 400, result.error === "conflict"
+    ? "A protocol with that name already exists or has a newer version. Load its latest version before saving, or choose a different name."
+    : "Enter a protocol name and valid settings for every sequence.");
+  return redirect(res, `/protocols/mr?version=${result.id}&saved=1`);
 }
 
 function readyConsole(order, user, readOnly = false) {
@@ -102,7 +167,7 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
       : acquisitions.find(series => String(series.id) === requestedSeries);
     if (requestedSeries !== null && !viewed) return reject(404);
     return send(res, status, mrConsole(user, handoff, order, {
-      acquisitions, selection, viewed, message, readOnly, scanKey: randomBytes(16).toString("hex"), ...draft,
+      acquisitions, selection, viewed, message, readOnly, protocols: protocolVersions(db, user), workingProtocol: examProtocol(db, institutionId, accession), scanKey: randomBytes(16).toString("hex"), ...draft,
     }));
   };
 
@@ -120,14 +185,31 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     }
     return reject(404);
   }
-  if (req.method !== "POST" || !(action === "scan" || seriesAction === "selection")) return reject(404);
+  if (req.method !== "POST" || !(action === "scan" || action === "protocol" || seriesAction === "selection")) return reject(404);
 
   const { form, error } = await readForm(req);
   if (error) return reject(error);
   const currentUser = sessionUser(db, token);
   if (!currentUser) return redirect(res, "/sign-in");
   if (!consoleHandoff(db, currentUser, accession)) return reject(404);
+  if (action === "protocol") {
+    const revision = form.get("protocolRevision"), operation = form.get("protocolAction");
+    if (form.getAll("protocolRevision").length !== 1 || !/^\d+$/.test(revision) || form.getAll("protocolAction").length !== 1) return reject(400);
+    const selecting = operation?.match(/^select:(\d+)$/);
+    if (!["load", "update", "save"].includes(operation) && !selecting) return reject(400);
+    const plan = operation === "load" ? undefined : readPlan(form);
+    if (operation !== "load" && !plan) return render(400, null, "Check all sequence parameters before saving or changing sequences.");
+    if (operation === "load" && (form.getAll("protocolVersion").length !== 1 || !/^[1-9]\d{0,14}$/.test(form.get("protocolVersion")))) return reject(400);
+    if (operation === "save" && form.getAll("protocolName").length !== 1) return reject(400);
+    const result = changeExamProtocol(db, currentUser, accession, Number(revision), selecting ? "select" : operation,
+      { versionId: Number(form.get("protocolVersion")), selected: selecting ? Number(selecting[1]) : undefined, plan, name: form.get("protocolName") });
+    if (result.error === "forbidden") return reject(403);
+    if (result.error) return render(result.error === "conflict" ? 409 : 400, null,
+      result.error === "conflict" ? "This case or named protocol changed. Reload the latest version or choose a different personal protocol name." : "Check the protocol name and sequence settings.", plan ? { plan } : undefined);
+    return redirect(res, base);
+  }
   if (action === "scan") {
+    const startingCopy = examProtocol(db, institutionId, accession);
     const scanKey = form.get("scanKey");
     if (form.getAll("scanKey").length !== 1 || !/^[0-9a-f]{32}$/.test(scanKey)) return reject(400);
     const plan = readPlan(form);
@@ -146,6 +228,9 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     if (!operator) return redirect(res, "/sign-in");
     const id = saveAcquisition(db, operator, accession, scanKey, acquisition, order.workflow_revision);
     if (!id) return reject(404);
+    // Retain a successfully acquired plan in an already-loaded case copy, without publishing
+    // a library version or overwriting a sequence changed while generation was in progress.
+    if (startingCopy) changeExamProtocol(db, operator, accession, startingCopy.revision, "update", { plan });
     return redirect(res, `${base}?series=${id}`);
   }
 
@@ -244,6 +329,7 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
       if (req.method === "GET" && path === "/") {
         return redirect(res, "/queue");
       }
+      if (path.startsWith("/protocols/mr")) return await handleProtocols(db, req, res, url, user, token, reject);
       if (req.method === "GET" && path === "/instructor") {
         return canUseWorkspace(user, "instructor") ? send(res, 200, instructor(user)) : reject(403);
       }

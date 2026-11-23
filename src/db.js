@@ -8,6 +8,7 @@ import { ageAtToday } from "./intake.js";
 import { exams } from "./exams.js";
 import { defaultTimeZone, futureOrder, localAppointment } from "./scheduling.js";
 import { canOperate, migrateWorkflow, recordExamEvent } from "./lifecycle.js";
+import { migrateProtocols } from "./protocols.js";
 
 const sessionDurationMs = 8 * 60 * 60 * 1000;
 const sessionDigest = token => createHash("sha256").update(token).digest("hex");
@@ -233,6 +234,7 @@ export function openDatabase(filename = process.env.MEDSIM_DB ?? "data/medimagin
       CREATE INDEX IF NOT EXISTS reviews_request ON order_reviews(request_id, id);
     `);
     migrateWorkflow(db);
+    migrateProtocols(db);
     return db;
   } catch (error) {
     db.close();

@@ -2,7 +2,7 @@
 
 This is the ongoing release workflow for the detailed user guide, all role tip sheets, printable copies, and screenshots. It applies to each delivered change, introduced in V 1.3 and updated for V 1.0.3. The application version source remains `package.json`.
 
-**Current documentation release: V 1.0.6 (November 23, 2026).** This change adds classroom concurrency configuration and validation; V 1.0.5 was the preceding local lifecycle release. The user is handling commit/push. Local behavior is checked through automated/request-handler tests; screenshot refresh, rendered browser/print layout, deployed SHA, and ThinkPad/LAN workflows remain pending. Historical capture/verification entries below retain their original versions and dates.
+**Current documentation release: V 1.0.7 (November 23, 2026).** This change adds saved acquisition protocols. Sign-in and three original protocol screenshots were captured in a disposable demo and inspected; other workflow recaptures, print-layout and live-host checks remain pending. The user is handling commit/push. Local behavior is checked through automated/request-handler tests; screenshot refresh, rendered browser/print layout, deployed SHA, and ThinkPad/LAN workflows remain pending. Historical capture/verification entries below retain their original versions and dates.
 
 ## Maintained files
 
@@ -66,3 +66,5 @@ Open the files in `docs/print` in a browser. Use Print / Save as PDF for a paper
 | V 1.0.5 | Explicit exam begin/end/RIS completion, separate Completed/Recent, reopen correction cycles, immediate instructor-open lock, and instructor send-back; guide, all role tips, exports, and demo fixture updated. | Automated HTTP/state/migration checks in milestone handoff. Browser service cannot initialize (CODEX_CLI_PATH unavailable) and local HTTP listener returns EPERM; original screen images retained but all marked refresh-pending and omitted until recaptured. Rendered canvas, browser/print layout, GitHub publication, and ThinkPad/LAN checks remain pending. |
 
 | V 1.0.6 | Classroom sessions, 64-slot scan backlog, configurable CPU pool, WAL-safe operation, and 60-user local validation documented in guide, all tips and hosting notes; printable copies regenerated. | Source/route and asset checks in milestone handoff. No screen layout change; sign-in version and previously pending captures remain refresh-pending. ThinkPad HTTPS classroom validation remains pending. |
+
+| V 1.0.7 | Multi-sequence institution defaults, private personal versions, explicit case-copy loading, current role permissions, save/switch/scan behavior and conflict troubleshooting. | Local instructor→student browser walkthrough passed; new sign-in and three protocol images captured with fictional data and inspected for role context/rendered canvases. Other images, print and ThinkPad verification remain pending. |
