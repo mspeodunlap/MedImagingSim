@@ -76,3 +76,7 @@ The console now has Setup, Plan & scan, Review and Finish views, a persistent pa
 ## MRI physics model
 
 V 1.1.0 uses analytic-mr-v3: finite-voxel partial volumes; signed IR and complex magnitude/noise; voxel/averaging/bandwidth/phase/3D sampling SNR; single-peak fat displacement/GRE phase; and tissue-specific FSE phase Fourier modulation. New Echo spacing (ms), shared timing validation, live physics feedback and stored acquisition evidence make parameter tradeoffs visible. Existing bytes and immutable protocol versions remain unchanged. Dictionary revision 2026-11-23.2 updates FSE starters with 10 ms spacing; installation preserves existing names. See the [physics source assessment and parameter contract](docs/MRI_PHYSICS_AUDIT.md). The supplied PDF and requested sequence links were reviewed within disclosed access limits; direct Radiopaedia linked pages returned HTTP 402. No clinical scanner calibration or unsupported specialized sequence is implied.
+
+## Standing MRI principles reference
+
+For future MRI physics, sequence, image-quality, encoding or reconstruction work, use the [Larson Lab course index and critical assessment](docs/LARSON_MRI_REFERENCE_INDEX.md), then read the relevant original chapter/section. The complete 36-page course catalog, topic routing, verified section IDs and fingerprints are maintained alongside the local PDF references. This reference update leaves the application at V 1.1.0.

@@ -1,0 +1,2527 @@
+{
+  "schema_version": 1,
+  "alias": "LARSON",
+  "title": "Principles of MRI",
+  "author": "Peder E. Z. Larson",
+  "entry_url": "https://larsonlab.github.io/MRI-education-resources/Introduction.html",
+  "reviewed_on": "2026-11-23",
+  "index": "docs/LARSON_MRI_REFERENCE_INDEX.md",
+  "coverage": {
+    "contents_pages": 36,
+    "section_headings": 360,
+    "internal_article_links_checked": 367,
+    "broken_internal_article_fragments": 0,
+    "page_fetch_failures": 0,
+    "scope": "All contents/navigation chapters and same-book HTML article links; not an unbounded crawl of external media, papers or software."
+  },
+  "source_identity": {
+    "repository": "https://github.com/LarsonLab/MRI-education-resources",
+    "repository_default_branch": "main",
+    "repository_head_sha": "5fdaf8e274ac2c694ee50bbadc797616e7d149a6",
+    "repository_head_committed_at": "2026-11-19T01:18:29Z",
+    "repository_head_is_not_proof_of_published_site_build": true,
+    "concept_doi": "10.5281/zenodo.5547020",
+    "resolved_archive_doi": "10.5281/zenodo.17967361",
+    "archive_version": "v2.0",
+    "archive_date": "2025-12-17",
+    "repository_citation_file_version": "v1.0",
+    "repository_citation_file_date": "2021-10-03",
+    "repository_license": "MIT; Copyright (c) 2021, Peder Larson",
+    "website_copyright_year": 2026
+  },
+  "fingerprint_method": "SHA-256 of UTF-8 article HTML between the bd-article tags; whole-response SHA-256 also retained. These are retrieval fingerprints, not proof of correctness or equivalence to the archived release.",
+  "not_validated": [
+    "Every equation and code cell independently",
+    "Notebooks executed or numerical outputs reproduced",
+    "External videos/animations/simulators and software recursively evaluated",
+    "Clinical scanner/coil calibration, hardware limits or safety clearance",
+    "Clinical indication protocols, contrast dosing, patient suitability or instructor grading"
+  ],
+  "pages": [
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Introduction.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Introduction.html",
+      "status": 200,
+      "title": "Introduction to Principles of MRI",
+      "article_sha256": "373ef5866aa75d861d4bf8814834ede156eaac53a05a25b873879f7940d0d358",
+      "html_sha256": "2e24bc9717629a7f01372d803d97881b9ba541eb304e3075d2cd44af4be7c335",
+      "bytes": 28099,
+      "headings": [
+        {
+          "level": 1,
+          "id": "introduction-to-principles-of-mri",
+          "title": "Introduction to Principles of MRI"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "getting-started",
+          "title": "Getting Started"
+        },
+        {
+          "level": 2,
+          "id": "principles-of-mri-course-lectures",
+          "title": "Principles of MRI Course Lectures"
+        },
+        {
+          "level": 2,
+          "id": "using-mri-education-resources-code",
+          "title": "Using MRI-Education-Resources code"
+        },
+        {
+          "level": 2,
+          "id": "acknowledgements",
+          "title": "Acknowledgements"
+        }
+      ],
+      "alias": "L00",
+      "group": "Orientation",
+      "summary": "Scope, prerequisites, author attribution, lecture/code entry points and citation.",
+      "project_use_and_limits": "Use to identify the source and its graduate-level teaching purpose; not an acquisition prescription.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Spin%20Physics.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Spin%20Physics.html",
+      "status": 200,
+      "title": "Spin Physics",
+      "article_sha256": "17bb5f6ad1e7036dad1068da519e305a38c15a654dc76d41a97ceddeccba54a1",
+      "html_sha256": "268938d9592b0a3e207ff35449a0fd2acfaff54ccfd495c078a67a520346a9d6",
+      "bytes": 41619,
+      "headings": [
+        {
+          "level": 1,
+          "id": "spin-physics",
+          "title": "Spin Physics"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "nuclear-spin",
+          "title": "Nuclear Spin"
+        },
+        {
+          "level": 2,
+          "id": "polarization-and-the-net-magnetization",
+          "title": "Polarization and the Net Magnetization"
+        },
+        {
+          "level": 3,
+          "id": "equilibrium-magnetization",
+          "title": "Equilibrium Magnetization"
+        },
+        {
+          "level": 3,
+          "id": "fractional-polarization",
+          "title": "Fractional Polarization"
+        },
+        {
+          "level": 2,
+          "id": "resonance",
+          "title": "Resonance"
+        },
+        {
+          "level": 3,
+          "id": "resonance-frequency",
+          "title": "Resonance Frequency"
+        },
+        {
+          "level": 3,
+          "id": "simulation-of-resonance",
+          "title": "Simulation of Resonance"
+        },
+        {
+          "level": 2,
+          "id": "excitation-and-precession",
+          "title": "Excitation and Precession"
+        },
+        {
+          "level": 3,
+          "id": "precession",
+          "title": "Precession"
+        },
+        {
+          "level": 3,
+          "id": "excitation",
+          "title": "Excitation"
+        },
+        {
+          "level": 3,
+          "id": "simulation-of-excitation-and-precession",
+          "title": "Simulation of Excitation and Precession"
+        },
+        {
+          "level": 2,
+          "id": "relaxation",
+          "title": "Relaxation"
+        },
+        {
+          "level": 3,
+          "id": "simulation-of-relaxation",
+          "title": "Simulation of Relaxation"
+        }
+      ],
+      "alias": "L01",
+      "group": "Spin physics",
+      "summary": "Polarization, net magnetization, Larmor resonance, excitation, precession and relaxation.",
+      "project_use_and_limits": "Ground explanations of what the phantom signal represents; fixed field/tissue assumptions must remain explicit.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Bloch%20Equation.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Bloch%20Equation.html",
+      "status": 200,
+      "title": "Bloch Equation",
+      "article_sha256": "181bbe46f02e9ba8c90ff5eeceb43023c8f9c472aa9b2c045ff982a121064f49",
+      "html_sha256": "77af364a2d1ac2d9a9f57359ef41d748773575c0f5158094d41ee00159984ddb",
+      "bytes": 89967,
+      "headings": [
+        {
+          "level": 1,
+          "id": "bloch-equation",
+          "title": "Bloch Equation"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "the-bloch-equation",
+          "title": "THE Bloch Equation"
+        },
+        {
+          "level": 2,
+          "id": "precession",
+          "title": "Precession"
+        },
+        {
+          "level": 3,
+          "id": "simulation-of-precession",
+          "title": "Simulation of Precession"
+        },
+        {
+          "level": 2,
+          "id": "rf-excitation",
+          "title": "RF Excitation"
+        },
+        {
+          "level": 3,
+          "id": "example-constant-amplitude-pulse",
+          "title": "Example: Constant amplitude pulse"
+        },
+        {
+          "level": 3,
+          "id": "lab-versus-rotating-frame",
+          "title": "Lab versus Rotating Frame"
+        },
+        {
+          "level": 3,
+          "id": "common-flip-angle-rf-excitations",
+          "title": "Common flip angle RF excitations"
+        },
+        {
+          "level": 3,
+          "id": "simulations-of-rf-excitation",
+          "title": "Simulations of RF Excitation"
+        },
+        {
+          "level": 2,
+          "id": "relaxation",
+          "title": "Relaxation"
+        },
+        {
+          "level": 3,
+          "id": "simulation-of-relaxation",
+          "title": "Simulation of Relaxation"
+        }
+      ],
+      "alias": "L02",
+      "group": "Spin physics",
+      "summary": "Bloch dynamics, rotating frames, RF rotations and independent longitudinal/transverse relaxation.",
+      "project_use_and_limits": "Use for future dynamic magnetization models; the current analytic engine is not a numerical Bloch solver.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/In%20Vivo%20Spin%20Physics.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/In%20Vivo%20Spin%20Physics.html",
+      "status": 200,
+      "title": "In Vivo Spin Physics",
+      "article_sha256": "3d8844c30a3be786ad9c0821a005978859f2b88c111dec0b811743cdd6c8f404",
+      "html_sha256": "342d247561d9334cc72588c5617eb79af011ba34552aef4d49692714e320cd56",
+      "bytes": 32642,
+      "headings": [
+        {
+          "level": 1,
+          "id": "in-vivo-spin-physics",
+          "title": "In Vivo Spin Physics"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "magnetic-susceptibility",
+          "title": "Magnetic Susceptibility"
+        },
+        {
+          "level": 2,
+          "id": "chemical-shift",
+          "title": "Chemical Shift"
+        },
+        {
+          "level": 3,
+          "id": "fat-versus-water",
+          "title": "Fat versus Water"
+        },
+        {
+          "level": 2,
+          "id": "variations-in-the-magnetic-field",
+          "title": "Variations in the Magnetic Field"
+        }
+      ],
+      "alias": "L03",
+      "group": "Spin physics",
+      "summary": "Susceptibility, chemical environments, fat/water resonances and spatial field variation.",
+      "project_use_and_limits": "Supports frequency assumptions and future field maps; does not provide a complete flow/diffusion/MT model or implant clearance.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/MRI%20System.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/MRI%20System.html",
+      "status": 200,
+      "title": "The MRI System",
+      "article_sha256": "1b608d548ee76e54e76a5068fde79e3902f4e7808ecdb9b68d5da32a3dd25076",
+      "html_sha256": "30e3c307a627842990d63c72fd297d641480bd95a01f2b97677f72619e203b6d",
+      "bytes": 35875,
+      "headings": [
+        {
+          "level": 1,
+          "id": "the-mri-system",
+          "title": "The MRI System"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "components-of-a-mri-scanner",
+          "title": "Components of a MRI Scanner"
+        },
+        {
+          "level": 3,
+          "id": "main-magnet-b-0",
+          "title": "Main magnet - \\(B_0\\)"
+        },
+        {
+          "level": 3,
+          "id": "radiofrequency-rf-coils-b-1-vec-r-t-b-1-vec-r-t",
+          "title": "Radiofrequency (RF) coils - \\(B_1^+(\\vec{r},t), B_1^-(\\vec{r},t)\\)"
+        },
+        {
+          "level": 3,
+          "id": "magnetic-field-gradient-coils-vec-g-t",
+          "title": "Magnetic field gradient coils - \\(\\vec{G}(t)\\)"
+        },
+        {
+          "level": 2,
+          "id": "fundamental-mri-experiment-procedure",
+          "title": "Fundamental MRI Experiment Procedure"
+        },
+        {
+          "level": 2,
+          "id": "calibrations",
+          "title": "Calibrations"
+        },
+        {
+          "level": 3,
+          "id": "installation-calibrations",
+          "title": "Installation Calibrations"
+        },
+        {
+          "level": 3,
+          "id": "pre-scan-calibrations",
+          "title": "Pre-scan Calibrations"
+        }
+      ],
+      "alias": "L04",
+      "group": "Scanner system",
+      "summary": "Magnet, transmit/receive coils, gradients and installation/prescan calibrations.",
+      "project_use_and_limits": "Reference for explaining physical setup; hardware calibration is currently outside the simulator.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Magnetic%20Fields%20in%20MRI.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Magnetic%20Fields%20in%20MRI.html",
+      "status": 200,
+      "title": "Magnetic fields in MRI",
+      "article_sha256": "455f0fd8d4d3017c7e06826c42a620f30a08f382113b305dbbc3241f9825733d",
+      "html_sha256": "e6cfc218e6e958b5cd2acdf70983f649cf0f7252be692971f5091fda09e769c6",
+      "bytes": 60805,
+      "headings": [
+        {
+          "level": 1,
+          "id": "magnetic-fields-in-mri",
+          "title": "Magnetic fields in MRI"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "summary-of-magnetic-fields",
+          "title": "Summary of Magnetic Fields"
+        },
+        {
+          "level": 2,
+          "id": "loop-currents-and-magnetic-fields",
+          "title": "Loop currents and magnetic fields"
+        },
+        {
+          "level": 2,
+          "id": "main-magnet-b-0",
+          "title": "Main Magnet - \\(B_0\\)"
+        },
+        {
+          "level": 2,
+          "id": "magnetic-field-gradient-coils-vec-g-t",
+          "title": "Magnetic field gradient coils - \\(\\vec{G}(t)\\)"
+        },
+        {
+          "level": 2,
+          "id": "radiofrequency-rf-coils-b-1-vec-r-t-b-1-vec-r-t",
+          "title": "Radiofrequency (RF) coils - \\(B_1^+(\\vec{r},t), B_1^-(\\vec{r},t)\\)"
+        },
+        {
+          "level": 3,
+          "id": "transmit-tx-system-for-excitation-b-1-vec-r-t",
+          "title": "Transmit (Tx) system for excitation - \\(B_1^+(\\vec{r},t)\\)"
+        },
+        {
+          "level": 3,
+          "id": "receive-rx-system-for-reception-b-1-vec-r-t",
+          "title": "Receive (Rx) system for reception - \\(B_1^-(\\vec{r},t)\\)"
+        },
+        {
+          "level": 3,
+          "id": "creating-transmit-rf-fields",
+          "title": "Creating Transmit RF fields"
+        },
+        {
+          "level": 3,
+          "id": "receiving-magnetic-resonance-signal",
+          "title": "Receiving Magnetic Resonance Signal"
+        },
+        {
+          "level": 3,
+          "id": "reciprocity",
+          "title": "Reciprocity"
+        },
+        {
+          "level": 2,
+          "id": "transmit-and-receive-rf-coils",
+          "title": "Transmit and Receive RF Coils"
+        },
+        {
+          "level": 3,
+          "id": "transmit-tx-rf-coils",
+          "title": "Transmit (Tx) RF coils"
+        },
+        {
+          "level": 3,
+          "id": "receive-rx-rf-coils",
+          "title": "Receive (Rx) RF coils"
+        },
+        {
+          "level": 2,
+          "id": "rf-coil-profiles",
+          "title": "RF Coil Profiles"
+        },
+        {
+          "level": 3,
+          "id": "receive-elements",
+          "title": "Receive elements"
+        },
+        {
+          "level": 3,
+          "id": "sensitivity-simulation",
+          "title": "Sensitivity Simulation"
+        }
+      ],
+      "alias": "L05",
+      "group": "Scanner system",
+      "summary": "Spatial field directions, transmit versus receive behavior, reciprocity and coil sensitivity.",
+      "project_use_and_limits": "Use before coil/field/shading enhancements; real gain and sensitivity require a declared model.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Pulse%20Sequence.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Pulse%20Sequence.html",
+      "status": 200,
+      "title": "The Pulse Sequence",
+      "article_sha256": "c6224e01353c2f3ec626fc8ad669583a88df16b2b0335f6f9214bc3fec4c72cc",
+      "html_sha256": "f69423add09d489b071902f9b0e19fac5530458d3f49d9adc858efcc631b2702",
+      "bytes": 33709,
+      "headings": [
+        {
+          "level": 1,
+          "id": "the-pulse-sequence",
+          "title": "The Pulse Sequence"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "components-of-a-pulse-sequence",
+          "title": "Components of a Pulse Sequence"
+        },
+        {
+          "level": 3,
+          "id": "rf-excitation-pulse-rf",
+          "title": "RF Excitation pulse (RF)"
+        },
+        {
+          "level": 3,
+          "id": "magnetic-field-gradients-for-localization-g-x-g-y-g-z",
+          "title": "Magnetic field gradients for localization (\\(G_X, G_Y, G_Z\\))"
+        },
+        {
+          "level": 3,
+          "id": "data-acquisition-window-daq",
+          "title": "Data acquisition window (DAQ)"
+        },
+        {
+          "level": 2,
+          "id": "pulse-sequence-diagrams",
+          "title": "Pulse Sequence Diagrams"
+        },
+        {
+          "level": 3,
+          "id": "sample-pulse-sequence-diagram",
+          "title": "Sample Pulse Sequence Diagram"
+        },
+        {
+          "level": 3,
+          "id": "annotations",
+          "title": "Annotations"
+        },
+        {
+          "level": 3,
+          "id": "simplified-diagrams",
+          "title": "Simplified diagrams"
+        },
+        {
+          "level": 2,
+          "id": "key-parameters",
+          "title": "Key Parameters"
+        }
+      ],
+      "alias": "L06",
+      "group": "Experiment",
+      "summary": "RF/gradient/acquisition diagrams, timing annotation, TE/TR and repeated acquisition blocks.",
+      "project_use_and_limits": "Start here before adding sequence diagrams or changing timing semantics.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/MRI%20Signal%20Equation.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/MRI%20Signal%20Equation.html",
+      "status": 200,
+      "title": "The MRI Signal Equation",
+      "article_sha256": "5f58097b350185427861b18c37e5cb1c1e67e831f9f2f6cfb872bb3951bebaf2",
+      "html_sha256": "c4331fe60eb472532daafc5b8c8411240815d561ae937b50b888639f65064f0c",
+      "bytes": 34512,
+      "headings": [
+        {
+          "level": 1,
+          "id": "the-mri-signal-equation",
+          "title": "The MRI Signal Equation"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "the-transverse-magnetization",
+          "title": "The Transverse Magnetization"
+        },
+        {
+          "level": 2,
+          "id": "adding-relaxation",
+          "title": "Adding Relaxation"
+        },
+        {
+          "level": 2,
+          "id": "adding-off-resonance-and-chemical-shift",
+          "title": "Adding Off-resonance and Chemical Shift"
+        },
+        {
+          "level": 2,
+          "id": "adding-gradients",
+          "title": "Adding Gradients"
+        },
+        {
+          "level": 2,
+          "id": "adding-rf-coil-profiles",
+          "title": "Adding RF Coil Profiles"
+        },
+        {
+          "level": 2,
+          "id": "complete-signal-equation",
+          "title": "Complete Signal Equation"
+        },
+        {
+          "level": 2,
+          "id": "simplified-versions-of-the-signal-equation",
+          "title": "Simplified Versions of the Signal Equation"
+        },
+        {
+          "level": 3,
+          "id": "image-formation-with-only-gradients",
+          "title": "Image Formation with only Gradients"
+        },
+        {
+          "level": 3,
+          "id": "relaxation-off-resonance-and-chemical-shift-in-images",
+          "title": "Relaxation, Off-resonance, and Chemical Shift in Images"
+        }
+      ],
+      "alias": "L07",
+      "group": "Experiment",
+      "summary": "Signal accumulation with relaxation, frequency offsets, gradients and coil profiles.",
+      "project_use_and_limits": "Use to define the forward model and its simplifications before coding reconstruction or artifacts.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Basic%20Contrast%20Mechanisms.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Basic%20Contrast%20Mechanisms.html",
+      "status": 200,
+      "title": "Basic Contrast Mechanisms",
+      "article_sha256": "81d3dce3454898fa9b7f30502f8321f972ea040de617a8fd7f00c2e7d03846e8",
+      "html_sha256": "8ce87eb7a668fe43f80d981ba46a616b3272b6a9a1460296c7bc2b93f5c5c5b4",
+      "bytes": 116531,
+      "headings": [
+        {
+          "level": 1,
+          "id": "basic-contrast-mechanisms",
+          "title": "Basic Contrast Mechanisms"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "what-determines-t-1-and-t-2-values",
+          "title": "What determines \\(T_1\\) and \\(T_2\\) values?"
+        },
+        {
+          "level": 3,
+          "id": "t-1",
+          "title": "\\(T_1\\)"
+        },
+        {
+          "level": 3,
+          "id": "t-2",
+          "title": "\\(T_2\\)"
+        },
+        {
+          "level": 3,
+          "id": "typical-t-1-and-t-2-values",
+          "title": "Typical \\(T_1\\) and \\(T_2\\) values"
+        },
+        {
+          "level": 4,
+          "id": "t",
+          "title": "1.5 T"
+        },
+        {
+          "level": 4,
+          "id": "id1",
+          "title": "3 T"
+        },
+        {
+          "level": 2,
+          "id": "te-and-t-2-t-2",
+          "title": "TE and \\(T_2/T_2^*\\)"
+        },
+        {
+          "level": 2,
+          "id": "tr-and-t-1",
+          "title": "TR and \\(T_1\\)"
+        },
+        {
+          "level": 3,
+          "id": "degree-flip-angles",
+          "title": "90-degree flip angles"
+        },
+        {
+          "level": 3,
+          "id": "id2",
+          "title": "< 90-degree flip angles"
+        },
+        {
+          "level": 2,
+          "id": "t-1-t-2-and-proton-density-weighting",
+          "title": "\\(T_1\\), \\(T_2\\) and Proton Density Weighting"
+        },
+        {
+          "level": 3,
+          "id": "t-2-weighting-and-t-2-weighting",
+          "title": "\\(T_2\\)-weighting and \\(T_2^*\\)-weighting"
+        },
+        {
+          "level": 3,
+          "id": "t-1-weighting",
+          "title": "\\(T_1\\)-weighting"
+        },
+        {
+          "level": 3,
+          "id": "pd-weighting",
+          "title": "PD-weighting"
+        },
+        {
+          "level": 2,
+          "id": "inversion-recovery",
+          "title": "Inversion Recovery"
+        }
+      ],
+      "alias": "L08",
+      "group": "Contrast",
+      "summary": "TE/TR/TI/flip effects, weighting, steady-state assumptions and field-specific example tissue tables.",
+      "project_use_and_limits": "Primary contrast lookup for current analytic equations; example values are not a calibrated tissue atlas.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/In%20Vivo%20Contrast%20Mechanisms.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/In%20Vivo%20Contrast%20Mechanisms.html",
+      "status": 200,
+      "title": "In Vivo Contrast Mechanisms",
+      "article_sha256": "8144c58ea37f6cd8081a0770c17f6d866056aaaedf2eeb88279f96f60cc0b5eb",
+      "html_sha256": "b85106ecbb69fd8d90c236cfffb1f64008cba74c38ff2843db1c5c744343364e",
+      "bytes": 38191,
+      "headings": [
+        {
+          "level": 1,
+          "id": "in-vivo-contrast-mechanisms",
+          "title": "In Vivo Contrast Mechanisms"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "off-resonance-and-chemical-shift",
+          "title": "Off-resonance and Chemical Shift"
+        },
+        {
+          "level": 3,
+          "id": "off-resonance",
+          "title": "Off-resonance"
+        },
+        {
+          "level": 3,
+          "id": "chemical-shift",
+          "title": "Chemical Shift"
+        },
+        {
+          "level": 2,
+          "id": "susceptibility-induced-contrasts",
+          "title": "Susceptibility Induced Contrasts"
+        },
+        {
+          "level": 3,
+          "id": "phase-contrast",
+          "title": "Phase Contrast"
+        },
+        {
+          "level": 3,
+          "id": "t-2",
+          "title": "\\(T_2^*\\)"
+        },
+        {
+          "level": 3,
+          "id": "t-2-contrast",
+          "title": "\\(T_2^*\\) contrast"
+        },
+        {
+          "level": 2,
+          "id": "fat-water-imaging",
+          "title": "Fat/Water Imaging"
+        },
+        {
+          "level": 2,
+          "id": "contrast-agents",
+          "title": "Contrast Agents"
+        }
+      ],
+      "alias": "L09",
+      "group": "Contrast",
+      "summary": "Phase/susceptibility contrast, T2-star, fat/water phase and contrast-agent mechanisms.",
+      "project_use_and_limits": "Separate chemical phase from fat suppression; dose/clinical administration and complete flow models remain separate requirements.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Gradient%20and%20Spin%20Echoes.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Gradient%20and%20Spin%20Echoes.html",
+      "status": 200,
+      "title": "Gradient and Spin Echo Pulse Sequences",
+      "article_sha256": "ee7e4ee1474448dc03cc8fb31c8d67fc519359e7fc912bda382617451a4582c8",
+      "html_sha256": "4b472b00b134d213ef52087bab92d255c43ed4807db3ca5cd26cc957b9215620",
+      "bytes": 30818,
+      "headings": [
+        {
+          "level": 1,
+          "id": "gradient-and-spin-echo-pulse-sequences",
+          "title": "Gradient and Spin Echo Pulse Sequences"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "gradient-echo-pulse-sequence-ge-or-gre",
+          "title": "Gradient Echo Pulse Sequence (GE or GRE)"
+        },
+        {
+          "level": 2,
+          "id": "refocusing-off-resonance-with-a-spin-echo",
+          "title": "Refocusing off-resonance with a spin-echo"
+        },
+        {
+          "level": 3,
+          "id": "simulation-for-visualization-of-refocusing-off-resonance",
+          "title": "Simulation for Visualization of refocusing off-resonance"
+        },
+        {
+          "level": 2,
+          "id": "spin-echo-pulse-sequence-se",
+          "title": "Spin Echo Pulse Sequence (SE)"
+        }
+      ],
+      "alias": "L10",
+      "group": "Contrast",
+      "summary": "Gradient refocusing versus RF spin-echo refocusing and residual off-resonance.",
+      "project_use_and_limits": "Use before explaining SE/GRE differences; RF refocusing does not reverse intrinsic T2 relaxation.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Image%20Contrast%20Examples.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Image%20Contrast%20Examples.html",
+      "status": 200,
+      "title": "Image Contrast Examples",
+      "article_sha256": "41d7597051ac17bf9017206db56993156b1ae5f46c10e2395b14837907d509b6",
+      "html_sha256": "9416ff21d6f64ded8bc430b89e2306257824747798e09355f9e497c0b2781bd2",
+      "bytes": 40485,
+      "headings": [
+        {
+          "level": 1,
+          "id": "image-contrast-examples",
+          "title": "Image Contrast Examples"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "id1",
+          "title": "Image Contrast Examples"
+        },
+        {
+          "level": 2,
+          "id": "simple-contrast-phantom",
+          "title": "Simple Contrast Phantom"
+        },
+        {
+          "level": 3,
+          "id": "challenge-yourself",
+          "title": "Challenge Yourself!"
+        }
+      ],
+      "alias": "L11",
+      "group": "Contrast",
+      "summary": "Illustrated weighting examples and a simple geometric contrast phantom.",
+      "project_use_and_limits": "An illustration/simulation exercise, not an anatomic validation dataset or student grading key.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/RF%20Pulses.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/RF%20Pulses.html",
+      "status": 200,
+      "title": "RF Pulses",
+      "article_sha256": "0a4a4c544ecfc5ed82c268a8e56b8752f7045fb92df9bdbbe08c415e7766253a",
+      "html_sha256": "222682d0ae4d451ee6dacc0314f8d379d162f617b7ef7d979f3ce1e65c3d45ff",
+      "bytes": 60958,
+      "headings": [
+        {
+          "level": 1,
+          "id": "rf-pulses",
+          "title": "RF Pulses"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "how-rf-pulses-are-used-in-mri",
+          "title": "How RF Pulses are Used in MRI"
+        },
+        {
+          "level": 2,
+          "id": "types-of-rf-pulses",
+          "title": "Types of RF Pulses"
+        },
+        {
+          "level": 2,
+          "id": "rf-pulse-properties",
+          "title": "RF Pulse Properties"
+        },
+        {
+          "level": 3,
+          "id": "flip-angle",
+          "title": "Flip Angle"
+        },
+        {
+          "level": 3,
+          "id": "time-bandwidth-product",
+          "title": "Time-bandwidth Product"
+        },
+        {
+          "level": 3,
+          "id": "specific-absorption-rate",
+          "title": "Specific Absorption Rate"
+        },
+        {
+          "level": 2,
+          "id": "hard-pulse-versus-shaped-pulse",
+          "title": "Hard pulse versus Shaped Pulse"
+        },
+        {
+          "level": 3,
+          "id": "on-resonance-excitation",
+          "title": "On-resonance Excitation"
+        },
+        {
+          "level": 3,
+          "id": "off-resonance-excitation",
+          "title": "Off-resonance Excitation"
+        },
+        {
+          "level": 2,
+          "id": "rf-pulse-profile",
+          "title": "RF Pulse Profile"
+        },
+        {
+          "level": 2,
+          "id": "frequency-content-in-rf-pulses",
+          "title": "Frequency Content in RF Pulses"
+        },
+        {
+          "level": 3,
+          "id": "sum-of-frequencies",
+          "title": "Sum of Frequencies"
+        },
+        {
+          "level": 3,
+          "id": "fourier-transform-approximation",
+          "title": "Fourier Transform Approximation"
+        },
+        {
+          "level": 2,
+          "id": "frequency-selective-pulses-for-fat-suppression",
+          "title": "Frequency-Selective Pulses for Fat Suppression"
+        }
+      ],
+      "alias": "L12",
+      "group": "RF pulses",
+      "summary": "Pulse purpose, flip, time-bandwidth product, SAR concepts, profiles and frequency selectivity.",
+      "project_use_and_limits": "Use before adding RF/suppression controls; RF bandwidth differs from receiver bandwidth, and SAR needs a separate validated model.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Slice%20Selection.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Slice%20Selection.html",
+      "status": 200,
+      "title": "Slice Selection",
+      "article_sha256": "75904c5e551c8dc0a4f00fa3d47b3f1936464af2b58bd7927a6cb944004e31e9",
+      "html_sha256": "4c65387eb84a5b50083f629239a61646a8c78d1eef5eabfd17a5fc4d995168e3",
+      "bytes": 29307,
+      "headings": [
+        {
+          "level": 1,
+          "id": "slice-selection",
+          "title": "Slice Selection"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "spatial-selectivity",
+          "title": "Spatial Selectivity"
+        },
+        {
+          "level": 2,
+          "id": "slice-selective-rf-pulses",
+          "title": "Slice Selective RF Pulses"
+        },
+        {
+          "level": 3,
+          "id": "pulse-design",
+          "title": "Pulse Design"
+        },
+        {
+          "level": 3,
+          "id": "slice-thickness",
+          "title": "Slice Thickness"
+        },
+        {
+          "level": 3,
+          "id": "slice-shifting",
+          "title": "Slice Shifting"
+        },
+        {
+          "level": 3,
+          "id": "refocusing-gradient",
+          "title": "Refocusing Gradient"
+        }
+      ],
+      "alias": "L13",
+      "group": "RF pulses",
+      "summary": "Slice-select gradients, RF bandwidth, thickness, frequency shifts and rephasing.",
+      "project_use_and_limits": "Ground future slice-profile/cross-talk changes; the current ideal finite-voxel geometry is not an RF waveform simulation.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/RF%20Pulse%20Design.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/RF%20Pulse%20Design.html",
+      "status": 200,
+      "title": "RF Pulse Design",
+      "article_sha256": "42272d4f931b2be4ac681b83094fb0c0d22849c5d5f5076a703280ad986aea84",
+      "html_sha256": "30616a3a38bcd0ee943839b9e5296d17830315fbc5dd64d65e263617795a0c5e",
+      "bytes": 107530,
+      "headings": [
+        {
+          "level": 1,
+          "id": "rf-pulse-design",
+          "title": "RF Pulse Design"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "general-considerations-pulse-duration-and-ripple",
+          "title": "General Considerations - Pulse Duration and Ripple"
+        },
+        {
+          "level": 2,
+          "id": "time-bandwidth-product-and-pulse-selectivity",
+          "title": "Time-bandwidth Product and Pulse Selectivity"
+        },
+        {
+          "level": 2,
+          "id": "high-flip-angle-pulse-design",
+          "title": "High flip angle pulse design"
+        }
+      ],
+      "alias": "L14",
+      "group": "RF pulses",
+      "summary": "Pulse-duration/ripple/selectivity tradeoffs, small-tip limits and high-angle design.",
+      "project_use_and_limits": "Do not extrapolate a small-tip Fourier pulse model to arbitrary 90/180-degree pulses.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Spatial%20Encoding.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Spatial%20Encoding.html",
+      "status": 200,
+      "title": "Spatial Encoding",
+      "article_sha256": "39e8ded68bbd252fc7d0eb45f36a409612de907f2fa856aa4a2cac278d911a7d",
+      "html_sha256": "825ff000f4ae2bc71b7c173b26aeaf8dfe4903c61f2df930788a2738a5c01267",
+      "bytes": 52521,
+      "headings": [
+        {
+          "level": 1,
+          "id": "spatial-encoding",
+          "title": "Spatial Encoding"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "effects-of-magnetic-field-gradients",
+          "title": "Effects of Magnetic Field Gradients"
+        },
+        {
+          "level": 2,
+          "id": "frequency-and-phase-encoding-or-ft-imaging",
+          "title": "Frequency and Phase encoding, or FT Imaging"
+        },
+        {
+          "level": 3,
+          "id": "frequency-encoding",
+          "title": "Frequency Encoding"
+        },
+        {
+          "level": 2,
+          "id": "phase-encoding",
+          "title": "Phase Encoding"
+        },
+        {
+          "level": 2,
+          "id": "frequency-and-phase-encoding",
+          "title": "Frequency and Phase Encoding"
+        },
+        {
+          "level": 2,
+          "id": "d-ft-imaging-pulse-sequence",
+          "title": "2D FT Imaging Pulse Sequence"
+        }
+      ],
+      "alias": "L15",
+      "group": "Image formation",
+      "summary": "Frequency/phase encoding and Cartesian two-dimensional Fourier imaging.",
+      "project_use_and_limits": "Use for axis, matrix, FOV and phase-encoding control semantics.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/K-space.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/K-space.html",
+      "status": 200,
+      "title": "K-space",
+      "article_sha256": "2fa317be29d16588d248a350ebbf23ee1000a49de704cc988692e55f09c51dab",
+      "html_sha256": "19940679f1e9a7332e82979a7bce884a3d9a68ad9c63f331422e43f120db771a",
+      "bytes": 81349,
+      "headings": [
+        {
+          "level": 1,
+          "id": "k-space",
+          "title": "K-space"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "generalized-spatial-encoding",
+          "title": "Generalized Spatial Encoding"
+        },
+        {
+          "level": 3,
+          "id": "definition-of-k-space",
+          "title": "Definition of k-space"
+        },
+        {
+          "level": 3,
+          "id": "mri-signal-in-the-fourier-domain",
+          "title": "MRI signal in the Fourier domain"
+        },
+        {
+          "level": 2,
+          "id": "from-mri-data-to-images",
+          "title": "From MRI data to images"
+        },
+        {
+          "level": 2,
+          "id": "k-space-trajectories",
+          "title": "K-space Trajectories"
+        },
+        {
+          "level": 3,
+          "id": "mapping-gradients-to-k-space-trajectory",
+          "title": "Mapping Gradients to K-space trajectory"
+        },
+        {
+          "level": 3,
+          "id": "spin-echo-effect-on-k-space",
+          "title": "Spin-echo Effect on K-space"
+        },
+        {
+          "level": 3,
+          "id": "example-k-space-trajectories",
+          "title": "Example K-space Trajectories"
+        }
+      ],
+      "alias": "L16",
+      "group": "Image formation",
+      "summary": "Gradient areas, k-space coordinates, trajectories and refocusing effects.",
+      "project_use_and_limits": "Use before changing sampling or echo ordering; preserve units and Fourier/sign conventions.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Image%20Reconstruction.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Image%20Reconstruction.html",
+      "status": 200,
+      "title": "Image Reconstruction",
+      "article_sha256": "31b4a7e1e7eb75975876bdfce044f43cf0f3d3fbde466f187d10dcb9fee77262",
+      "html_sha256": "88fb76cac548a6c67bccf01faaec78e1d0b9e2b713c5b486415584ebbd3ead53",
+      "bytes": 33691,
+      "headings": [
+        {
+          "level": 1,
+          "id": "image-reconstruction",
+          "title": "Image Reconstruction"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "sorting-the-mri-data-into-k-space",
+          "title": "Sorting the MRI Data into k-space"
+        },
+        {
+          "level": 2,
+          "id": "fourier-transform-reconstruction",
+          "title": "Fourier Transform Reconstruction"
+        },
+        {
+          "level": 2,
+          "id": "linear-system-formulation",
+          "title": "Linear System Formulation"
+        }
+      ],
+      "alias": "L17",
+      "group": "Image formation",
+      "summary": "Sorting acquired data, inverse Fourier reconstruction and linear encoding formulation.",
+      "project_use_and_limits": "Check FFT scaling/centering and stored geometry; an adjoint equals an inverse only under the stated normalization/conditions.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/FOV%20and%20Resolution.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/FOV%20and%20Resolution.html",
+      "status": 200,
+      "title": "Field of View (FOV) and Resolution",
+      "article_sha256": "9143fbdc9f939b7c84a1537910c12c46d32a1f70471a0b06841d9a8814906d33",
+      "html_sha256": "8fb97839207b76cea3debbed75eba17a1a1a48a5823302c42c827a3de7828a4b",
+      "bytes": 56808,
+      "headings": [
+        {
+          "level": 1,
+          "id": "field-of-view-fov-and-resolution",
+          "title": "Field of View (FOV) and Resolution"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "field-of-view-fov",
+          "title": "Field-of-View (FOV)"
+        },
+        {
+          "level": 2,
+          "id": "spatial-resolution",
+          "title": "Spatial Resolution"
+        }
+      ],
+      "alias": "L18",
+      "group": "Image characteristics",
+      "summary": "FOV from k-space spacing and nominal resolution from sampled extent.",
+      "project_use_and_limits": "Distinguish acquired matrix/resolution from display interpolation and PSF-limited detail.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Signal%20to%20Noise%20Ratio.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Signal%20to%20Noise%20Ratio.html",
+      "status": 200,
+      "title": "Scan Time and Signal to Noise Ratio (SNR)",
+      "article_sha256": "5490fe75a960c55a7e5002dfbb50bb55819e72e9b21c387483e26459473bc461",
+      "html_sha256": "ab50b3d2cd96c091bb8ed232ca0b9b21c3bb45dc1eed0965ba21e2d8db3cd889",
+      "bytes": 35505,
+      "headings": [
+        {
+          "level": 1,
+          "id": "scan-time-and-signal-to-noise-ratio-snr",
+          "title": "Scan Time and Signal to Noise Ratio (SNR)"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "scan-time",
+          "title": "Scan Time"
+        },
+        {
+          "level": 2,
+          "id": "snr-dependencies",
+          "title": "SNR Dependencies"
+        },
+        {
+          "level": 3,
+          "id": "voxel-volume",
+          "title": "Voxel Volume"
+        },
+        {
+          "level": 3,
+          "id": "data-acquisition-time",
+          "title": "Data Acquisition Time"
+        },
+        {
+          "level": 3,
+          "id": "transverse-magnetization",
+          "title": "Transverse Magnetization"
+        },
+        {
+          "level": 2,
+          "id": "snr-equations",
+          "title": "SNR Equations"
+        },
+        {
+          "level": 3,
+          "id": "alternative-formulations-of-snr",
+          "title": "Alternative formulations of SNR"
+        },
+        {
+          "level": 2,
+          "id": "snr-efficiency",
+          "title": "SNR Efficiency"
+        },
+        {
+          "level": 2,
+          "id": "resolution-and-snr-in-post-processing",
+          "title": "Resolution and SNR in Post-Processing"
+        },
+        {
+          "level": 3,
+          "id": "upsampling",
+          "title": "Upsampling"
+        },
+        {
+          "level": 3,
+          "id": "downsampling",
+          "title": "Downsampling"
+        }
+      ],
+      "alias": "L19",
+      "group": "Image characteristics",
+      "summary": "Measurement time, voxel/contrast-dependent SNR, bandwidth units and resampling.",
+      "project_use_and_limits": "Main tradeoff lookup; resolve the repetition-count inconsistency using L20/L21 rather than copying it into scan time.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Cartesian%20Image%20Characteristics.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Cartesian%20Image%20Characteristics.html",
+      "status": 200,
+      "title": "Cartesian Sampling Image Characteristics",
+      "article_sha256": "59c787bc9c4df0e96fd49790ed947aa0c7afb88d5bb14a24cf52ada069ac6d8a",
+      "html_sha256": "90cddcfc8a7fcdef6fe3657be1f98737ff66365b484b88f2f6222965ed868fea",
+      "bytes": 29556,
+      "headings": [
+        {
+          "level": 1,
+          "id": "cartesian-sampling-image-characteristics",
+          "title": "Cartesian Sampling Image Characteristics"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "cartesian-pulse-sequence",
+          "title": "Cartesian Pulse Sequence"
+        },
+        {
+          "level": 2,
+          "id": "spatial-resolution",
+          "title": "Spatial Resolution"
+        },
+        {
+          "level": 2,
+          "id": "field-of-view-fov",
+          "title": "Field-of-View (FOV)"
+        },
+        {
+          "level": 2,
+          "id": "scan-time",
+          "title": "Scan Time"
+        },
+        {
+          "level": 2,
+          "id": "snr",
+          "title": "SNR"
+        }
+      ],
+      "alias": "L20",
+      "group": "Image characteristics",
+      "summary": "Cartesian gradient/sample relationships for resolution, FOV, repetitions and time.",
+      "project_use_and_limits": "Use as the explicit unaccelerated phase-step time cross-check alongside L19.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Volumetric%20Imaging.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Volumetric%20Imaging.html",
+      "status": 200,
+      "title": "Volumetric Imaging",
+      "article_sha256": "7136fb7584dd7dca01c4649da4238e0e79a269805046c975ad90af197873a557",
+      "html_sha256": "9a2d2be1b7ee2caab116a0c5cf850d31154c0818765b738b20befb0831da76d4",
+      "bytes": 31869,
+      "headings": [
+        {
+          "level": 1,
+          "id": "volumetric-imaging",
+          "title": "Volumetric Imaging"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "d-multi-slice-imaging",
+          "title": "2D Multi-slice Imaging"
+        },
+        {
+          "level": 3,
+          "id": "interleaving",
+          "title": "Interleaving"
+        },
+        {
+          "level": 3,
+          "id": "cross-talk",
+          "title": "Cross-talk"
+        },
+        {
+          "level": 2,
+          "id": "d-imaging",
+          "title": "3D Imaging"
+        },
+        {
+          "level": 2,
+          "id": "d-multi-slice-vs-3d-imaging",
+          "title": "2D Multi-slice vs 3D Imaging"
+        },
+        {
+          "level": 3,
+          "id": "coverage",
+          "title": "Coverage"
+        },
+        {
+          "level": 3,
+          "id": "contrast",
+          "title": "Contrast"
+        },
+        {
+          "level": 3,
+          "id": "scan-time",
+          "title": "Scan Time"
+        },
+        {
+          "level": 3,
+          "id": "snr",
+          "title": "SNR"
+        }
+      ],
+      "alias": "L21",
+      "group": "Fast/volume methods",
+      "summary": "Multislice interleaving, cross-talk, volume encoding, coverage, time and SNR.",
+      "project_use_and_limits": "Use before changing 2D packages/3D partitions; separate contrast and sampling gains.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Fast%20Imaging%20Pulse%20Sequences.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Fast%20Imaging%20Pulse%20Sequences.html",
+      "status": 200,
+      "title": "Fast Imaging Pulse Sequences",
+      "article_sha256": "a2ae374922d6c898b936720614957356fe3745e4f42aa4ba34f151d814147d97",
+      "html_sha256": "c82dbc4f53110368c7d272c831dc6fbe7c1bcf0c00ebc85735441d240a14dfea",
+      "bytes": 55988,
+      "headings": [
+        {
+          "level": 1,
+          "id": "fast-imaging-pulse-sequences",
+          "title": "Fast Imaging Pulse Sequences"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "multiple-spin-echo-sequences-rare-fse-tse",
+          "title": "Multiple Spin-echo Sequences (RARE/FSE/TSE)"
+        },
+        {
+          "level": 3,
+          "id": "simplified-pulse-sequence-diagram",
+          "title": "Simplified Pulse Sequence Diagram"
+        },
+        {
+          "level": 3,
+          "id": "sequence-parameters",
+          "title": "Sequence parameters"
+        },
+        {
+          "level": 3,
+          "id": "tradeoffs",
+          "title": "Tradeoffs"
+        },
+        {
+          "level": 2,
+          "id": "echo-planar-imaging-epi",
+          "title": "Echo-planar Imaging (EPI)"
+        },
+        {
+          "level": 3,
+          "id": "pulse-sequence-and-k-space-diagram",
+          "title": "Pulse Sequence and K-space Diagram"
+        },
+        {
+          "level": 3,
+          "id": "id1",
+          "title": "Sequence parameters"
+        },
+        {
+          "level": 3,
+          "id": "id2",
+          "title": "Tradeoffs"
+        },
+        {
+          "level": 2,
+          "id": "fast-gradient-echo-sequences",
+          "title": "Fast gradient-echo sequences"
+        },
+        {
+          "level": 3,
+          "id": "spoiler-or-crusher-gradients",
+          "title": "Spoiler or Crusher gradients"
+        },
+        {
+          "level": 3,
+          "id": "rf-spoiling",
+          "title": "RF spoiling"
+        },
+        {
+          "level": 3,
+          "id": "types-of-fast-gradient-echo-sequences",
+          "title": "Types of fast gradient-echo sequences"
+        },
+        {
+          "level": 3,
+          "id": "magnetization-prepared-fast-gradient-echo-sequences",
+          "title": "Magnetization Prepared Fast Gradient-echo Sequences"
+        }
+      ],
+      "alias": "L22",
+      "group": "Fast/volume methods",
+      "summary": "FSE/TSE effective TE/spacing/train tradeoffs, EPI, spoiling, steady states and preparation.",
+      "project_use_and_limits": "Start here for family-specific behavior; verify vendor aliases independently (TFE is not FSE).",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Accelerated%20Imaging%20Methods.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Accelerated%20Imaging%20Methods.html",
+      "status": 200,
+      "title": "Accelerated Imaging Methods",
+      "article_sha256": "420f8386d3e736c8d306b28cfb84113bb743cf120793074406c56246eef03b93",
+      "html_sha256": "7c92356bf19a9a2b57f0f21e7a56fd27a008eb0e1a46b4fca004f4bdc09a37b9",
+      "bytes": 68020,
+      "headings": [
+        {
+          "level": 1,
+          "id": "accelerated-imaging-methods",
+          "title": "Accelerated Imaging Methods"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "general-principles",
+          "title": "General Principles"
+        },
+        {
+          "level": 2,
+          "id": "methods-inventory-and-comparison",
+          "title": "Methods Inventory and Comparison"
+        },
+        {
+          "level": 2,
+          "id": "partial-fourier-imaging",
+          "title": "Partial Fourier Imaging"
+        },
+        {
+          "level": 2,
+          "id": "parallel-imaging",
+          "title": "Parallel Imaging"
+        },
+        {
+          "level": 3,
+          "id": "undersampled-k-space-methods",
+          "title": "Undersampled k-space Methods"
+        },
+        {
+          "level": 3,
+          "id": "simultaneous-multi-slice-sms-methods",
+          "title": "Simultaneous Multi-Slice (SMS) Methods"
+        },
+        {
+          "level": 3,
+          "id": "snr-in-parallel-imaging",
+          "title": "SNR in Parallel Imaging"
+        },
+        {
+          "level": 3,
+          "id": "artifacts-with-parallel-imaging",
+          "title": "Artifacts with Parallel Imaging"
+        },
+        {
+          "level": 2,
+          "id": "compressed-sensing-methods",
+          "title": "Compressed Sensing Methods"
+        },
+        {
+          "level": 3,
+          "id": "snr-in-compressed-sensing",
+          "title": "SNR in Compressed Sensing"
+        },
+        {
+          "level": 3,
+          "id": "artifacts-with-compressed-sensing",
+          "title": "Artifacts with Compressed Sensing"
+        },
+        {
+          "level": 2,
+          "id": "deep-learning-reconstructions",
+          "title": "Deep Learning Reconstructions"
+        },
+        {
+          "level": 3,
+          "id": "snr-in-dl-reconstructions",
+          "title": "SNR in DL Reconstructions"
+        },
+        {
+          "level": 3,
+          "id": "artifacts-with-dl-reconstructions",
+          "title": "Artifacts with DL Reconstructions"
+        }
+      ],
+      "alias": "L23",
+      "group": "Fast/volume methods",
+      "summary": "Partial Fourier, parallel imaging/SMS, compressed sensing and learned reconstruction.",
+      "project_use_and_limits": "These require corresponding encoding/reconstruction assumptions; a time-divisor control alone would be misleading.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Point%20Spread%20Function%20Analysis.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Point%20Spread%20Function%20Analysis.html",
+      "status": 200,
+      "title": "Point Spread Function Analysis",
+      "article_sha256": "b44d1916b85c9a76df5b1823cb1b58ccd5f22105ea06f16911f7939f8c75b28a",
+      "html_sha256": "58e5b60997cf9be95f2e8af5ad75afce05f5b9b9c84310a9611c0c5b163f47b4",
+      "bytes": 79780,
+      "headings": [
+        {
+          "level": 1,
+          "id": "point-spread-function-analysis",
+          "title": "Point Spread Function Analysis"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "mri-signal-equation",
+          "title": "MRI Signal Equation"
+        },
+        {
+          "level": 2,
+          "id": "k-space-data-weighting",
+          "title": "K-space Data Weighting"
+        },
+        {
+          "level": 2,
+          "id": "relaxation-during-signal-acquisition",
+          "title": "Relaxation during signal acquisition"
+        },
+        {
+          "level": 2,
+          "id": "off-resonance-and-chemical-shift",
+          "title": "Off-resonance and Chemical Shift"
+        },
+        {
+          "level": 3,
+          "id": "displacement-artifacts",
+          "title": "Displacement Artifacts"
+        },
+        {
+          "level": 4,
+          "id": "cartesian-sampling",
+          "title": "Cartesian Sampling"
+        },
+        {
+          "level": 4,
+          "id": "epi-sampling",
+          "title": "EPI Sampling"
+        },
+        {
+          "level": 4,
+          "id": "other-trajectories",
+          "title": "Other Trajectories"
+        },
+        {
+          "level": 3,
+          "id": "chemical-shift-displacement-artifact",
+          "title": "Chemical Shift Displacement Artifact"
+        }
+      ],
+      "alias": "L24",
+      "group": "Artifacts/PSF",
+      "summary": "Tissue-specific k-space weighting, relaxation/readout effects and trajectory-dependent frequency displacement.",
+      "project_use_and_limits": "Core source for FSE/filter/blur and chemical-shift reasoning; ideal analytic weighting has defined limits.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Artifacts.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Artifacts.html",
+      "status": 200,
+      "title": "Artifacts",
+      "article_sha256": "ebc1c446c7cd68180a34a7654933754dc22d8f9a51203111af082c271d0a06a6",
+      "html_sha256": "f5f307d5f174c2ba82b459ba1ff6db3791d369ccb098b47fe3363c7043eb5d9a",
+      "bytes": 90931,
+      "headings": [
+        {
+          "level": 1,
+          "id": "artifacts",
+          "title": "Artifacts"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "introduction",
+          "title": "Introduction"
+        },
+        {
+          "level": 2,
+          "id": "artifact-comparison",
+          "title": "Artifact Comparison"
+        },
+        {
+          "level": 2,
+          "id": "sampling-characteristics-artifacts-aliasing-and-gibbs-ringing",
+          "title": "Sampling Characteristics Artifacts - Aliasing and Gibbs Ringing"
+        },
+        {
+          "level": 3,
+          "id": "aliasing",
+          "title": "Aliasing"
+        },
+        {
+          "level": 3,
+          "id": "aliasing-in-parallel-imaging",
+          "title": "Aliasing in Parallel Imaging"
+        },
+        {
+          "level": 3,
+          "id": "gibbs-ringing-truncation",
+          "title": "Gibbs Ringing/Truncation"
+        },
+        {
+          "level": 2,
+          "id": "displacement-and-distortion-artifacts-due-to-changes-in-frequency",
+          "title": "Displacement and Distortion Artifacts due to Changes in Frequency"
+        },
+        {
+          "level": 3,
+          "id": "shifts-in-the-image",
+          "title": "Shifts in the Image"
+        },
+        {
+          "level": 3,
+          "id": "fat-chemical-shift-artifacts-displacement",
+          "title": "Fat Chemical Shift Artifacts - Displacement"
+        },
+        {
+          "level": 3,
+          "id": "off-resonance-artifacts-distortion",
+          "title": "Off-resonance Artifacts - Distortion"
+        },
+        {
+          "level": 3,
+          "id": "shifts-in-slice-selection",
+          "title": "Shifts in Slice Selection"
+        },
+        {
+          "level": 2,
+          "id": "t2",
+          "title": "T2*"
+        },
+        {
+          "level": 2,
+          "id": "motion-and-flow-artifacts",
+          "title": "Motion and Flow Artifacts"
+        },
+        {
+          "level": 3,
+          "id": "pediodic-motion-ghosting",
+          "title": "Pediodic Motion - Ghosting"
+        },
+        {
+          "level": 3,
+          "id": "incoherent-motion-diffuse-ghosting",
+          "title": "Incoherent Motion - Diffuse Ghosting"
+        },
+        {
+          "level": 2,
+          "id": "unwanted-signals-spike-noise-zipper",
+          "title": "Unwanted signals - Spike noise, Zipper"
+        },
+        {
+          "level": 3,
+          "id": "spike-noise",
+          "title": "Spike Noise"
+        },
+        {
+          "level": 3,
+          "id": "rf-interference-zipper",
+          "title": "RF interference/Zipper"
+        },
+        {
+          "level": 2,
+          "id": "mri-hardware-limitations-rf-shading-gradient-non-linearity",
+          "title": "MRI hardware limitations - RF shading, gradient non-linearity"
+        },
+        {
+          "level": 3,
+          "id": "rf-shading",
+          "title": "RF Shading"
+        },
+        {
+          "level": 3,
+          "id": "gradient-non-linearity",
+          "title": "Gradient Non-Linearity"
+        },
+        {
+          "level": 2,
+          "id": "partial-volume-and-boundary-artifacts",
+          "title": "Partial Volume and Boundary Artifacts"
+        }
+      ],
+      "alias": "L25",
+      "group": "Artifacts/PSF",
+      "summary": "Aliasing, ringing, frequency distortion, motion, interference, RF/gradient imperfections and mixed voxels.",
+      "project_use_and_limits": "Use symptom-to-mechanism routing, then check the trajectory/axis; availability of a mitigation here does not mean it exists in the app.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Key%20MRI%20Concepts.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Key%20MRI%20Concepts.html",
+      "status": 200,
+      "title": "Key MRI Concepts and Equations",
+      "article_sha256": "e70d6765c0af96ff6c95465b3619984651ac1e808003dd2f44d5d80a956f964b",
+      "html_sha256": "475912cf7311757ddd376bf6d83f11f505ec2717a642ee920848a9595bdf6736",
+      "bytes": 40615,
+      "headings": [
+        {
+          "level": 1,
+          "id": "key-mri-concepts-and-equations",
+          "title": "Key MRI Concepts and Equations"
+        },
+        {
+          "level": 2,
+          "id": "background-material",
+          "title": "Background Material"
+        },
+        {
+          "level": 2,
+          "id": "mr-spin-physics",
+          "title": "MR Spin Physics"
+        },
+        {
+          "level": 2,
+          "id": "mri-system",
+          "title": "MRI System"
+        },
+        {
+          "level": 2,
+          "id": "mri-experiment",
+          "title": "MRI Experiment"
+        },
+        {
+          "level": 2,
+          "id": "mr-contrasts",
+          "title": "MR Contrasts"
+        },
+        {
+          "level": 2,
+          "id": "in-vivo-spin-physics",
+          "title": "In Vivo Spin Physics"
+        },
+        {
+          "level": 2,
+          "id": "in-vivo-contrasts",
+          "title": "In Vivo Contrasts"
+        },
+        {
+          "level": 2,
+          "id": "rf-pulses",
+          "title": "RF Pulses"
+        },
+        {
+          "level": 2,
+          "id": "spatial-encoding",
+          "title": "Spatial Encoding"
+        },
+        {
+          "level": 2,
+          "id": "image-characteristics",
+          "title": "Image Characteristics"
+        },
+        {
+          "level": 2,
+          "id": "ft-imaging-sequence",
+          "title": "FT Imaging Sequence"
+        },
+        {
+          "level": 2,
+          "id": "fast-imaging-pulse-sequences",
+          "title": "Fast Imaging Pulse Sequences"
+        },
+        {
+          "level": 2,
+          "id": "accelerated-imaging-methods",
+          "title": "Accelerated Imaging Methods"
+        },
+        {
+          "level": 2,
+          "id": "artifacts",
+          "title": "Artifacts"
+        }
+      ],
+      "alias": "L26",
+      "group": "Summary",
+      "summary": "Cross-topic equation/concept navigation and concise reminders.",
+      "project_use_and_limits": "Quick lookup only; reopen the underlying chapter for assumptions before changing code.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Questions.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Questions.html",
+      "status": 200,
+      "title": "MRI Questions",
+      "article_sha256": "b597a49c254a4cc45b8dce7a0cfb8dfeee479565ba6bf14a4b7c45e78d8dada9",
+      "html_sha256": "eeb96bb90c828bbad576205a87ef7bbb9aae4e04bfc75cac0c1c97cc290c4b44",
+      "bytes": 52031,
+      "headings": [
+        {
+          "level": 1,
+          "id": "mri-questions",
+          "title": "MRI Questions"
+        },
+        {
+          "level": 2,
+          "id": "mri-system",
+          "title": "MRI System"
+        },
+        {
+          "level": 2,
+          "id": "mr-physics",
+          "title": "MR Physics"
+        },
+        {
+          "level": 2,
+          "id": "rf-coils",
+          "title": "RF Coils"
+        },
+        {
+          "level": 2,
+          "id": "contrast",
+          "title": "Contrast"
+        },
+        {
+          "level": 2,
+          "id": "pulse-sequence",
+          "title": "Pulse Sequence"
+        },
+        {
+          "level": 2,
+          "id": "rf-pulses",
+          "title": "RF Pulses"
+        },
+        {
+          "level": 2,
+          "id": "spatial-encoding",
+          "title": "Spatial Encoding"
+        },
+        {
+          "level": 2,
+          "id": "image-reconstruction",
+          "title": "Image Reconstruction"
+        },
+        {
+          "level": 2,
+          "id": "image-characteristics-fov-and-resolution",
+          "title": "Image Characteristics (FOV and Resolution)"
+        },
+        {
+          "level": 2,
+          "id": "snr",
+          "title": "SNR"
+        },
+        {
+          "level": 2,
+          "id": "artifacts",
+          "title": "Artifacts"
+        },
+        {
+          "level": 2,
+          "id": "fast-imaging-pulse-sequences",
+          "title": "Fast Imaging Pulse Sequences"
+        },
+        {
+          "level": 2,
+          "id": "accelerated-imaging-methods",
+          "title": "Accelerated Imaging Methods"
+        }
+      ],
+      "alias": "L27",
+      "group": "Summary",
+      "summary": "Knowledge-check categories spanning hardware, contrast, encoding, quality and acceleration.",
+      "project_use_and_limits": "Useful coverage prompts; do not copy questions/answers or infer the project assessment rubric.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/MRI%20Notation.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/MRI%20Notation.html",
+      "status": 200,
+      "title": "MRI Notation and Terminology",
+      "article_sha256": "a790fe08058e2e6acc2358a752463bfb58ef559e079734522f39aea49fc27816",
+      "html_sha256": "4fbaa22c300b54d3e0b93cdc983ea75dcafca89a373023d60001c2769b0f062b",
+      "bytes": 30403,
+      "headings": [
+        {
+          "level": 1,
+          "id": "mri-notation-and-terminology",
+          "title": "MRI Notation and Terminology"
+        },
+        {
+          "level": 2,
+          "id": "definitions",
+          "title": "Definitions"
+        },
+        {
+          "level": 3,
+          "id": "position-in-space",
+          "title": "Position in space"
+        },
+        {
+          "level": 3,
+          "id": "net-magnetization",
+          "title": "Net magnetization"
+        },
+        {
+          "level": 3,
+          "id": "magnetic-field",
+          "title": "Magnetic field"
+        },
+        {
+          "level": 2,
+          "id": "acronyms",
+          "title": "Acronyms"
+        },
+        {
+          "level": 2,
+          "id": "glossary",
+          "title": "Glossary"
+        }
+      ],
+      "alias": "L28",
+      "group": "Reference",
+      "summary": "Symbols, SI conventions, acronyms and terminology.",
+      "project_use_and_limits": "Check Hz versus rad/s, seconds versus milliseconds and amplitude versus power; some table wording needs interpretation.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/MRI%20Math%20Concepts.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/MRI%20Math%20Concepts.html",
+      "status": 200,
+      "title": "MRI Math Concepts",
+      "article_sha256": "1c2d31e4db698377e0a5a6de2f3582e9f78603f5e024efa58f1683adb859b6da",
+      "html_sha256": "288b35aa00b9798dab5dc9b1f22138b7ccb872b99932f261c7bd51563d3ef2a8",
+      "bytes": 51889,
+      "headings": [
+        {
+          "level": 1,
+          "id": "mri-math-concepts",
+          "title": "MRI Math Concepts"
+        },
+        {
+          "level": 2,
+          "id": "complex-numbers",
+          "title": "Complex Numbers"
+        },
+        {
+          "level": 2,
+          "id": "impulse-function",
+          "title": "Impulse Function"
+        },
+        {
+          "level": 3,
+          "id": "impulse-train-sampling-function",
+          "title": "Impulse train sampling function"
+        },
+        {
+          "level": 2,
+          "id": "other-functions",
+          "title": "Other Functions"
+        },
+        {
+          "level": 2,
+          "id": "convolution",
+          "title": "Convolution"
+        },
+        {
+          "level": 2,
+          "id": "fourier-transforms",
+          "title": "Fourier Transforms"
+        },
+        {
+          "level": 3,
+          "id": "inverse-fourier-transform",
+          "title": "Inverse Fourier Transform:"
+        },
+        {
+          "level": 3,
+          "id": "d-fourier-transform",
+          "title": "2-D Fourier Transform"
+        },
+        {
+          "level": 3,
+          "id": "n-d-fourier-transform",
+          "title": "N-D Fourier Transform"
+        },
+        {
+          "level": 3,
+          "id": "duality",
+          "title": "Duality"
+        },
+        {
+          "level": 3,
+          "id": "separable",
+          "title": "Separable"
+        },
+        {
+          "level": 2,
+          "id": "fourier-transform-identities-and-pairs",
+          "title": "Fourier Transform Identities and Pairs"
+        },
+        {
+          "level": 2,
+          "id": "fourier-transform-example-truncated-k-space-data",
+          "title": "Fourier Transform Example - Truncated k-space data"
+        },
+        {
+          "level": 2,
+          "id": "point-spread-function-psf-analysis",
+          "title": "Point Spread function (PSF) Analysis"
+        },
+        {
+          "level": 2,
+          "id": "discrete-fourier-transform",
+          "title": "Discrete Fourier Transform"
+        }
+      ],
+      "alias": "L29",
+      "group": "Reference",
+      "summary": "Complex arithmetic, sampling functions, Fourier/convolution identities, PSFs and DFTs.",
+      "project_use_and_limits": "Use for phase/magnitude/reconstruction reasoning; implement phase with quadrant-aware atan2 and explicit FFT normalization.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Software_Resources.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Software_Resources.html",
+      "status": 200,
+      "title": "MRI Software Resources",
+      "article_sha256": "48d85d3630f20c7b405174f65396d10dcd5097a2b4d03392261aa5fa0ab2b94c",
+      "html_sha256": "87264d3cee5f9d2cc50aee5c7632b71bb3bdb6353b5a0ebb8334956f02396be2",
+      "bytes": 23629,
+      "headings": [
+        {
+          "level": 1,
+          "id": "mri-software-resources",
+          "title": "MRI Software Resources"
+        }
+      ],
+      "alias": "L30",
+      "group": "Reference",
+      "summary": "Pointers to educational simulation, RF, reconstruction and quantitative-MRI software.",
+      "project_use_and_limits": "A directory, not technical validation or authorization to install dependencies/import data.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Excitation%20K-space.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Excitation%20K-space.html",
+      "status": 200,
+      "title": "Excitation K-space and Multidimensional RF Pulses",
+      "article_sha256": "8d14d75235576d5d50a0834f8eb76fd7df8477ea86fb6510de82b0d24ad12262",
+      "html_sha256": "1e4845fc0bea8e68d25f0ac44dbde9e54542cc743f4e3946bd7e6a27028bd4aa",
+      "bytes": 32378,
+      "headings": [
+        {
+          "level": 1,
+          "id": "excitation-k-space-and-multidimensional-rf-pulses",
+          "title": "Excitation K-space and Multidimensional RF Pulses"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "excitation-k-space",
+          "title": "Excitation k-space"
+        },
+        {
+          "level": 2,
+          "id": "multidimensional-spatially-selective-pulses",
+          "title": "Multidimensional spatially-selective Pulses"
+        },
+        {
+          "level": 2,
+          "id": "spectral-k-space",
+          "title": "Spectral k-space"
+        },
+        {
+          "level": 2,
+          "id": "spectral-spatial-rf-pulses",
+          "title": "Spectral-Spatial RF Pulses"
+        }
+      ],
+      "alias": "L31",
+      "group": "Advanced RF",
+      "summary": "Excitation versus acquisition k-space and multidimensional/spectral-spatial selection.",
+      "project_use_and_limits": "Advanced reference for future selective excitation; distinguish remaining gradient area from accumulated acquisition area.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Spectral-Spatial%20RF%20Pulses.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Spectral-Spatial%20RF%20Pulses.html",
+      "status": 200,
+      "title": "Spectral-Spatial RF Pulses",
+      "article_sha256": "f47b3713f1a4004de839210d5aa57b45a3f280e09d899d7f280d5c18546dcd37",
+      "html_sha256": "f4508160b5e788f956f36b88a7b430d574390212879f81aebe5033c8c0190ecd",
+      "bytes": 60278,
+      "headings": [
+        {
+          "level": 1,
+          "id": "spectral-spatial-rf-pulses",
+          "title": "Spectral-Spatial RF Pulses"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 2,
+          "id": "spectral-spatial-rf-pulse-design",
+          "title": "Spectral-Spatial RF Pulse Design"
+        }
+      ],
+      "alias": "L32",
+      "group": "Advanced RF",
+      "summary": "Combined frequency/spatial selectivity, envelope/subpulse construction and design examples.",
+      "project_use_and_limits": "Use before implementing water excitation or spectral-spatial suppression; this is not an ordinary spatial band.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Fun%20with%20RF%20Pulses.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Fun%20with%20RF%20Pulses.html",
+      "status": 200,
+      "title": "Fun with RF Pulses?",
+      "article_sha256": "2665e3554c9a12b065df9ce8d497402790d34952a73680d7bb6bb9d03b6ea368",
+      "html_sha256": "4dd08aca19ad58fb1755fb0cbc47d74120937569ddfff0b02bd9daa33c49b386",
+      "bytes": 26324,
+      "headings": [
+        {
+          "level": 1,
+          "id": "fun-with-rf-pulses",
+          "title": "Fun with RF Pulses?"
+        },
+        {
+          "level": 2,
+          "id": "learning-goals",
+          "title": "Learning Goals"
+        },
+        {
+          "level": 3,
+          "id": "adiabatic-pulses",
+          "title": "Adiabatic Pulses"
+        },
+        {
+          "level": 3,
+          "id": "pretty-pictures",
+          "title": "Pretty Pictures"
+        }
+      ],
+      "alias": "L33",
+      "group": "Advanced RF",
+      "summary": "Adiabatic and off-resonance RF illustrations.",
+      "project_use_and_limits": "Illustrative supplement; no universal inversion efficacy or safety threshold follows from an animation.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Advanced%20SNR.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Advanced%20SNR.html",
+      "status": 200,
+      "title": "Advanced SNR",
+      "article_sha256": "87da7d7c8abab762945c9e94b9e3dbf3424ed088ddd2fa0573ddcfe8020e4fe0",
+      "html_sha256": "63418f37e7834f868e8648bd9ff79540b03e62be47ec2ea2f0eda544c08d0d16",
+      "bytes": 42566,
+      "headings": [
+        {
+          "level": 1,
+          "id": "advanced-snr",
+          "title": "Advanced SNR"
+        },
+        {
+          "level": 2,
+          "id": "snr-and-t-2-decay",
+          "title": "SNR and \\(T_2^*\\) decay"
+        },
+        {
+          "level": 2,
+          "id": "snr-efficiency-versus-tr",
+          "title": "SNR efficiency versus TR"
+        }
+      ],
+      "alias": "L34",
+      "group": "Advanced quality",
+      "summary": "Readout decay limits and TR/Ernst-angle SNR efficiency.",
+      "project_use_and_limits": "Advanced supplement; rederive the displayed two-sided decay expression before numerical use.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    },
+    {
+      "url": "https://larsonlab.github.io/MRI-education-resources/Advanced%20Image%20Reconstruction.html",
+      "resolved_url": "https://larsonlab.github.io/MRI-education-resources/Advanced%20Image%20Reconstruction.html",
+      "status": 200,
+      "title": "Advanced Image Reconstruction",
+      "article_sha256": "cfdeab5f8fc056db0ab7c5de907dbfe25a5b1eb690c95dd7c937991640afd76a",
+      "html_sha256": "2d64e7a846fc50353e6038c27882e101579062f0bc1a1e9b9755479622ace924",
+      "bytes": 40778,
+      "headings": [
+        {
+          "level": 1,
+          "id": "advanced-image-reconstruction",
+          "title": "Advanced Image Reconstruction"
+        },
+        {
+          "level": 2,
+          "id": "general-formulation-of-mri-reconstruction",
+          "title": "General Formulation of MRI Reconstruction"
+        },
+        {
+          "level": 2,
+          "id": "fourier-transform-reconstruction",
+          "title": "Fourier Transform Reconstruction"
+        },
+        {
+          "level": 2,
+          "id": "parallel-imaging",
+          "title": "Parallel Imaging"
+        },
+        {
+          "level": 3,
+          "id": "model-based-methods",
+          "title": "Model-based Methods"
+        },
+        {
+          "level": 3,
+          "id": "linear-predictability-methods",
+          "title": "Linear Predictability Methods"
+        },
+        {
+          "level": 2,
+          "id": "compressed-sensing-methods",
+          "title": "Compressed Sensing Methods"
+        },
+        {
+          "level": 2,
+          "id": "deep-learning-reconstructions",
+          "title": "Deep Learning Reconstructions"
+        },
+        {
+          "level": 3,
+          "id": "deep-learning-requirements",
+          "title": "Deep Learning Requirements"
+        },
+        {
+          "level": 3,
+          "id": "reference",
+          "title": "Reference"
+        }
+      ],
+      "alias": "L35",
+      "group": "Advanced reconstruction",
+      "summary": "Encoding operators, parallel/model-based/linear-predictability methods and physics-driven learning.",
+      "project_use_and_limits": "Use before advanced reconstruction; data consistency and failure behavior need explicit validation.",
+      "reviewed_on": "2026-11-23",
+      "review_level": "chapter-coverage-and-expository-review; not independent validation of every equation, figure, notebook or external tool"
+    }
+  ],
+  "implementation_caveats": [
+    {
+      "pages": [
+        "L19",
+        "L20",
+        "L21"
+      ],
+      "issue": "Repetition versus frequency-sample counts are inconsistent between the general SNR and explicit Cartesian descriptions.",
+      "handling": "Derive sequence-specific TR count; frequency samples within a readout do not add TR repetitions."
+    },
+    {
+      "pages": [
+        "L22"
+      ],
+      "issue": "Philips TFE is incorrectly grouped as an FSE/TSE alias.",
+      "handling": "Verify manufacturer terminology; Philips distinguishes gradient echo FFE/TFE from TSE.",
+      "cross_check": "https://www.documents.philips.com/assets/20220224/49580a6adf0441c6a137ae4600b0128e.pdf?func=ll&objaction=open&objid=8360181"
+    },
+    {
+      "pages": [
+        "L34"
+      ],
+      "issue": "Suspected notation problem in the displayed two-sided decay integral.",
+      "handling": "Re-derive the envelope and check the notebook before adopting numerical optima."
+    },
+    {
+      "pages": [
+        "L17",
+        "L35",
+        "L29",
+        "L28"
+      ],
+      "issue": "FFT normalization, quadrant-aware phase and relaxation time/rate distinctions need explicit implementation conventions.",
+      "handling": "Use dimensional checks and controlled forward/inverse, phase and signal tests."
+    }
+  ],
+  "supplementary_resources": [
+    {
+      "kind": "lecture playlist",
+      "url": "https://www.youtube.com/playlist?list=PLjBt5Iq93BT9eXMsgevVTXKVv4BgVLB1X",
+      "review_status": "linked; lectures not exhaustively watched"
+    },
+    {
+      "kind": "overview video",
+      "url": "https://youtu.be/1Ku6-uXw7Ag",
+      "review_status": "linked; video not watched in this task"
+    },
+    {
+      "kind": "Bloch simulator",
+      "url": "https://www.drcmr.dk/BlochSimulator/",
+      "review_status": "linked; external runtime not exercised in this task"
+    },
+    {
+      "kind": "CompassMR",
+      "url": "https://www.drcmr.dk/CompassMR/",
+      "review_status": "linked; external runtime not exercised in this task"
+    },
+    {
+      "kind": "SpinBench",
+      "url": "https://vista.ai/products/research-spinbench/",
+      "review_status": "linked; external runtime not exercised in this task"
+    },
+    {
+      "kind": "book PDF",
+      "url": "https://larsonlab.github.io/MRI-education-resources/Larson_Principles-of-MRI.pdf",
+      "review_status": "linked alternative format; not independently downloaded/reviewed in addition to all HTML chapters"
+    },
+    {
+      "kind": "software directory",
+      "url": "https://larsonlab.github.io/MRI-education-resources/Software_Resources.html",
+      "review_status": "directory reviewed; listed external packages not installed or exhaustively evaluated"
+    }
+  ]
+}

@@ -57,5 +57,25 @@
       "bytes": 2685315,
       "sha256": "52195cafc171bf779f0e2e9af378f2f14bb1da62e5a1362545c8d6851977eba3"
     }
+  ],
+  "web_sources": [
+    {
+      "alias": "LARSON",
+      "title": "Principles of MRI",
+      "author": "Peder E. Z. Larson",
+      "url": "https://larsonlab.github.io/MRI-education-resources/Introduction.html",
+      "reviewed_on": "2026-11-23",
+      "index": "docs/LARSON_MRI_REFERENCE_INDEX.md",
+      "page_manifest": "docs/larson-reference-pages.json",
+      "review_scope": "All 36 course contents pages; 360 heading IDs; 367 internal article links checked. Expository review, not independent verification of every equation or execution of external media/software.",
+      "repository_head_sha": "5fdaf8e274ac2c694ee50bbadc797616e7d149a6",
+      "repository_head_committed_at": "2026-11-19T01:18:29Z",
+      "concept_doi": "10.5281/zenodo.5547020",
+      "resolved_archive_doi": "10.5281/zenodo.17967361",
+      "archive_version": "v2.0",
+      "archive_date": "2025-12-17",
+      "repository_license": "MIT",
+      "source_identity_note": "Repository citation file remains v1.0/2021; live site footer 2026. Site content fingerprints and exact heading IDs are in page_manifest; repository HEAD is not proof of published build."
+    }
   ]
 }

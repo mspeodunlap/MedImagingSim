@@ -2,7 +2,7 @@
 
 Updated November 23, 2026. Start here for a new functional task, then read only the relevant source pages and any cross-references needed to answer it. All page ranges below are **PDF page positions starting at 1**, not the chapter/page labels printed inside the training companions. For example, RAD100 PDF page 83 is printed as 5 • 4.
 
-This index covers six local documents, including the newly supplied MRI physics reference. Chapter outlines were surveyed for navigation; the workflow, resource scheduling, questionnaires, worklist, configuration, and access sections relevant to MedImagingSim were examined in more detail. A navigation entry alone does not establish that a feature's behavior has been verified. Review the actual cited pages when using them for a task. The documents describe a source product and training configuration, not an implementation specification for our simulator.
+This index covers six local documents and the standing Larson Lab online MRI course reference. Chapter outlines were surveyed for navigation; the workflow, resource scheduling, questionnaires, worklist, configuration, and access sections relevant to MedImagingSim were examined in more detail. A navigation entry alone does not establish that a feature's behavior has been verified. Review the actual cited pages when using them for a task. The documents describe a source product and training configuration, not an implementation specification for our simulator.
 
 ## Document aliases
 
@@ -13,6 +13,8 @@ This index covers six local documents, including the newly supplied MRI physics 
 | RAD100 | [RAD100 Radiant Fundamentals (With Answers)](<../Reference Docs/RAD100 Radiant Fundamentals (With Answers).pdf>) | 205 | August 2026 edition; revised October 23, 2026 | End-user ordering, scheduling, screening, diagnostic exam work, and corrections. |
 | RAD400 | [RAD400 Radiant Administration (With Answers)](<../Reference Docs/RAD400 Radiant Administration (With Answers).pdf>) | 407 | August 2026 edition; revised March 27, 2026 | Imaging-specific resource, procedure, questionnaire, worklist, and permission configuration. |
 | CLN | [CLN251–252 Configuring the Epic End User Clinical/Shared (With Answers)](<../Reference Docs/CLN251-252 Configuring the Epic End User Clinical_Shared (With Answers).pdf>) | 311 | August 2026 edition; revised April 9, 2026 | Shared configuration concepts, contextual workflows, roles, permissions, and user/provider distinctions. |
+
+**PHYSICS** is the 75-page Blink MRI physics PDF indexed [below](#mri-image-physics-and-parameter-dependencies). **LARSON** is the online [Principles of MRI course](https://larsonlab.github.io/MRI-education-resources/Introduction.html), indexed in [LARSON_MRI_REFERENCE_INDEX.md](LARSON_MRI_REFERENCE_INDEX.md) with chapter/section metadata in [larson-reference-pages.json](larson-reference-pages.json). Use LARSON as the first quantitative teaching reference for MRI physics, parameters, image quality, sequence, encoding and reconstruction tasks, subject to its documented caveats.
 
 File sizes and SHA-256 fingerprints are recorded in [reference-sources.json](reference-sources.json). If a PDF is added, removed, renamed, or replaced, refresh its metadata and affected page mappings. Edition names and revision dates describe different attributes; do not assume one source is authoritative merely because its course number or edition label is higher.
 
@@ -49,7 +51,8 @@ File sizes and SHA-256 fingerprints are recorded in [reference-sources.json](ref
 | Critical findings; follow-up | RAD100 pp. 139–146, 177–179 | RAD400 pp. 225–226; OVERVIEW p. 3 | Tracked communication/follow-up concepts, outside current MRI acquisition scope unless requested. |
 | Quality tracking; audit; operational metrics | SUPPORT pp. 36–49, 62–68, 83–84 | RAD100 pp. 173–180 | Attribution, workflow timing, observations, and correction history. These do not define our student rubric. |
 | Procedure content validation; troubleshooting; test cases | SUPPORT pp. 92–101, 133–145 | RAD400 pp. 228–237, 371–383; CLN pp. 145–146, 181–182 | Test realistic outcomes, diagnose configuration, and recheck affected users/workflows. |
-| MRI console parameters / image physics / grading rubric | No complete specification in these five PDFs | Project PRD, MRI_CONSOLE_COVERAGE.md, existing user decisions | State the reference gap and obtain task-specific requirements; course answer keys are not our rubric. |
+| MRI parameters / physics / image quality / pulse sequences | LARSON topic routing; PHYSICS pp. 36–65 | MRI_PHYSICS_AUDIT.md, manufacturer instructions and focused primary literature | Check equations, assumptions, units and source caveats; source concepts do not imply app support or clinical calibration. |
+| Instructor grading rubric | Existing user decisions and project PRD | Workflow references establish process only | Learning outcomes and grading rules remain project decisions; source questions/answer keys are not our rubric. |
 
 ## Broader chapter map
 
@@ -99,3 +102,7 @@ Use [MR_CONSOLE_WORKFLOW_RESEARCH.md](MR_CONSOLE_WORKFLOW_RESEARCH.md) for the V
 Use **PHYSICS**, [mri-physics.pdf](<../Reference Docs/mri-physics.pdf>), Evert J. Blink, 75 pages, November 2004 preface / February 2006 PDF metadata. The complete source was surveyed; consult pp. 10–35 for relaxation/encoding, pp. 36–37 for multislicing, pp. 38–46 for contrast/SE/FSE/GRE/IR, pp. 47–58 for TR/TE/flip/TI/averages/matrix/FOV/thickness/gap/phase/bandwidth, pp. 59–63 for artifacts, p. 64 for parameter tradeoffs and p. 65 for example relaxation values. PDF positions start at 1 and printed labels start at 0. Bandwidth/chemical-shift figures were visually inspected. Historical examples and simplified statements are not universal settings; specifically, intrinsic T2 decays across full TE, not TE/2.
 
 [MRI_PHYSICS_AUDIT.md](MRI_PHYSICS_AUDIT.md) records requested Wikipedia/Radiopaedia link exploration, direct Radiopaedia HTTP 402 limitations, accessible primary university cross-checks, all active parameter effects, V 1.1.0 equations/validation and remaining idealizations. This new source partly resolves the old physics gap; it does not specify calibrated scanner hardware, safety clearance, clinical protocol acceptance or grading.
+
+## Standing Larson Lab reference for future MRI work
+
+The user designated [Principles of MRI](https://larsonlab.github.io/MRI-education-resources/Introduction.html) as a standing reference on November 23, 2026. [The complete course index and assessment](LARSON_MRI_REFERENCE_INDEX.md) covers 36 contents pages, 360 section headings, a request-to-topic table, direct section links, implementation checks and source-specific caveats. [The machine index](larson-reference-pages.json) retains retrieval fingerprints and exact heading IDs. Read the applicable source section before relying on it; basic overview, advanced supplement, software pointer and independently validated model are different levels of evidence. The course does not replace clinical/device safety policy, scanner calibration, indication protocols or user-confirmed workflow requirements.
