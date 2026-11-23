@@ -20,17 +20,17 @@ function sequenceEditor(sequence, index, count) {
   const p = sequence.plan;
   const select = (key, label, options) => `<label>${label}<select name="${index}.${key}" data-param="${key}">${options.map(([value, text, attributes = ""]) =>
     `<option value="${escape(value)}"${String(p[key] ?? (key === "phaseMatrix" ? "match" : "")) === String(value) ? " selected" : ""}${attributes}>${escape(text)}</option>`).join("")}</select></label>`;
-  const numeric = (key, [label, min, max, step], disabled = false) => `<label>${label}<input type="number" name="${index}.${key}" data-param="${key}" value="${escape(p[key] ?? "")}" min="${min}" max="${max}" step="${step}" required${disabled ? " disabled" : ""}></label>`;
+  const numeric = (key, [label, min, max, step], disabled = false) => `<label>${label}<input type="number" name="${index}.${key}" data-param="${key}" value="${escape(p[key] ?? (key === "echoSpacing" && p.preset === "tse" ? 10 : ""))}" min="${min}" max="${max}" step="${step}" required${disabled ? " disabled" : ""}></label>`;
   return `<details open class="panel" data-protocol-sequence><summary>Sequence ${index + 1}: ${escape(sequence.name)}</summary>
     <label>Sequence name<input name="${index}.name" value="${escape(sequence.name)}" maxlength="120" required></label>
     <div class="intake-fields">
       ${select("preset", "Preset", Object.entries(presets).map(([key, preset]) => [key, preset.label,
-        ` data-tr="${preset.tr}" data-te="${preset.te}" data-ti="${preset.ti ?? ""}" data-flip="${preset.flip ?? ""}" data-echo-train="${preset.echoTrain ?? ""}" data-sequence="${preset.sequence}"`]))}
+        ` data-tr="${preset.tr}" data-te="${preset.te}" data-ti="${preset.ti ?? ""}" data-flip="${preset.flip ?? ""}" data-echo-train="${preset.echoTrain ?? ""}" data-echo-spacing="${preset.echoSpacing ?? ""}" data-sequence="${preset.sequence}"`]))}
       ${select("plane", "Plane", Object.keys(planes).map(value => [value, value]))}
       ${select("acquisition", "Acquisition mode", [["2D", "2D slice stack"], ["3D", "3D slab (GRE)"]])}
       ${Object.entries(geometryFields).map(([key, field]) => numeric(key, field)).join("")}
       ${Object.entries(timingFields).map(([key, field]) => numeric(key, key === "tr" && p.preset !== "gre" ? [field[0], 200, ...field.slice(2)] : field,
-        ["ti", "flip", "echoTrain"].includes(key) && key !== ({ ir: "ti", gre: "flip", tse: "echoTrain" })[p.preset])).join("")}
+        ["ti", "flip", "echoTrain", "echoSpacing"].includes(key) && !(p.preset === "tse" ? ["echoTrain", "echoSpacing"] : [({ ir: "ti", gre: "flip" })[p.preset]]).includes(key))).join("")}
       ${select("matrix", "Frequency matrix", matrices.map(value => [value, value]))}
       ${select("phaseMatrix", "Phase matrix", [["match", "Match frequency"], ...matrices.map(value => [value, value])])}
       ${select("phaseDirection", "Phase direction", [["vertical", "Top ↔ bottom"], ["horizontal", "Left ↔ right"]])}

@@ -8,13 +8,7 @@ export const planes = {
 export const localizerSize = 144;
 export const localizerFov = 264;
 
-// The UI and generator share this teaching estimate; it is not an elapsed-time
-// countdown or a clinical scanner timing prediction.
-export function estimateScanSeconds(plan) {
-  const lines = Math.ceil((plan.phaseMatrix ?? plan.matrix) * (1 + plan.oversampling / 100));
-  const partitions = plan.acquisition === "3D" ? plan.slices : 1;
-  return Math.ceil(lines / (plan.echoTrain ?? 1)) * partitions * plan.averages * plan.tr / 1000;
-}
+export { estimateScanSeconds } from "./mr-physics.js";
 
 export function sliceFrame(plane, angle) {
   const { u, v, normal } = planes[plane];

@@ -4,12 +4,12 @@
       "file": "sign-in.jpg",
       "role": "all",
       "route": "/sign-in",
-      "purpose": "V 1.0.9 sign-in",
-      "captured_version": "1.0.9",
-      "last_verified_version": "1.0.9",
+      "purpose": "V 1.1.0 sign-in",
+      "captured_version": "1.1.0",
+      "last_verified_version": "1.1.0",
       "captured_on": "2026-11-23",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
-      "sha256": "d66e148ab8056584f7e497e21309990bf8b0228a918708f502a9bc1e18f87d5e",
+      "sha256": "af441e94b28272093fb1fe597f4eeecccda2d1043b8cfd29b3327b9da6686dc8",
       "status": "current"
     },
     {
@@ -23,7 +23,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "76d2a9453debe4f1a576c94dcc265a680541986524faa5c1a884e9397f85d818",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -37,7 +37,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "bd11ddd7af220e661d2f3be430ca64940837af6f16a5d134abc6444f7d95b5c7",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -51,7 +51,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "491bfee9b2db26fe7f76ec35e51bd5694ce6f6fc79004367c5e72f5f0fdab999",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -65,7 +65,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "bea05cd8a5840dc8a75e6105004dddbbddfe07d3d998d79127c09e5b46e21258",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -79,7 +79,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "ed18e7ee9eaca954e5ca9f9b9e749b80330feb5b30f49bd3e55afe866b4aad1f",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -93,7 +93,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "31a903b2274cd2ea97b446ae28091cefd7fc4ab540ecfe108999143457624ef9",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -107,7 +107,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "0117ab9e72ff6df8ebe74a530e413239c5834985cbe8a1a005c63002702bbb31",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -121,7 +121,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "b061ad036140fcf252407c7bdc5d389866415cc04e77e4a517a51771f415eb52",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -135,7 +135,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "646b1d5c3bfc97c093de293189057a750d7a0cca074baba30847691eee31b30e",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -149,7 +149,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "ea20033873ae65d8c48424a2e9520eca34dfb291e5f23cff151ec5f729000e4d",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -163,7 +163,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "0629557324527e4a49deb2bc21c8a84b2de342f36d978ee4f25820a7c98ae35c",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -177,7 +177,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "9e5f40123594387690a33d34a43abda72bb044ef952458c605d35567d4e478a5",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -191,7 +191,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "18f6f1ea7c1276b0d336847ca034b957752def024c272e10e27c7408e164211d",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -205,7 +205,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "7838406fbdd46e1b57efbf1199452ad76b978eeb5d91c7e6609fc24995785638",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -219,7 +219,7 @@
       "environment": "isolated localhost demo; fictional data",
       "sha256": "7ca1b719b5e8aaadbd3dedbffa0a710e0723d4ca9c0fedebfb58885ed564db80",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -233,7 +233,7 @@
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
       "sha256": "c178cf73debd405fd186c2927b7d1bdec8fc92ae758a0e27318eded0d90c13d1",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -246,7 +246,9 @@
       "captured_on": "2026-11-23",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
       "sha256": "11456b8366345ae436ea92ed10ebf145192ca3c8cd396022c0d568ea56d27c0e",
-      "status": "current"
+      "status": "refresh-pending",
+      "refresh_for_version": "1.1.0",
+      "note": "Historical capture preserved; current physics/editor metadata or dictionary revision changed. Omitted from current guide."
     },
     {
       "file": "protocol-student-version.jpg",
@@ -259,7 +261,7 @@
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
       "sha256": "373104f32fa4c7fc9600adb4b9fb8cf28aa0b4b3741b9ca0157fa513f984a95c",
       "status": "refresh-pending",
-      "refresh_for_version": "1.0.9",
+      "refresh_for_version": "1.1.0",
       "note": "Dictionary/navigation or library content changed; preserved historical capture, omitted from current guide pending recapture. Not verified for this release."
     },
     {
@@ -270,9 +272,11 @@
       "captured_version": "1.0.8",
       "last_verified_version": "1.0.8",
       "captured_on": "2026-11-23",
-      "status": "current",
+      "status": "refresh-pending",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
-      "sha256": "df09ce5870bc86ce7a8634bd061e5d60698d2e42e348a56f1c7ea25e4f030b83"
+      "sha256": "df09ce5870bc86ce7a8634bd061e5d60698d2e42e348a56f1c7ea25e4f030b83",
+      "refresh_for_version": "1.1.0",
+      "note": "Historical capture preserved; current physics/editor metadata or dictionary revision changed. Omitted from current guide."
     },
     {
       "file": "mri-dictionary-defaults.jpg",
@@ -282,9 +286,11 @@
       "captured_version": "1.0.8",
       "last_verified_version": "1.0.8",
       "captured_on": "2026-11-23",
-      "status": "current",
+      "status": "refresh-pending",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
-      "sha256": "3ec46669091883c6103899f2d4f01b907c0fcb92607fa130a356926c5631437b"
+      "sha256": "3ec46669091883c6103899f2d4f01b907c0fcb92607fa130a356926c5631437b",
+      "refresh_for_version": "1.1.0",
+      "note": "Historical capture preserved; current physics/editor metadata or dictionary revision changed. Omitted from current guide."
     },
     {
       "file": "console-setup.jpg",
@@ -292,11 +298,12 @@
       "route": "/console/mr/:accession",
       "purpose": "Setup with persistent identifiers, recorded screening and fixed synthetic training context",
       "captured_version": "1.0.9",
-      "last_verified_version": "1.0.9",
+      "last_verified_version": "1.1.0",
       "captured_on": "2026-11-23",
       "status": "current",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
-      "sha256": "0028c1559710cb496c3183198001b9a47edaba08fa099bca63138e48b6931444"
+      "sha256": "0028c1559710cb496c3183198001b9a47edaba08fa099bca63138e48b6931444",
+      "note": "Retained V 1.0.9 workflow example after checking unchanged visible controls against current implementation; not recaptured and not evidence of the new image physics."
     },
     {
       "file": "console-review.jpg",
@@ -306,9 +313,11 @@
       "captured_version": "1.0.9",
       "last_verified_version": "1.0.9",
       "captured_on": "2026-11-23",
-      "status": "current",
+      "status": "refresh-pending",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
-      "sha256": "5ddd6d8f0d56e114cd54e5fd601829523dcaffd11af0c6ae55ea26c3f049ec08"
+      "sha256": "5ddd6d8f0d56e114cd54e5fd601829523dcaffd11af0c6ae55ea26c3f049ec08",
+      "refresh_for_version": "1.1.0",
+      "note": "Historical capture preserved; current physics/editor metadata or dictionary revision changed. Omitted from current guide."
     },
     {
       "file": "console-finish.jpg",
@@ -316,11 +325,12 @@
       "route": "/console/mr/:accession",
       "purpose": "Finish summary with remaining-sequence advisory, performed confirmation and notes",
       "captured_version": "1.0.9",
-      "last_verified_version": "1.0.9",
+      "last_verified_version": "1.1.0",
       "captured_on": "2026-11-23",
       "status": "current",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
-      "sha256": "46295052d4fa3526c023212affeb5feaccede8d0e6f96fd703c15a086d1e187e"
+      "sha256": "46295052d4fa3526c023212affeb5feaccede8d0e6f96fd703c15a086d1e187e",
+      "note": "Retained V 1.0.9 workflow example after checking unchanged visible controls against current implementation; not recaptured and not evidence of the new image physics."
     },
     {
       "file": "console-review-locked.jpg",
@@ -328,11 +338,48 @@
       "route": "/console/mr/:accession",
       "purpose": "Completed and locked read-only review with planning and write controls unavailable",
       "captured_version": "1.0.9",
-      "last_verified_version": "1.0.9",
+      "last_verified_version": "1.1.0",
       "captured_on": "2026-11-23",
       "status": "current",
       "environment": "disposable localhost documentation database; fictional demo accounts and patients",
-      "sha256": "9c9145d0357c08eac4d69a6ba20d8caa630a07daecb3aab6826bbba80aa24cdf"
+      "sha256": "9c9145d0357c08eac4d69a6ba20d8caa630a07daecb3aab6826bbba80aa24cdf",
+      "note": "Retained V 1.0.9 workflow example after checking unchanged visible controls against current implementation; not recaptured and not evidence of the new image physics."
+    },
+    {
+      "file": "console-physics-plan.jpg",
+      "role": "student",
+      "route": "/console/mr/:accession",
+      "purpose": "FSE ETL 4 and 20 ms spacing, live voxel/SNR/readout/fat-shift/package feedback at 80 Hz/pixel",
+      "captured_version": "1.1.0",
+      "last_verified_version": "1.1.0",
+      "captured_on": "2026-11-23",
+      "status": "current",
+      "environment": "disposable localhost documentation database; fictional demo accounts and patients",
+      "sha256": "ea8b3d7e05b89e82f0aee224347e585b6d0b7390efe485918f007cf6bd7b16ad"
+    },
+    {
+      "file": "console-physics-review.jpg",
+      "role": "student",
+      "route": "/console/mr/:accession",
+      "purpose": "New analytic-mr-v3 FSE acquisition with expanded stored model and sampling/timing details",
+      "captured_version": "1.1.0",
+      "last_verified_version": "1.1.0",
+      "captured_on": "2026-11-23",
+      "status": "current",
+      "environment": "disposable localhost documentation database; fictional demo accounts and patients",
+      "sha256": "5b24339853bff5e62ccbb22d811e6bf7f9360f618f7f40ec2075a1baa3f9f28a"
+    },
+    {
+      "file": "console-physics-timing.jpg",
+      "role": "student",
+      "route": "/console/mr/:accession",
+      "purpose": "Blocked FSE draft: 80 Hz/pixel requires spacing at least 17 ms; current 10 ms is invalid",
+      "captured_version": "1.1.0",
+      "last_verified_version": "1.1.0",
+      "captured_on": "2026-11-23",
+      "status": "current",
+      "environment": "disposable localhost documentation database; fictional demo accounts and patients",
+      "sha256": "64a0633e3d43ebf8882e29943448ae366b13072f9e8fa1d1fe4a83fbf85d2cf9"
     }
   ],
   "pending_captures": [

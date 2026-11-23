@@ -1,7 +1,7 @@
 import { defaultPlan, estimateScanSeconds, planFromAcquisition, readPlan } from "./mr.js";
 
 export const geometryKeys = ["plane", "angle", "offset", "fov", "slices", "thickness", "gap", "phaseFov", "phaseDirection"];
-export const durationLabel = seconds => `${Math.floor(seconds / 60)}m ${Math.round(seconds % 60)}s`;
+export const durationLabel = seconds => `${Math.floor(Math.round(seconds) / 60)}m ${Math.round(seconds) % 60}s`;
 
 export function copyGeometry(target, series) {
   const source = planFromAcquisition(series);
@@ -20,7 +20,7 @@ export function sequenceProgress(working, acquisitions) {
       return context?.instanceKey === working.instance_key && context?.sequenceIndex === index;
     });
     const actual = series && planFromAcquisition(series);
-    const matches = actual && Object.keys(defaultPlan).every(key => actual[key] === sequence.plan[key]);
+    const matches = actual && Object.keys(defaultPlan).every(key => actual[key] === (key === "echoSpacing" && sequence.plan.preset === "tse" ? sequence.plan[key] ?? 10 : sequence.plan[key] ?? defaultPlan[key]));
     return { ...sequence, index, seriesId: series?.id, state: !series ? "Planned" : matches ? "Acquired" : "Settings changed", seconds: estimateScanSeconds(sequence.plan) };
   });
 }

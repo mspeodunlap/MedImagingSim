@@ -1,3 +1,4 @@
+import { samplingMetrics } from "../public/mr-physics.js";
 import { coverage, localizerSize, planes } from "../public/mr-geometry.js";
 import {
   defaultPlan, defaultPresentation, estimateScanSeconds, geometryFields, matrices, planFromAcquisition, presentationFields, presets,
@@ -17,13 +18,18 @@ function option(value, label, selected) {
   return `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`;
 }
 
+function physicsFeedback(plan) {
+  const m = samplingMetrics(plan);
+  return `Voxel ${m.voxel.map(v => v.toFixed(2)).join(" × ")} mm · Relative sampling SNR ${m.relativeSamplingSnr.toFixed(2)}× · Readout ${m.readoutMs.toFixed(2)} ms · Fat shift ${m.chemicalShiftPixels.toFixed(2)} pixels · ${m.packages} slice package(s)`;
+}
+
 function planner(base, plan, scanKey, protocolRevision = 0, savedPlan = plan) {
   return `<section class="panel mr-controls">
     <div class="mr-panel-heading"><h2>Scan parameters</h2><div class="mr-parameter-views" aria-label="Parameter detail"><button type="button" class="secondary" data-parameter-view="basic" aria-pressed="true">Essential</button><button type="button" class="secondary" data-parameter-view="all" aria-pressed="false">All parameters</button></div></div>
     <form id="mr-plan" action="${base}/scan" method="post" class="mr-plan-fields" data-saved-plan="${escape(JSON.stringify(savedPlan))}">
       <input type="hidden" name="scanKey" value="${scanKey}">
       <input type="hidden" name="protocolRevision" value="${protocolRevision}">
-      <label class="mr-preset">Preset<select name="preset" form="mr-plan">${Object.entries(presets).map(([key, preset]) => `<option value="${key}" data-tr="${preset.tr}" data-te="${preset.te}" data-ti="${preset.ti ?? ""}" data-flip="${preset.flip ?? ""}" data-echo-train="${preset.echoTrain ?? ""}" data-sequence="${preset.sequence}" ${key === plan.preset ? "selected" : ""}>${preset.label}</option>`).join("")}</select></label>
+      <label class="mr-preset">Preset<select name="preset" form="mr-plan">${Object.entries(presets).map(([key, preset]) => `<option value="${key}" data-tr="${preset.tr}" data-te="${preset.te}" data-ti="${preset.ti ?? ""}" data-flip="${preset.flip ?? ""}" data-echo-train="${preset.echoTrain ?? ""}" data-echo-spacing="${preset.echoSpacing ?? ""}" data-sequence="${preset.sequence}" ${key === plan.preset ? "selected" : ""}>${preset.label}</option>`).join("")}</select></label>
       <fieldset><legend>Slice geometry</legend><div class="mr-fields">
         <label>Plane<select name="plane">
           ${Object.keys(planes).map(plane => option(plane, plane, plan.plane)).join("")}
@@ -39,10 +45,12 @@ function planner(base, plan, scanKey, protocolRevision = 0, savedPlan = plan) {
         <div class="mr-fields">
           ${Object.entries(timingFields).map(([key, field]) => {
             const input = key === "tr" && plan.preset !== "gre" ? [field[0], 200, ...field.slice(2)] : field;
-            return numberInput(key, input, plan[key], plan[key] === null);
+            return numberInput(key, input, plan[key] ?? (key === "echoSpacing" && plan.preset === "tse" ? 10 : null), plan[key] == null && !(key === "echoSpacing" && plan.preset === "tse"));
           }).join("")}
         </div>
       </fieldset>
+      <p class="mr-hint" id="mr-physics-feedback" role="status">${physicsFeedback(plan)}</p>
+      <p class="mr-hint">Fixed 1.5 T frequency assumption; synthetic tissue constants. FSE uses a center-first teaching echo order. Relative SNR excludes contrast. These are model estimates, not scanner safety limits.</p>
       <details class="mr-advanced"><summary>Sampling and encoding</summary><div class="mr-fields">
         <label>Frequency matrix<select name="matrix">
           ${matrices.map(size => option(size, size, plan.matrix)).join("")}
@@ -117,6 +125,8 @@ export function acquisitionViewer(base, series, selection, readOnly = false) {
       </div>
       <details class="mr-review-details"><summary>Series details</summary>
         <dl>
+          <dt>Image model</dt><dd>${escape(series.engine_version ?? "Earlier saved model")}${parameters.physics ? ` · ${parameters.physics.fieldStrengthTesla} T frequency assumption` : " · Earlier model; current physics corrections do not alter these saved pixels"}</dd>
+          ${parameters.physics ? `<dt>Physics at acquisition</dt><dd>${parameters.physics.voxel.map(v => v.toFixed(2)).join(" × ")} mm voxels · ${parameters.physics.readoutMs.toFixed(2)} ms readout · ${parameters.physics.chemicalShiftPixels.toFixed(2)} pixel fat shift · ${parameters.physics.packages} slice package(s)</dd>` : ""}
           <dt>Geometry</dt><dd class="mr-plane">${parameters.acquisition} · ${geometry.plane} · ${geometry.angle}° · ${slices} slices</dd>
           <dt>Sampling</dt><dd>${geometry.fov} mm readout FOV · ${geometry.thickness} mm thickness · ${geometry.gap} mm gap</dd>
           <dt>Timing</dt><dd>TR ${parameters.tr} ms · TE ${parameters.te} ms${parameters.ti === null ? "" : ` · TI ${parameters.ti} ms`}</dd>
@@ -125,7 +135,7 @@ export function acquisitionViewer(base, series, selection, readOnly = false) {
           <dt>Encoding</dt><dd>${parameters.phaseDirection} phase · ${parameters.phaseFov}% phase FOV · ${parameters.oversampling}% oversampling</dd>
           <dt>Acquisition settings</dt><dd>${parameters.averages} averages · ${parameters.bandwidth} Hz/pixel
             ${parameters.flip === null ? "" : ` · ${parameters.flip}° flip`}
-            ${parameters.echoTrain === null ? "" : ` · ETL ${parameters.echoTrain}`}</dd>
+            ${parameters.echoTrain === null ? "" : ` · ETL ${parameters.echoTrain}${parameters.echoSpacing ? ` · spacing ${parameters.echoSpacing} ms` : ""}`}</dd>
           ${parameters.satAxis === "none" ? "" : `<dt>Spatial saturation</dt><dd>Band center ${parameters.satOffset} mm · ${parameters.satWidth} mm thick</dd>`}`}
         </dl>
       </details>

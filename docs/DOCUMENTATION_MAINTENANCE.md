@@ -2,7 +2,7 @@
 
 This is the ongoing release workflow for the detailed user guide, all role tip sheets, printable copies, and screenshots. It applies to each delivered change, introduced in V 1.3 and updated for V 1.0.3. The application version source remains `package.json`.
 
-**Current documentation release: V 1.0.9 (November 23, 2026).** Added the guided MR console and manufacturer workflow research. Updated the full guide, all role tips, four HTML exports and console screenshot set. Current sign-in/Setup/planning/Review/Finish captures use an isolated fictional database; unchanged dictionary images retain V 1.0.8 metadata. Other historical captures remain refresh-pending. Local functional/role tests and browser walkthrough are recorded in the milestone handoff; full print layout and ThinkPad/LAN checks remain pending. The user handles commit/push.
+**Current documentation release: V 1.1.0 (November 23, 2026).** Updated image-physics behavior, parameter/validation guidance, role tips, source index/fingerprints, audit, four HTML exports and physics planning/review/sign-in captures. Unchanged Setup/Finish/locked-review examples retain V 1.0.9 capture metadata. Other captures remain historical or refresh-pending. Final local checks are recorded in the milestone handoff; full print layout and ThinkPad/LAN checks remain pending. The user handles commit/push.
 
 ## Maintained files
 
@@ -14,7 +14,7 @@ This is the ongoing release workflow for the detailed user guide, all role tip s
 | Administrator quick tips | `docs/quick-start/ADMIN.md` | Current admin screenshots |
 | Printable/shareable copies | Generated `docs/print/USER_GUIDE.html`, `STUDENT.html`, `INSTRUCTOR.html`, `ADMIN.html` | Images embedded by `ops/docs/build.py` |
 | Screenshot inventory | `docs/screenshots/manifest.json` | Capture and last-verified versions, roles, routes, and file hashes |
-| Reference routing and decisions | `docs/REFERENCE_INDEX.md`, `docs/REFERENCE_WORKFLOWS.md` | Five local reference PDFs and their fingerprints |
+| Reference routing and decisions | `docs/REFERENCE_INDEX.md`, `docs/REFERENCE_WORKFLOWS.md` | Six local reference PDFs and their fingerprints |
 
 ## For every release/change set
 

@@ -1,9 +1,11 @@
+import { echoSpacing, fatWaterHz, fieldStrengthTesla, physicsVersion, samplingMetrics, sequenceKind, timingError, tissueSignal } from "../public/mr-physics.js";
+import { filterPhase } from "./mr-reconstruction.js";
 import { coverage, estimateScanSeconds, localizerFov, localizerSize, patientPoint, planes, sampleGrid, sliceCenter, sliceFrame } from "../public/mr-geometry.js";
 export { estimateScanSeconds } from "../public/mr-geometry.js";
 
 export const mrExamKey = "mr-brain-v1";
 const sourceVersion = "synthetic-brain-v1";
-const engineVersion = "analytic-mr-v2";
+const engineVersion = physicsVersion;
 
 export const presets = {
   t1: { label: "T1 spin echo", sequence: "se", tr: 550, te: 12, ti: null },
@@ -11,7 +13,7 @@ export const presets = {
   pd: { label: "PD spin echo", sequence: "se", tr: 3500, te: 16, ti: null },
   ir: { label: "Fluid-suppressed inversion recovery", sequence: "ir", tr: 8500, te: 100, ti: 2200 },
   gre: { label: "Spoiled gradient echo", sequence: "gre", tr: 35, te: 8, ti: null, flip: 25 },
-  tse: { label: "T2 fast spin echo", sequence: "tse", tr: 3500, te: 95, ti: null, echoTrain: 8 },
+  tse: { label: "T2 fast spin echo", sequence: "tse", tr: 3500, te: 95, ti: null, echoTrain: 8, echoSpacing: 10 },
 };
 
 export const geometryFields = {
@@ -29,6 +31,7 @@ export const timingFields = {
   ti: ["TI (ms)", 50, 4500, 1],
   flip: ["Flip angle (°)", 1, 90, 1],
   echoTrain: ["Echo train length", 2, 32, 1],
+  echoSpacing: ["Echo spacing (ms)", 5, 40, 1],
 };
 
 export const matrices = [64, 96, 128];
@@ -54,7 +57,7 @@ export const defaultPlan = {
   ...Object.fromEntries(Object.entries(geometryFields).map(([key, field]) => [key, field[4]])),
   ...Object.fromEntries(Object.entries({ ...samplingFields, ...saturationFields }).map(([key, field]) => [key, field[4]])),
   tr: presets.t1.tr, te: presets.t1.te, ti: null,
-  flip: null, echoTrain: null,
+  flip: null, echoTrain: null, echoSpacing: null,
 };
 
 function numberField(form, key, [, min, max, step]) {
@@ -64,7 +67,7 @@ function numberField(form, key, [, min, max, step]) {
   return value >= min && value <= max && Number.isInteger((value - min) / step) ? value : NaN;
 }
 
-export function readPlan(form) {
+export function readPlan(form, { allowTimingInvalid = false } = {}) {
   const plane = form.get("plane");
   const preset = form.get("preset");
   if (form.getAll("plane").length !== 1 || form.getAll("preset").length !== 1 ||
@@ -74,7 +77,7 @@ export function readPlan(form) {
   const fields = { ...geometryFields, tr: timingFields.tr, te: timingFields.te };
   if (sequence === "ir") fields.ti = timingFields.ti;
   if (sequence === "gre") fields.flip = timingFields.flip;
-  if (sequence === "tse") fields.echoTrain = timingFields.echoTrain;
+  if (sequence === "tse") { fields.echoTrain = timingFields.echoTrain; if (form.has("echoSpacing")) fields.echoSpacing = timingFields.echoSpacing; }
   const phaseMatrix = form.get("phaseMatrix") ?? "match";
   const phaseDirection = form.get("phaseDirection") ?? "vertical";
   const acquisition = form.get("acquisition") ?? "2D";
@@ -93,9 +96,10 @@ export function readPlan(form) {
     ...defaultPlan, ...values, plane, preset, matrix, phaseDirection, acquisition, satAxis,
     phaseMatrix: phaseMatrix === "match" ? null : Number(phaseMatrix),
   };
+  if (sequence === "tse" && !form.has("echoSpacing")) plan.echoSpacing = 10;
   if (acquisition === "3D" && plan.gap !== 0) return null;
   if (sequence !== "gre" && plan.tr < 200) return null;
-  if (plan.te >= plan.tr || (plan.ti !== null && plan.ti + plan.te >= plan.tr)) return null;
+  if (!allowTimingInvalid && timingError(plan)) return null;
   if (Math.abs(plan.offset) + coverage(plan) / 2 > localizerFov / 2) return null;
   return plan;
 }
@@ -135,62 +139,88 @@ function tissueAt(x, y, z) {
   return 3;
 }
 
-function tissueSignals(plan) {
-  const sequence = presets[plan.preset].sequence;
-  return tissues.map(([density, t1, t2], index) => {
-    if (sequence === "gre") {
-      const angle = plan.flip * Math.PI / 180;
-      const e1 = Math.exp(-plan.tr / t1);
-      const t2Star = [1, 55, 45, 250, 45, 8, 55, 48][index];
-      return 255 * density * Math.sin(angle) * (1 - e1) / (1 - Math.cos(angle) * e1) * Math.exp(-plan.te / t2Star);
-    }
-    const recovery = sequence === "ir"
-      ? Math.abs(1 - 2 * Math.exp(-plan.ti / t1) + Math.exp(-plan.tr / t1))
-      : 1 - Math.exp(-plan.tr / t1);
-    return 255 * density * recovery * Math.exp(-plan.te / t2);
-  });
-}
+export const tissueProperties = tissues.map(([density, t1, t2], index) => ({
+  density, t1, t2, t2Star: [1, 55, 45, 250, 45, 8, 55, 48][index],
+}));
 
+function tissueSignals(plan) { return tissueProperties.map(tissue => tissueSignal(plan, tissue)); }
+
+// Integrate tissue fractions over finite voxels, then reconstruct complex signals.
+// A fixed quadrature keeps classroom runs bounded; it is not an anatomical dataset.
 function pixelsForSlice(grid, frame, offset, thickness, signals, target, plan, sliceIndex = 0) {
   const { rows, columns, widthMm, heightMm, columnsArePhase } = grid;
-  const [ox, oy, oz] = patientPoint(frame, 0, 0, offset);
-  const [nx, ny, nz] = frame.normal.map(component => component * thickness / 3);
-  const phasePeriod = plan
-    ? (columnsArePhase ? widthMm : heightMm) * (1 + plan.oversampling / 100) : Infinity;
-  const noise = plan ? 7 * Math.sqrt(plan.bandwidth / (250 * plan.averages)) : 0;
-  let seed = sliceIndex + 1;
-
-  function sample(u, v) {
-    const x = ox + frame.u[0] * u + frame.v[0] * v;
-    const y = oy + frame.u[1] * u + frame.v[1] * v;
-    const z = oz + frame.u[2] * u + frame.v[2] * v;
-    const signal = (signals[tissueAt(x, y, z)] + signals[tissueAt(x - nx, y - ny, z - nz)] +
-      signals[tissueAt(x + nx, y + ny, z + nz)]) / 3;
-    if (!plan || plan.satAxis === "none") return signal;
-    const bandCoordinate = plan.satAxis === "u" ? u : plan.satAxis === "v" ? v : offset;
-    return Math.abs(bandCoordinate - plan.satOffset) <= plan.satWidth / 2 ? signal * 0.1 : signal;
-  }
-
-  for (let row = 0; row < rows; row++) {
-    const v = (row + 0.5 - rows / 2) * heightMm / rows;
-    for (let col = 0; col < columns; col++) {
-      const u = (col + 0.5 - columns / 2) * widthMm / columns;
-      let signal = sample(u, v);
-      // Fold signal outside the encoded phase FOV into the displayed field.
-      const phase = columnsArePhase ? u : v;
-      for (let shift = phasePeriod; shift - Math.abs(phase) <= 132; shift += phasePeriod) {
-        signal += columnsArePhase ? sample(u - shift, v) + sample(u + shift, v)
-          : sample(u, v - shift) + sample(u, v + shift);
+  const phaseCount = columnsArePhase ? columns : rows;
+  const m = plan && samplingMetrics(plan);
+  const encoded = m?.encodedPhase ?? phaseCount;
+  const encodedGrid = { rows: columnsArePhase ? rows : encoded, columns: columnsArePhase ? encoded : columns };
+  const er = encodedGrid.rows, ec = encodedGrid.columns;
+  const du = widthMm / columns, dv = heightMm / rows;
+  const period = (columnsArePhase ? du : dv) * encoded;
+  const components = tissueProperties.map(() => new Float64Array(er * ec));
+  const through = Math.max(1, Math.ceil(thickness / 2));
+  const norm = 1 / (4 * through);
+  const shiftMm = plan ? m.chemicalShiftPixels * plan.fov / plan.matrix : 0;
+  function integrate(u, v, at, fatOnly = false) {
+    for (const su of [-0.25, 0.25]) for (const sv of [-0.25, 0.25]) for (let z = 0; z < through; z++) {
+      const a = u + su * du, b = v + sv * dv, c = offset + ((z + 0.5) / through - 0.5) * thickness;
+      const point = patientPoint(frame, a, b, c);
+      const tissue = tissueAt(...point);
+      if (!tissue || (fatOnly ? tissue !== 4 : tissue === 4 && plan)) continue;
+      let attenuation = 1;
+      if (plan?.satAxis && plan.satAxis !== "none") {
+        const position = plan.satAxis === "u" ? a : plan.satAxis === "v" ? b : c;
+        // Ideal spatial 90-degree saturation followed by 10 ms T1 recovery.
+        if (Math.abs(position - plan.satOffset) <= plan.satWidth / 2) attenuation = 1 - Math.exp(-10 / tissueProperties[tissue].t1);
       }
-      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-      const intensity = signal + noise * (2 * (seed / 4294967296) - 1);
-      target[row * columns + col] = Math.max(0, Math.min(255, Math.round(intensity)));
+      components[tissue][at] += norm * attenuation;
     }
+  }
+  for (let row = 0; row < er; row++) for (let col = 0; col < ec; col++) {
+    const u = (col + 0.5 - ec / 2) * du, v = (row + 0.5 - er / 2) * dv, at = row * ec + col;
+    const phase = columnsArePhase ? u : v;
+    for (let wrap = -Math.ceil(264 / period); wrap <= Math.ceil(264 / period); wrap++) {
+      const a = u + (columnsArePhase ? wrap * period : 0), b = v + (columnsArePhase ? 0 : wrap * period);
+      if (Math.abs((columnsArePhase ? a : b)) > 132) continue;
+      integrate(a, b, at);
+      if (plan) integrate(a - (columnsArePhase ? 0 : shiftMm), b - (columnsArePhase ? shiftMm : 0), at, true);
+    }
+  }
+  if (plan && sequenceKind(plan) === "tse") {
+    components.forEach((component, index) => {
+      if (index) filterPhase(component, er, ec, columnsArePhase, plan.echoTrain, echoSpacing(plan), tissueProperties[index].t2);
+    });
+  }
+  let seed = sliceIndex + 1;
+  const uniform = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return (seed + 0.5) / 4294967296; };
+  const fatPhase = plan && sequenceKind(plan) === "gre" ? 2 * Math.PI * fatWaterHz * plan.te / 1000 : 0;
+  const fatCos = Math.cos(fatPhase), fatSin = Math.sin(fatPhase);
+  function complex(at) {
+    let real = 0, imag = 0;
+    for (let t = 1; t < components.length; t++) {
+      const amplitude = components[t][at] * signals[t];
+      real += amplitude * (t === 4 ? fatCos : 1);
+      if (t === 4) imag += amplitude * fatSin;
+    }
+    return [real, imag];
+  }
+  const crop = (encoded - phaseCount) / 2;
+  for (let row = 0; row < rows; row++) for (let col = 0; col < columns; col++) {
+    const p = (columnsArePhase ? col : row) + crop, lo = Math.floor(p), fraction = p - lo;
+    const at = columnsArePhase ? row * ec + lo : lo * ec + col;
+    const next = columnsArePhase ? row * ec + Math.min(lo + 1, ec - 1) : Math.min(lo + 1, er - 1) * ec + col;
+    const first = complex(at), second = fraction ? complex(next) : first;
+    let real = first[0] * (1 - fraction) + second[0] * fraction, imag = first[1] * (1 - fraction) + second[1] * fraction;
+    if (plan) {
+      const radius = m.noiseSigma * Math.sqrt(-2 * Math.log(uniform())), angle = 2 * Math.PI * uniform();
+      real += radius * Math.cos(angle); imag += radius * Math.sin(angle);
+    }
+    target[row * columns + col] = Math.max(0, Math.min(255, Math.round(Math.hypot(real, imag))));
   }
 }
 
 export function acquireMr(plan) {
   plan = { ...defaultPlan, ...plan };
+  if (sequenceKind(plan) === "tse" && plan.echoSpacing == null) plan.echoSpacing = 10;
   const frame = sliceFrame(plan.plane, plan.angle);
   const grid = sampleGrid(plan);
   const { rows, columns, widthMm, heightMm } = grid;
@@ -213,11 +243,14 @@ export function acquireMr(plan) {
     parameters: {
       sequence: presets[plan.preset].sequence, preset: plan.preset,
       tr: plan.tr, te: plan.te, ti: plan.ti, matrix: plan.matrix, acquisition: plan.acquisition,
-      flip: plan.flip, echoTrain: plan.echoTrain, phaseFov: plan.phaseFov, phaseMatrix: plan.phaseMatrix,
+      flip: plan.flip, echoTrain: plan.echoTrain, echoSpacing: plan.echoSpacing, phaseFov: plan.phaseFov, phaseMatrix: plan.phaseMatrix,
       phaseDirection: plan.phaseDirection, frequencyDirection: grid.columnsArePhase ? "vertical" : "horizontal",
       oversampling: plan.oversampling, averages: plan.averages, bandwidth: plan.bandwidth,
       satAxis: plan.satAxis, satOffset: plan.satOffset, satWidth: plan.satWidth,
       durationSeconds: estimateScanSeconds(plan),
+      physics: { version: physicsVersion, fieldStrengthTesla, fatWaterHz, ...samplingMetrics(plan),
+        echoOrdering: sequenceKind(plan) === "tse" ? "centric-bands-center-first" : null,
+        signalModel: "ideal-spoiled-steady-state", saturationRecoveryMs: 10 },
     },
   };
 }
@@ -237,5 +270,7 @@ export function makeLocalizers() {
 export function planFromAcquisition(series) {
   if (!series) return defaultPlan;
   const geometry = JSON.parse(series.geometry);
-  return { ...defaultPlan, ...geometry, ...JSON.parse(series.parameters) };
+  const plan = { ...defaultPlan, ...geometry, ...JSON.parse(series.parameters) };
+  if (plan.preset === "tse" && plan.echoSpacing == null) plan.echoSpacing = 10;
+  return plan;
 }

@@ -1,3 +1,4 @@
+import { samplingMetrics, timingError } from "./mr-physics.js";
 import { coverage, estimateScanSeconds, localizerFov, patientPoint, planes, sampleGrid, sliceCenter, sliceFrame } from "./mr-geometry.js";
 
 function showStage(stage, updateHash = true) {
@@ -161,14 +162,18 @@ async function setupPlanner() {
     });
     const fits = Math.abs(plan.offset) + distance / 2 <= localizerFov / 2;
     fields.offset.setCustomValidity(validGeometry && !fits ? "Reduce stack coverage or move the stack center toward zero." : "");
-    fields.te.setCustomValidity(fields.te.valueAsNumber >= fields.tr.valueAsNumber ? "TE must be shorter than TR." : "");
-    fields.ti.setCustomValidity(!fields.ti.disabled && fields.ti.valueAsNumber + fields.te.valueAsNumber >= fields.tr.valueAsNumber
-      ? "TI plus TE must be shorter than TR." : "");
+    const scanPlan = { ...plan, preset: fields.preset.value, phaseMatrix: fields.phaseMatrix.value === "match" ? null : Number(fields.phaseMatrix.value), matrix: Number(fields.matrix.value), oversampling: fields.oversampling.valueAsNumber,
+      acquisition: fields.acquisition.value, averages: fields.averages.valueAsNumber, bandwidth: fields.bandwidth.valueAsNumber, tr: fields.tr.valueAsNumber, te: fields.te.valueAsNumber,
+      ti: fields.ti.disabled ? null : fields.ti.valueAsNumber, echoTrain: fields.echoTrain.disabled ? null : fields.echoTrain.valueAsNumber,
+      echoSpacing: fields.echoSpacing.disabled ? null : fields.echoSpacing.valueAsNumber };
+    const error = timingError(scanPlan);
+    fields.te.setCustomValidity(error);
+    fields.ti.setCustomValidity("");
     output.value = validGeometry ? `${distance} mm` : "—";
-    const estimate = estimateScanSeconds({ phaseMatrix: fields.phaseMatrix.value === "match" ? null : Number(fields.phaseMatrix.value), matrix: Number(fields.matrix.value), oversampling: fields.oversampling.valueAsNumber,
-      acquisition: fields.acquisition.value, slices: plan.slices, averages: fields.averages.valueAsNumber, tr: fields.tr.valueAsNumber, echoTrain: fields.echoTrain.disabled ? null : fields.echoTrain.valueAsNumber });
+    const metrics = samplingMetrics(scanPlan), estimate = estimateScanSeconds(scanPlan);
+    document.getElementById("mr-physics-feedback").textContent = error || `Voxel ${metrics.voxel.map(v => v.toFixed(2)).join(" × ")} mm · Relative sampling SNR ${metrics.relativeSamplingSnr.toFixed(2)}× · Readout ${metrics.readoutMs.toFixed(2)} ms · Fat shift ${metrics.chemicalShiftPixels.toFixed(2)} pixels · ${metrics.packages} slice package(s)`;
     const time = document.getElementById("mr-model-time");
-    if (time) time.textContent = Number.isFinite(estimate) ? `${Math.floor(estimate / 60)}m ${Math.round(estimate % 60)}s` : "—";
+    if (time) time.textContent = Number.isFinite(estimate) ? `${Math.floor(Math.round(estimate) / 60)}m ${Math.round(estimate) % 60}s` : "—";
     const saved = JSON.parse(form.dataset.savedPlan);
     const dirty = Object.keys(saved).filter(key => fields[key] && !fields[key].disabled && !["durationSeconds", "protocolContext"].includes(key))
       .some(key => fields[key].value !== String(saved[key] ?? (key === "phaseMatrix" ? "match" : "")));
@@ -186,7 +191,7 @@ async function setupPlanner() {
 
   fields.preset.addEventListener("change", () => {
     const preset = fields.preset.selectedOptions[0].dataset;
-    for (const key of ["tr", "te", "ti", "flip", "echoTrain"]) {
+    for (const key of ["tr", "te", "ti", "flip", "echoTrain", "echoSpacing"]) {
       fields[key].value = preset[key];
       fields[key].disabled = !preset[key];
     }

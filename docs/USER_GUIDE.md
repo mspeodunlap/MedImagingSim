@@ -1,10 +1,10 @@
 # MedImagingSim user guide
 
-**Guide version: V 1.0.9 · Locally checked November 23, 2026; guided-console browser walkthrough passed; print/LAN verification pending · MRI training release**
+**Guide version: V 1.1.0 · Locally checked November 23, 2026; guided-console browser walkthrough passed; print/LAN verification pending · MRI training release**
 
-This guide covers the working simulator, with separate instructions for students, instructors, and administrators. Use fictional patients and the synthetic brain phantom for exercises. Sign-in and the four console-task views were captured and inspected in a disposable fictional-data environment for V 1.0.9. Dictionary examples retain their V 1.0.8 captures because that layout is unchanged. Older workflow screenshots remain pending refresh and are omitted. The protocol workflow passed a local browser walkthrough; print and ThinkPad/LAN verification remain pending.
+This guide covers the working simulator, with separate instructions for students, instructors, and administrators. Use fictional patients and the synthetic brain phantom. V 1.1.0 sign-in and physics planning/review screenshots use a disposable fictional-data environment. Unchanged Setup/Finish/locked-review workflow examples retain V 1.0.9 captures; their original capture versions remain in the manifest. Earlier dictionary/planning captures are pending refresh and omitted. Local parameter/image tests and the physics browser walkthrough are recorded in the milestone handoff; full print and ThinkPad/LAN checks remain pending.
 
-**Release status:** these instructions describe the local V 1.0.9 code. The user is handling the pending commit/push; the ThinkPad deployment and live version have not been verified. The guided-console workflow passed a local browser walkthrough. Other screen refresh, print-layout and live-host checks remain pending.
+**Release status:** these instructions describe the local V 1.1.0 code. The user is handling the pending commit/push; the ThinkPad deployment and live version have not been verified. The updated physics controls passed a local browser walkthrough. Other screen refresh, print-layout and live-host checks remain pending.
 
 **Internal test server:** [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in). Connect to the same local network and complete the host's certificate trust setup first. The ThinkPad hosts the tester build; your Mac is a client and development machine.
 
@@ -28,17 +28,17 @@ Contents: [Console workflow](#use-the-guided-console-workspace) · [Access](#ope
 **Before you start:** obtain your account and password from the host/instructor, confirm which role you should use, and connect to the tester network. The app has no self-registration or password-reset screen.
 
 1. Open the internal test address above in Safari, Chrome, or your device's browser. For development on the same Mac that runs the server, use [http://127.0.0.1:3000/sign-in](http://127.0.0.1:3000/sign-in). Do not use localhost to reach the ThinkPad from another device.
-2. Check the version centered **below** the sign-in box. For this guide it is **V 1.0.9**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
+2. Check the version centered **below** the sign-in box. For this guide it is **V 1.1.0**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
 3. Enter **Username**, then **Password**, and select **Sign in**. Passwords are case-sensitive. Use your supplied account rather than a name shown in a screenshot.
 4. Confirm the account name and role in the top-right header. Successful sign-in opens **Order queue** for all current roles.
 5. Use **Training help** on the screen to open the relevant guide section or your role's quick tips. The sign-in page offers tips for all three roles. Each simulator help link requests a new tab/window, leaving the current workflow open; browser preferences decide which. If a browser blocks it, allow the user-initiated opening or use its Open Link in New Tab action. The guide and screenshots are delivered by this simulator, so the ThinkPad needs the current documentation files in the release.
 6. Select **Sign out** before switching roles or leaving a shared device. If your session expires, sign in again and reopen the saved order. The app preserves submitted orders, screening, scans, and PACS selection; unsaved field edits may be lost.
 
-![Sign-in showing V 1.0.9 below the panel](screenshots/sign-in.jpg)
+![Sign-in showing V 1.1.0 below the panel](screenshots/sign-in.jpg)
 
 ### Version numbering
 
-The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.0.9**; the next delivered change is **1.1.0**. After **1.0.9**, the next is **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
+The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.1.0**; the next delivered change is **1.1.1**. The previous **1.0.9** rolled to **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
 
 ## Roles and navigation
 
@@ -175,11 +175,9 @@ Open **MRI protocols → MRI anatomy and protocol dictionary**, or **Anatomy and
 6. Instructors/admins may select **Install teaching starters as institution defaults** to install all seven missing names in their institution. The result reports added and preserved counts. Matching names, existing versions, personal protocols and other institutions remain unchanged, including after repeat installation. To change an installed default, open its latest version and use the normal versioned editor.
 7. In an eligible begun case, **Saved protocol version** also offers the seven **Built-in synthetic brain teaching starters** immediately, without installation. Select one, then **Load protocol copy**. Loading creates a separate case copy and never runs a scan. Switch/save sequences using the existing protocol workflow. Save a personal version before replacing a case copy.
 
-![Instructor filtering to a sourced knee PD example at 1.5T with explicit reference-only status](screenshots/mri-dictionary-reference.jpg)
 
 *The knee values are a named UW scanner example. They are not runnable with the synthetic brain phantom. Other recipes may contain only a planning outline or selected quality criteria.*
 
-![Instructor library after seven teaching defaults were installed while the earlier default remained](screenshots/mri-dictionary-defaults.jpg)
 
 *Repeating installation added zero and preserved seven names in the disposable walkthrough. These snapshots can be revised only by publishing later versions. The built-in definitions stay unchanged.*
 
@@ -210,7 +208,7 @@ A **protocol** is an ordered set of 1–32 named sequences. Each sequence stores
 5. To add, remove, rename or reorder sequences for the full case copy, first expand **Save or edit full protocol**, save its current settings, then select **Edit full protocol**. The library editor opens a snapshot. Save a personal version there, return to the case console, choose that saved version and select **Load protocol copy**. Library edits do not automatically change the case's working copy.
 6. Without a loaded library protocol, **Save sequence settings** creates a one-sequence case copy from the current scan plan. Use Edit full protocol to expand it into a multi-sequence personal protocol.
 
-![Focused planning workspace with patient ribbon, sequence progress, three localizers and essential parameters](screenshots/protocol-console.jpg)
+![FSE planning with echo spacing, voxel dimensions, relative sampling SNR, readout and fat displacement](screenshots/console-physics-plan.jpg)
 
 ### Save personal versions without changing the default
 
@@ -265,7 +263,7 @@ Old/unlinked images remain in **Acquisition history**, without making a new prot
 | **Stack center (mm)** | Shifts the stack along its slice direction. Check the perpendicular localizers for the shift. |
 | **Field of view (mm)** | Sets the readout field of view. **Phase FOV (%)** can make the other dimension smaller. |
 | **Slices** | Sets how many images the scan acquires. |
-| **Thickness (mm)** | Sets slice thickness. |
+| **Thickness (mm)** | Changes slice thickness, tissue partial volume and sampling SNR. Thicker slices average more anatomy and provide higher SNR. |
 | **Gap (mm)** | Sets the spacing between adjacent slice edges. |
 | **Stack coverage** | Shows the total span. For example, 20 slices at 5 mm with a 1 mm gap span 119 mm. |
 
@@ -275,9 +273,10 @@ Old/unlinked images remain in **Acquisition history**, without making a new prot
 | --- | --- |
 | **Preset** | Loads **T1 spin echo**, **T2 spin echo**, **PD spin echo**, **Fluid-suppressed inversion recovery**, **Spoiled gradient echo**, or **T2 fast spin echo**. |
 | **TR (ms)** and **TE (ms)** | Set repetition and echo timing for the simulated signal. |
-| **TI (ms)** | Sets inversion timing. This field is enabled when you select the inversion-recovery preset. |
-| **Flip angle (°)** | Changes signal in the spoiled GRE preset. |
-| **Echo train length** | Changes the estimated time for **T2 fast spin echo**. The simulator uses an idealized image signal for this preset. |
+| **TI (ms)** | Changes IR recovery and tissue nulling. Signal may fall toward a null and then rise; increasing TI is not always brighter. |
+| **Flip angle (°)** | Changes spoiled-GRE steady-state signal. Signal rises to a tissue/TR-dependent maximum and can fall beyond it. |
+| **Echo train length** | Changes FSE shots/time, package capacity and phase-direction T2 blurring. |
+| **Echo spacing (ms)** | FSE interval between echoes. Longer spacing increases train duration and phase blurring; it must accommodate the bandwidth-dependent readout. |
 
 ### Sampling, encoding, and spatial saturation
 
@@ -288,8 +287,24 @@ Old/unlinked images remain in **Acquisition history**, without making a new prot
 | **Phase FOV (%)** | Sets the phase field of view as a percentage of the readout FOV. Reducing it can make anatomy wrap into the displayed field. |
 | **Phase oversampling (%)** | Expands the encoded phase field while keeping the displayed field the same. It can reduce wrap and increases the estimated acquisition time. |
 | **Averages (NEX / NSA)** | More averages reduce simulated noise and increase the estimated acquisition time. |
-| **Receiver bandwidth (Hz/pixel)** | Higher bandwidth increases noise in this training model. |
+| **Receiver bandwidth (Hz/pixel)** | Higher bandwidth increases noise and reduces fat displacement along readout. Lower bandwidth lengthens readout and may require longer TE/echo spacing. |
 | **Saturation band** | Choose its direction, then set **Band center** and **Band thickness**. Check the amber marks on the localizers. The band reduces signal in the selected region. |
+
+### Understand the physics feedback
+
+Below timing, the console displays **Voxel**, **Relative sampling SNR**, **Readout**, **Fat shift** and **slice package(s)**. These update with your draft. The SNR indicator compares sampling only with a fixed reference plan; TR/TE/TI/flip still change tissue contrast independently. It is not a measured patient SNR or quality score.
+
+1. Hold geometry/timing fixed and change **Averages (NEX / NSA)** from 1 to 4: relative sampling SNR doubles and the model acquisition time quadruples. Run both scans to compare noise.
+2. At a fixed frequency matrix and bandwidth, a smaller phase matrix makes larger phase voxels and fewer phase encodes. Detail, SNR and time all change. Set an explicit phase matrix before changing frequency matrix if you want to vary only readout resolution.
+3. Compare FSE **Echo train length** 4 and 8 at the same effective TE/spacing. Extra late echoes can blur phase detail while reducing shots; package timing can limit the time saving.
+4. Lower bandwidth and watch **Readout** and **Fat shift** rise. If a timing message appears, increase TE/echo spacing as directed or restore bandwidth. Invalid combinations do not acquire; safe timing-invalid values are retained for correction. At 80 Hz/pixel, the model needs at least 17 ms echo spacing; default 10 ms is insufficient.
+5. For 3D GRE, partitions add scan time and sampling SNR; a short-TR 2D stack may require multiple slice packages. This is an explicit teaching estimate, not scanner scheduling.
+
+Magnitude images have a nonzero noise floor. FSE uses a specified center-first echo order. Fat/water frequency and GRE phase use a fixed **1.5 T** assumption; tissue relaxation values are synthetic and there is no field-strength selector. Finite voxels mix tissues; changing thickness/matrix changes partial volume. Ideal RF profiles mean gap changes coverage without a simulated cross-talk penalty. Spatial saturation is a location-based ideal preparation, not chemical fat suppression or flow compensation.
+
+New acquisitions store **analytic-mr-v3** and physics values under **Series details**. Earlier saved images retain their pixels and model, with an earlier-model notice; the upgrade never recomputes them. Old FSE definitions missing spacing use 10 ms when read. If an older definition now fails timing checks, use the full editor to correct every affected sequence and save a new version. Installed defaults and private ownership remain protected. See [physics audit and limits](MRI_PHYSICS_AUDIT.md).
+
+![Invalid FSE timing draft showing the required bandwidth-dependent echo spacing](screenshots/console-physics-timing.jpg)
 
 ### Supported values and validation
 
@@ -308,6 +323,7 @@ These are the limits of the current training model, rather than a specification 
 | TI | 50–4,500 ms for inversion recovery; TI + TE must be shorter than TR. |
 | Flip angle | 1–90°, whole degrees, for spoiled GRE. |
 | Echo train length | 2–32, whole numbers, for fast spin echo. |
+| Echo spacing | 5–40 ms, whole milliseconds, FSE only; at least 4 ms plus readout duration, and no longer than effective TE. |
 | Frequency/phase matrices | 64, 96, or 128; phase can Match frequency. |
 | Phase FOV / oversampling | 50–100% / 0–100%, whole percentages. |
 | Averages | 1–8, whole numbers. |
@@ -315,7 +331,7 @@ These are the limits of the current training model, rather than a specification 
 | Band center / thickness | −130 to +130 mm / 5–70 mm, whole millimeters, when saturation is enabled. |
 | Window width / level | Width 1–255; level 0–255, whole numbers. |
 
-All geometry settings interact. For example, coverage is slices × thickness + (slices − 1) × gap; changing one field can make an otherwise valid plan too large. A disabled field is not currently applicable to the selected preset or mode. Review the validation message before rerunning.
+All geometry settings interact. For example, coverage is slices × thickness + (slices − 1) × gap; changing one field can make an otherwise valid plan too large. The readout must fit TE; FSE effective TE must be at least one spacing and the full train/readout must fit TR (including TI for IR). The model uses 4 ms scheduling overhead and bandwidth-dependent readout, not a manufacturer hardware specification. A disabled field is not currently applicable to the selected preset or mode. Review the validation message before rerunning.
 
 For parameter coverage and upcoming controls, see the [MRI console parameter inventory](MRI_CONSOLE_COVERAGE.md).
 
@@ -328,7 +344,7 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 5. Select **Save PACS selection** for the intended series and display settings. Confirm the series and W/L in history. This is a saved selection, not image transfer or delivery confirmation. Saving it reloads the page, so save any other draft edits first.
 6. **Next planned sequence** opens a waiting plan without acquiring. **Continue to finish** opens the final summary. Selecting these views does not complete the RIS case.
 
-![Dedicated image review with slice and display controls, geometry reuse and next-sequence guidance](screenshots/console-review.jpg)
+![Acquired FSE image with expanded details showing its saved image model, voxel dimensions, readout, fat shift and echo spacing](screenshots/console-physics-review.jpg)
 
 ### Finish in the console
 
@@ -497,6 +513,6 @@ Planned capabilities include scanner/room availability and resource conflicts; i
 
 ## Functional references and documentation maintenance
 
-The five supplied reference documents guide workflow understanding. Our interface, implementation, examples, and screenshots are original. The [topic index](REFERENCE_INDEX.md) routes development tasks to relevant pages; the [decision log](REFERENCE_WORKFLOWS.md) distinguishes confirmed targets from unresolved requirements. The guide documents the actual simulator, even where a source product offers more features.
+Five workflow references and the newly supplied MRI physics document inform this simulator. Our interface, implementation, examples, and screenshots are original. The [topic index](REFERENCE_INDEX.md) routes development tasks to relevant pages; the [decision log](REFERENCE_WORKFLOWS.md) distinguishes confirmed targets from unresolved requirements. The guide documents the actual simulator, even where a source product offers more features.
 
-This guide, role tips and printable copies are maintained with releases. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records the workflow. V 1.0.9 sign-in, Setup, Plan & scan, Review and Finish images were captured and inspected in a disposable fictional-data environment. The local walkthrough checked visual stack movement, task-switch draft retention, essential/all parameters, geometry reuse preserving timing, linked acquisitions, personal protocol saving, display reset, saved PACS selection, end/completion and correction reopening. Older screenshots retain their capture version or are refresh-pending. ThinkPad/LAN and full print-layout checks remain pending. [Manufacturer workflow research](MR_CONSOLE_WORKFLOW_RESEARCH.md) records primary sources, adopted interaction principles and model limitations.
+This guide, role tips and printable copies are maintained with releases. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records the workflow. V 1.1.0 physics planning/review and sign-in images were captured and inspected with fictional data. Unchanged task/role examples retain V 1.0.9 capture labels in the manifest; other historical images are refresh-pending. The current walkthrough checks live sampling metrics, averaging/time, bandwidth validation, FSE echo spacing and acquired model evidence. ThinkPad/LAN and full print checks remain pending. [Manufacturer workflow research](MR_CONSOLE_WORKFLOW_RESEARCH.md) records the earlier interface assessment; [MRI physics audit](MRI_PHYSICS_AUDIT.md) records current equations, source access limits, parameter effects and remaining idealizations.

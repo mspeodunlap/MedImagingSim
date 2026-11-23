@@ -1,12 +1,12 @@
 # Instructor quick tips
 
-**MedImagingSim V 1.0.9 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
+**MedImagingSim V 1.1.0 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
 
 **Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Confirm Instructor in the header. You start in Order queue and see requests in your institution.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Release status:** instructions match local V 1.0.9. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.9.** Current dictionary, installation and console screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the guided console workflow was checked in a disposable browser environment.
+**Release status:** instructions match local V 1.1.0. The user handles commit/push; ThinkPad deployment and LAN behavior are unverified. New physics planning/review and sign-in screenshots are in the full guide. Retained task examples preserve their earlier capture version; **Screenshot refresh pending** for other workflows; full print checks also remain pending. The physics workflow was checked with fictional data.
 
 ## Guided console workflow
 
@@ -17,6 +17,13 @@ The rail's **Acquired** means a linked image matches saved settings, not quality
 **Finish** summarizes images/selection and reuses the performed-exam confirmation and notes. **End exam**, then **Mark completed** explicitly; both return to Finish. Missing sequences and PACS selection are advisory, and completion does not deliver images. Existing role/review-lock/correction rules remain in force. [Detailed console guide](../USER_GUIDE.md#use-the-guided-console-workspace).
 
 Initial instructor console use is review-only; acquisition remains available only in an unlocked correction cycle. Opening an ended/completed case still locks corrections immediately.
+
+## Image physics feedback
+
+The console now shows voxel dimensions, relative sampling SNR, readout, fat displacement and slice packages. Four averages give twice the sampling SNR and four times the time. FSE **Echo train length** and **Echo spacing (ms)** affect phase blurring as well as time. Narrower bandwidth reduces noise but increases fat displacement and minimum timing. Correct the displayed timing error before acquiring.
+
+**Series details** records the image model; older images are preserved. Missing spacing in an older FSE plan resolves to 10 ms; incompatible old timings require an explicit revised version. The fixed 1.5 T frequency assumption and synthetic tissue constants are educational approximations. Full physics limits and a comparison exercise are in the [guide](../USER_GUIDE.md#understand-the-physics-feedback).
+
 
 ## MRI dictionary and starting protocols
 

@@ -1,5 +1,5 @@
 {
-  "indexed_on": "2026-11-22",
+  "indexed_on": "2026-11-23",
   "page_numbering": "1-based PDF page position",
   "sources": [
     {
@@ -46,6 +46,16 @@
       "revision_date": "2026-04-09",
       "bytes": 12859415,
       "sha256": "6d2fabb543fd94b449f95ad49329d03dd28441c6f5217a80978e4115bc27751d"
+    },
+    {
+      "alias": "PHYSICS",
+      "path": "Reference Docs/mri-physics.pdf",
+      "pdf_pages": 75,
+      "edition": "Preface November 2004; copyright January 2000\u2013November 2004",
+      "revision_date": null,
+      "pdf_modified_date": "2006-02-27",
+      "bytes": 2685315,
+      "sha256": "52195cafc171bf779f0e2e9af378f2f14bb1da62e5a1362545c8d6851977eba3"
     }
   ]
 }

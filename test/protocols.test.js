@@ -393,3 +393,25 @@ test("console finish uses the existing end/complete guards and returns to its fi
     assert.equal(f.db.prepare('SELECT count(*) n FROM pacs_selections').get().n,0);
   } finally {f.close();}
 });
+
+test("physics timing errors preserve safe drafts and cannot acquire or publish invalid FSE timings", async () => {
+  const f=setup();
+  try {
+    const accession=f.launch(),base=`/console/mr/${accession}`;
+    const page=await(await f.request(base)).text(),scanKey=page.match(/name="scanKey" value="([a-f0-9]+)"/)[1];
+    const p={...defaultPlan,preset:'tse',tr:3500,te:95,echoTrain:4,echoSpacing:10,bandwidth:80};
+    const flat=Object.fromEntries(Object.entries(p).filter(([,v])=>v!==null));
+    const invalid=await f.request(base+'/scan',f.student,{...flat,scanKey});
+    assert.equal(invalid.status,400);const html=await invalid.text();
+    assert.match(html,/Echo spacing must be at least 17 ms/);
+    assert.match(html,/name="bandwidth"[^>]*\svalue="80"/);
+    assert.match(html,/name="echoSpacing"[^>]*\svalue="10"/);
+    assert.equal(f.db.prepare('SELECT count(*) AS n FROM acquisitions').get().n,0);
+    assert.equal((await f.request('/protocols/mr/save',f.instructor,fields({sequences:[{name:'Invalid FSE',plan:p}]}))).status,400);
+    const corrected=await f.request(base+'/scan',f.student,{...flat,echoSpacing:20,scanKey});assert.equal(corrected.status,303);
+    const record=f.db.prepare('SELECT parameters FROM acquisitions').get(),parameters=JSON.parse(record.parameters);
+    assert.equal(parameters.echoSpacing,20);assert.equal(parameters.physics.readoutMs,12.5);
+    assert.equal((await f.request('/mr-physics.js')).status,200);
+    assert.equal((await f.request('/Reference%20Docs/mri-physics.pdf')).status,404);
+  } finally {f.close();}
+});

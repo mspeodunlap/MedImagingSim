@@ -127,7 +127,7 @@ test("a screened order retains repeat scan bytes, geometry and the PACS selectio
     assert.equal(geometry.plane, "coronal");
     assert.equal(JSON.parse(second.parameters).te, 95);
     assert.equal(firstRecord.source_version, "synthetic-brain-v1");
-    assert.equal(firstRecord.engine_version, "analytic-mr-v2");
+    assert.equal(firstRecord.engine_version, "analytic-mr-v3");
     assert.equal((await pixels(consolePath, second.id, admin.cookie)).length, 13 * 128 ** 2);
     assert.deepEqual(await pixels(consolePath, firstId), original);
     assert.equal((await request(`${consolePath}/pixels/${firstId}`, other.cookie)).status, 404);
@@ -229,7 +229,7 @@ test("GRE flip, spatial saturation, 3D partitions and fast spin echo operate und
 
   const threeD = acquireMr({ ...gre, acquisition: "3D" });
   assert.equal(threeD.parameters.acquisition, "3D");
-  assert.equal(threeD.parameters.durationSeconds, gre.slices * plain.parameters.durationSeconds);
+  assert.equal(threeD.parameters.durationSeconds, gre.slices / plain.parameters.physics.packages * plain.parameters.durationSeconds);
   assert.equal(threeD.geometry.centersMm.length, gre.slices);
   assert.equal(threeD.geometry.coverage, gre.slices * gre.thickness);
   const express = { ...plan, ...presets.tse, preset: "tse" };

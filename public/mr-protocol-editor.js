@@ -1,8 +1,9 @@
+import { timingError } from "./mr-physics.js";
 for (const row of document.querySelectorAll("[data-protocol-sequence]")) {
   const field = key => row.querySelector(`[data-param="${key}"]`);
   const update = resetTiming => {
     const preset = field("preset").selectedOptions[0].dataset;
-    for (const key of ["tr", "te", "ti", "flip", "echoTrain"]) {
+    for (const key of ["tr", "te", "ti", "flip", "echoTrain", "echoSpacing"]) {
       if (resetTiming) field(key).value = preset[key];
       if (!["tr", "te"].includes(key)) field(key).disabled = !preset[key];
     }
@@ -11,10 +12,14 @@ for (const row of document.querySelectorAll("[data-protocol-sequence]")) {
     if (preset.sequence !== "gre") field("acquisition").value = "2D";
     field("gap").readOnly = field("acquisition").value === "3D";
     if (field("gap").readOnly) field("gap").value = "0";
+    const plan = Object.fromEntries(["tr", "te", "ti", "bandwidth", "echoTrain", "echoSpacing"].map(key => [key, field(key).valueAsNumber]));
+    plan.preset = field("preset").value;
+    field("te").setCustomValidity(timingError(plan));
     for (const key of ["satOffset", "satWidth"]) field(key).disabled = field("satAxis").value === "none";
   };
   field("preset").addEventListener("change", () => update(true));
   for (const key of ["acquisition", "satAxis"]) field(key).addEventListener("change", () => update(false));
+  row.addEventListener("input", () => update(false));
   row.addEventListener("invalid", () => { row.open = true; }, true);
   update(false);
 }

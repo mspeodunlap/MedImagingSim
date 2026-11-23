@@ -2,7 +2,7 @@ import { defaultPlan, presets } from "./mr.js";
 
 // Original educational synthesis. Source examples are deliberately separate from
 // executable phantom plans; missing clinical parameters are never invented.
-export const dictionaryVersion = "2026-11-23.1";
+export const dictionaryVersion = "2026-11-23.2";
 const source = (id, title, url, revision, kind) => ({ id, title, url, revision, kind, reviewed: "2026-11-23" });
 const ohsu = "https://www.ohsu.edu/school-of-medicine/diagnostic-radiology/";
 const acr = "https://accreditationsupport.acr.org/support/solutions/articles/";
@@ -66,7 +66,7 @@ const family = (id, name, aliases, purpose, limitation, sources, preset = null) 
 export const families = [
   family("t1", "T1 SE / FSE", ["T1W", "T1 TSE"], "Anatomic contrast and pre/post comparison.", "Brain SE approximation; no contrast injection model.", ["aapm", "brain"], "t1"),
   family("t2", "T2 SE", ["T2W"], "Fluid-sensitive long-TR/long-TE contrast.", "Synthetic brain only.", ["aapm", "head"], "t2"),
-  family("tse", "T2 FSE / TSE", ["Fast spin echo", "Turbo spin echo"], "Faster T2-weighted acquisition.", "ETL affects simulated time; no true echo-train blurring or SAR.", ["aapm", "brain"], "tse"),
+  family("tse", "T2 FSE / TSE", ["Fast spin echo", "Turbo spin echo"], "Faster T2-weighted acquisition.", "ETL and echo spacing affect time and phase-direction T2 blurring using a center-first teaching order; no SAR or variable-refocusing model.", ["aapm", "brain"], "tse"),
   family("pd", "Proton density", ["PD", "PDW"], "Long TR and short TE for proton-density contrast.", "Brain SE approximation; joint anatomy absent.", ["aapm", "knee15"], "pd"),
   family("flair", "T2 FLAIR", ["Fluid attenuated inversion recovery", "T2FLAIR"], "Suppress CSF while retaining T2 sensitivity.", "2D fluid-null IR approximation only; no 3D FLAIR.", ["head", "nrg"], "ir"),
   family("t2fs", "T2 fat suppressed", ["T2FS", "T2 FS", "T2 fat sat", "SPAIR", "SPIR"], "Fluid sensitivity with reduced fat signal.", "Spectral fat suppression is not modeled; spatial saturation is different.", ["shoulder15", "liver"]),
@@ -74,7 +74,7 @@ export const families = [
   family("t1fs", "T1 fat suppressed", ["T1FS", "T1 FS"], "Pre/post contrast comparison against suppressed fat.", "Fat suppression and contrast enhancement are not modeled.", ["breast", "prostate"]),
   family("stir", "STIR", ["Short tau inversion recovery"], "Short-TI inversion recovery to null fat.", "Current IR preset nulls brain fluid, not a validated STIR/fat model.", ["aapm", "lumbar"]),
   family("dixon", "Dixon water / fat separation", ["mDixon", "IDEAL"], "Water-only, fat-only and chemical-shift information.", "Multiple echoes and water/fat reconstruction are absent.", ["liver", "pancreas"]),
-  family("chemical", "In-phase / opposed-phase GRE", ["Chemical shift", "Dual echo"], "Compare signal across water/fat phase relationships.", "Chemical-shift physics are absent.", ["body", "renal"]),
+  family("chemical", "In-phase / opposed-phase GRE", ["Chemical shift", "Dual echo"], "Compare signal across water/fat phase relationships.", "Single-peak GRE fat/water phase and frequency displacement are modeled in the brain; no paired-echo organ protocol or quantitative separation.", ["body", "renal"]),
   family("gre", "Spoiled GRE", ["SPGR", "FLASH", "FFE"], "Explore TR, TE and flip-angle dependent GRE contrast.", "Idealized GRE; no inflow, susceptibility or enhancement.", ["aapm"], "gre"),
   family("t2star", "T2* GRE", ["T2 star", "T2-star"], "Susceptibility-sensitive imaging.", "Spoiled GRE preset does not reproduce T2* susceptibility.", ["brain", "stroke"]),
   family("swi", "Susceptibility weighted imaging", ["SWI", "SWAN"], "Magnitude/phase-based susceptibility assessment.", "No phase processing or susceptibility model.", ["ohsu"]),
@@ -212,11 +212,11 @@ export const examRecipes = [
 ];
 
 const seq = (name, preset, overrides = {}) => ({ name, plan: { ...defaultPlan, preset, tr: presets[preset].tr, te: presets[preset].te,
-  ti: presets[preset].ti ?? null, flip: presets[preset].flip ?? null, echoTrain: presets[preset].echoTrain ?? null, ...overrides } });
+  ti: presets[preset].ti ?? null, flip: presets[preset].flip ?? null, echoTrain: presets[preset].echoTrain ?? null, echoSpacing: presets[preset].echoSpacing ?? null, ...overrides } });
 export const teachingStarters = [
   { id: "brain-core", name: "Brain structural teaching starter", purpose: "Practice planning sagittal T1, axial T2 FSE and fluid-null IR. This is an educational subset, not a complete diagnostic brain exam.", sequences: [seq("Sagittal T1", "t1", { plane: "sagittal" }), seq("Axial T2 FSE", "tse"), seq("Axial fluid-null IR (FLAIR approximation)", "ir")] },
   { id: "brain-weighting", name: "Brain T1 / T2 / PD comparison", purpose: "Compare three weightings with the same geometry.", sequences: [seq("Axial T1", "t1"), seq("Axial T2", "t2"), seq("Axial PD", "pd")] },
-  { id: "brain-fse", name: "Brain spin echo / fast spin echo", purpose: "Compare idealized contrast and estimated scan time at ETL 4 and 8.", sequences: [seq("Axial T2 SE", "t2"), seq("Axial T2 FSE ETL 4", "tse", { echoTrain: 4 }), seq("Axial T2 FSE ETL 8", "tse")] },
+  { id: "brain-fse", name: "Brain spin echo / fast spin echo", purpose: "Compare phase-direction T2 blurring and estimated scan time at ETL 4 and 8; echo spacing is 10 ms.", sequences: [seq("Axial T2 SE", "t2"), seq("Axial T2 FSE ETL 4", "tse", { echoTrain: 4 }), seq("Axial T2 FSE ETL 8", "tse")] },
   { id: "brain-fluid", name: "Brain fluid suppression comparison", purpose: "Compare bright-fluid T2 and fluid-null IR; this does not simulate STIR or spectral fat suppression.", sequences: [seq("Axial T2", "t2"), seq("Axial fluid-null IR", "ir")] },
   { id: "brain-planes", name: "Brain multiplanar T2 planning", purpose: "Practice axial, coronal and sagittal prescriptions.", sequences: [seq("Axial T2", "t2"), seq("Coronal T2", "t2", { plane: "coronal" }), seq("Sagittal T2", "t2", { plane: "sagittal" })] },
   { id: "brain-gre", name: "Brain GRE 2D / 3D comparison", purpose: "Practice idealized GRE slice-stack/slab controls. This is not MPRAGE, TOF or T2* susceptibility imaging.", sequences: [seq("Axial spoiled GRE 2D", "gre"), seq("Axial spoiled GRE 3D slab", "gre", { acquisition: "3D", gap: 0 })] },

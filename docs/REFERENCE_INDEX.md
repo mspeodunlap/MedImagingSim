@@ -1,8 +1,8 @@
 # Imaging reference topic index
 
-Updated November 22, 2026. Start here for a new functional task, then read only the relevant source pages and any cross-references needed to answer it. All page ranges below are **PDF page positions starting at 1**, not the chapter/page labels printed inside the training companions. For example, RAD100 PDF page 83 is printed as 5 • 4.
+Updated November 23, 2026. Start here for a new functional task, then read only the relevant source pages and any cross-references needed to answer it. All page ranges below are **PDF page positions starting at 1**, not the chapter/page labels printed inside the training companions. For example, RAD100 PDF page 83 is printed as 5 • 4.
 
-This index covers five documents. Chapter outlines were surveyed for navigation; the workflow, resource scheduling, questionnaires, worklist, configuration, and access sections relevant to MedImagingSim were examined in more detail. A navigation entry alone does not establish that a feature's behavior has been verified. Review the actual cited pages when using them for a task. The documents describe a source product and training configuration, not an implementation specification for our simulator.
+This index covers six local documents, including the newly supplied MRI physics reference. Chapter outlines were surveyed for navigation; the workflow, resource scheduling, questionnaires, worklist, configuration, and access sections relevant to MedImagingSim were examined in more detail. A navigation entry alone does not establish that a feature's behavior has been verified. Review the actual cited pages when using them for a task. The documents describe a source product and training configuration, not an implementation specification for our simulator.
 
 ## Document aliases
 
@@ -93,3 +93,9 @@ The five workflow PDFs do not specify a complete clinical scanner protocol dicti
 ## Manufacturer console workflow and presentation
 
 Use [MR_CONSOLE_WORKFLOW_RESEARCH.md](MR_CONSOLE_WORKFLOW_RESEARCH.md) for the V 1.0.9 GE/Siemens/Philips primary-source register, version-specific findings and adopted task/parameter/review principles. It supplements the workflow manuals without copying vendor interfaces or importing unsupported scanner mechanics.
+
+## MRI image physics and parameter dependencies
+
+Use **PHYSICS**, [mri-physics.pdf](<../Reference Docs/mri-physics.pdf>), Evert J. Blink, 75 pages, November 2004 preface / February 2006 PDF metadata. The complete source was surveyed; consult pp. 10–35 for relaxation/encoding, pp. 36–37 for multislicing, pp. 38–46 for contrast/SE/FSE/GRE/IR, pp. 47–58 for TR/TE/flip/TI/averages/matrix/FOV/thickness/gap/phase/bandwidth, pp. 59–63 for artifacts, p. 64 for parameter tradeoffs and p. 65 for example relaxation values. PDF positions start at 1 and printed labels start at 0. Bandwidth/chemical-shift figures were visually inspected. Historical examples and simplified statements are not universal settings; specifically, intrinsic T2 decays across full TE, not TE/2.
+
+[MRI_PHYSICS_AUDIT.md](MRI_PHYSICS_AUDIT.md) records requested Wikipedia/Radiopaedia link exploration, direct Radiopaedia HTTP 402 limitations, accessible primary university cross-checks, all active parameter effects, V 1.1.0 equations/validation and remaining idealizations. This new source partly resolves the old physics gap; it does not specify calibrated scanner hardware, safety clearance, clinical protocol acceptance or grading.

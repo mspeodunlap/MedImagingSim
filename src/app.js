@@ -1,3 +1,4 @@
+import { timingError } from "../public/mr-physics.js";
 import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
@@ -30,6 +31,7 @@ const assets = new Map([
   ["/mr-protocol-editor.js", "text/javascript; charset=utf-8"],
   ["/ris-worklist.js", "text/javascript; charset=utf-8"],
   ["/mr-geometry.js", "text/javascript; charset=utf-8"],
+  ["/mr-physics.js", "text/javascript; charset=utf-8"],
 ].map(([path, type]) => [path, { type, bytes: readFileSync(new URL(`../public${path}`, import.meta.url)) }]));
 const orderPattern = /^\/ris\/orders\/(SIM-[A-F0-9]{16})(\/(?:screening|reschedule|begin|end|complete|reopen|return))?$/;
 const mrPattern = /^\/console\/mr\/(SIM-[A-F0-9]{16})(?:\/(?:(scan|localizers|protocol)|(pixels|selection|preview)\/([1-9][0-9]{0,15})))?$/;
@@ -260,7 +262,10 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     const scanKey = form.get("scanKey");
     if (form.getAll("scanKey").length !== 1 || !/^[0-9a-f]{32}$/.test(scanKey)) return reject(400);
     const plan = readPlan(form);
-    if (!plan) return render(400, null, "Check the slice coverage and sequence parameters before running the scan.");
+    if (!plan) {
+      const draft = readPlan(form, { allowTimingInvalid: true });
+      return render(400, null, draft ? timingError(draft) : "Check slice coverage, parameter ranges and sequence timing before running the scan.", draft ? { plan: draft } : undefined);
+    }
     const existing = findScan(db, institutionId, accession, scanKey);
     if (existing) return redirect(res, `${base}?series=${existing.id}#review`);
     const revision = form.get("protocolRevision");
