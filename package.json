@@ -1,6 +1,6 @@
 {
   "name": "medimagingsim",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "type": "module",
   "engines": {
@@ -10,6 +10,7 @@
     "start": "node src/server.js",
     "create-user": "node src/create-user.js",
     "test": "node --test",
+    "test:classroom": "node --test test/classroom.test.js test/concurrency.test.js",
     "version:next": "node ops/bump-version.mjs"
   }
 }

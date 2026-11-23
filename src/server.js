@@ -1,5 +1,6 @@
 import { createApp } from "./app.js";
 import { openDatabase } from "./db.js";
+import { scanLimits } from "./mr-executor.js";
 
 const port = Number(process.env.MEDSIM_PORT ?? 3000);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) {
@@ -12,4 +13,5 @@ const server = createApp(db, { publicOrigin });
 server.listen(port, "127.0.0.1", () => {
   const address = publicOrigin ?? `http://127.0.0.1:${port}`;
   console.log(`MedImagingSim is available at ${address}`);
+  console.log(`MRI execution: ${scanLimits.workers} workers; ${scanLimits.waiting} waiting scans. Sessions are independent per signed-in browser profile.`);
 });

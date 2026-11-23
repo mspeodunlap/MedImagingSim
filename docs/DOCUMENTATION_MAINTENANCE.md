@@ -2,6 +2,8 @@
 
 This is the ongoing release workflow for the detailed user guide, all role tip sheets, printable copies, and screenshots. It applies to each delivered change, introduced in V 1.3 and updated for V 1.0.3. The application version source remains `package.json`.
 
+**Current documentation release: V 1.0.6 (November 23, 2026).** This change adds classroom concurrency configuration and validation; V 1.0.5 was the preceding local lifecycle release. The user is handling commit/push. Local behavior is checked through automated/request-handler tests; screenshot refresh, rendered browser/print layout, deployed SHA, and ThinkPad/LAN workflows remain pending. Historical capture/verification entries below retain their original versions and dates.
+
 ## Maintained files
 
 | Deliverable | Canonical source | Supporting assets |
@@ -62,3 +64,5 @@ Open the files in `docs/print` in a browser. Use Print / Save as PDF for a paper
 
 | V 1.0.4 | Added RIS MRN and automatic date filtering; updated guide/tips/HTML. | 18 automated tests pass. Sign-in and affected RIS screenshots omitted and marked refresh-pending because browser capture is unavailable. Live browser/ThinkPad check pending. |
 | V 1.0.5 | Explicit exam begin/end/RIS completion, separate Completed/Recent, reopen correction cycles, immediate instructor-open lock, and instructor send-back; guide, all role tips, exports, and demo fixture updated. | Automated HTTP/state/migration checks in milestone handoff. Browser service cannot initialize (CODEX_CLI_PATH unavailable) and local HTTP listener returns EPERM; original screen images retained but all marked refresh-pending and omitted until recaptured. Rendered canvas, browser/print layout, GitHub publication, and ThinkPad/LAN checks remain pending. |
+
+| V 1.0.6 | Classroom sessions, 64-slot scan backlog, configurable CPU pool, WAL-safe operation, and 60-user local validation documented in guide, all tips and hosting notes; printable copies regenerated. | Source/route and asset checks in milestone handoff. No screen layout change; sign-in version and previously pending captures remain refresh-pending. ThinkPad HTTPS classroom validation remains pending. |

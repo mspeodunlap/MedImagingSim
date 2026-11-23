@@ -1,12 +1,14 @@
 # MedImagingSim user guide
 
-**Guide version: V 1.0.5 · Locally checked November 23, 2026; browser/LAN verification pending · MRI training release**
+**Guide version: V 1.0.6 · Locally checked November 23, 2026; browser/LAN verification pending · MRI training release**
 
 This guide covers the working simulator, with separate instructions for students, instructors, and administrators. Use fictional patients and the synthetic brain phantom for exercises. Screen images are pending refresh for this release and are omitted until recaptured from a disposable fictional-data environment. Browser walkthrough and ThinkPad/LAN verification remain pending.
 
+**Release status:** these instructions describe the local V 1.0.6 code. The user is handling the pending commit/push; the ThinkPad deployment and live version have not been verified. Browser walkthrough, screenshot refresh and print-layout checks remain pending.
+
 **Internal test server:** [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in). Connect to the same local network and complete the host's certificate trust setup first. The ThinkPad hosts the tester build; your Mac is a client and development machine.
 
-**Screenshot refresh pending for V 1.0.5.** Current screen images are omitted until browser capture is available.
+**Screenshot refresh pending for V 1.0.6.** Current screen images are omitted until browser capture is available.
 
 ## Choose your instructions
 
@@ -26,7 +28,7 @@ Contents: [Access](#open-the-simulator-and-sign-in) · [Roles](#roles-and-naviga
 **Before you start:** obtain your account and password from the host/instructor, confirm which role you should use, and connect to the tester network. The app has no self-registration or password-reset screen.
 
 1. Open the internal test address above in Safari, Chrome, or your device's browser. For development on the same Mac that runs the server, use [http://127.0.0.1:3000/sign-in](http://127.0.0.1:3000/sign-in). Do not use localhost to reach the ThinkPad from another device.
-2. Check the version centered **below** the sign-in box. For this guide it is **V 1.0.5**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
+2. Check the version centered **below** the sign-in box. For this guide it is **V 1.0.6**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
 3. Enter **Username**, then **Password**, and select **Sign in**. Passwords are case-sensitive. Use your supplied account rather than a name shown in a screenshot.
 4. Confirm the account name and role in the top-right header. Successful sign-in opens **Order queue** for all current roles.
 5. Use **Training help** on the screen to open the relevant guide section or your role's quick tips. The sign-in page offers tips for all three roles. Each simulator help link requests a new tab/window, leaving the current workflow open; browser preferences decide which. If a browser blocks it, allow the user-initiated opening or use its Open Link in New Tab action. The guide and screenshots are delivered by this simulator, so the ThinkPad needs the current documentation files in the release.
@@ -34,7 +36,7 @@ Contents: [Access](#open-the-simulator-and-sign-in) · [Roles](#roles-and-naviga
 
 ### Version numbering
 
-The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.0.5**; the next delivered change is **1.0.6**. After **1.0.9**, the next is **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
+The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.0.6**; the next delivered change is **1.0.7**. After **1.0.9**, the next is **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
 
 ## Roles and navigation
 
@@ -48,7 +50,7 @@ The displayed version uses all three components. The numbering scheme started at
 | Reschedule before screening | Own exam | Unavailable | Institution's accessible exams |
 | Safety screening / initial Begin exam | Own eligible exam | View only | Institution's eligible exams |
 | MRI acquisition | Own begun exam | Begun correction cycle only | Institution's begun exams |
-| End exam / Mark completed | Own eligible exam | End in correction cycle; complete an unlocked ended exam | Institution's eligible exams |
+| End exam / Mark completed | Own eligible exam | End in a correction cycle; opening the ended study locks it, so completion must occur before review or after send-back | Institution's eligible exams |
 | Reopen for correction before instructor review | Own ended/completed exam | Institution's ended/completed exams | Institution's ended/completed exams |
 | Review lock on opening ended/completed study | Does not lock | Locks automatically | Does not lock |
 | Send back for correction after review lock | Unavailable | Available within institution; reason required | Unavailable |
@@ -56,6 +58,16 @@ The displayed version uses all three components. The numbering scheme started at
 | Assignment dispatch / grading | Planned | Planned | Planned |
 
 **Order queue** contains requests at **Ordered**, with **Awaiting review** or **Needs information** as the review detail, awaiting scheduling. **RIS worklist** contains active scheduled exams for the selected appointment date. Unscheduled orders never appear there. **Completed/Recent** contains Exam End and Completed studies for the selected appointment date. Reopening returns a study to the active worklist. **Instructor home** links to study review; assignment dispatch and grading remain planned. **Training help** links to the guide section for the screen and the signed-in role’s quick tips. The wordmark returns to Order queue. An admin is still scoped to the current institution; this is not a cross-institution superuser. Reviewing another user's order does not change its original owner.
+
+## Work independently in a class
+
+The default configuration supports a classroom of 30 users with headroom; local request-handler and real localhost HTTP exercises passed with 60 independently signed-in students scheduling, screening, scanning and completing separate cases concurrently. This verifies the application workflow and ownership checks, not a guaranteed response time on the ThinkPad or every network.
+
+1. Give every learner a separate student account. Students see and change their own cases; instructors/admins retain their institution-wide access. Reusing one account shares its saved cases even though each sign-in has a separate session token.
+2. Use one signed-in account per browser profile or device. Tabs in the same profile share the sign-in cookie and are not separate identities. To practice different roles on one computer, use separate browser profiles or different browsers.
+3. Work normally through Order queue, RIS worklist and the console. Multiple learners may save different cases and request scans at the same time. Their appointment times do not reserve a physical scanner: resource conflict management is still planned.
+4. Scan calculations run in a bounded worker pool. With default settings, up to 64 scans can wait in addition to active workers. If **The scanner is busy** appears, wait briefly and select **Run scan** again; confirm the plan before retrying. This is temporary shared compute capacity, not another learner taking ownership of the case.
+5. Sign out when finished. Signing out affects that browser session only; another learner's session is unaffected. Sessions normally last eight hours and saved work persists beyond sign-out and server restart. A server restart during a scan can interrupt that unfinished scan; reopen the saved case and retry.
 
 ## Review and schedule an incoming order
 
@@ -223,7 +235,7 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 2. Adjust **Window width** and **Window level** beside the image. Width controls the displayed intensity range and level shifts its midpoint. The preview updates as you change valid values.
 3. To repeat a scan, change a setting under **Scan parameters** and select **Run scan** again. Each run appears in **Acquisition history**. To preview an earlier run, drag its series row onto **Series preview**. You can also click the row or press **Enter** while it has keyboard focus. Your current scan settings stay in place. Open **Series details** to inspect the displayed series metadata.
 4. To prepare a series for PACS, open that series, set the desired window and level, and select **Save PACS selection**. Confirm the **Selected for PACS** notice lists the intended series number and values. Saving a different series replaces the saved selection for this exam. Each scan remains in the history.
-5. Reopen the exam and check the **Selected for PACS** notice. A fresh console visit previews the latest acquisition. Select the saved series from history to verify its stored window and level. This saves a selection only. RIS exam end/completion and instructor image review are available as described below; PACS transfer remains planned.
+5. While the exam is at **Exam Begin**, revisit its console and check the **Selected for PACS** notice. A fresh console visit previews the latest acquisition. After Exam End/Completed use **Review images** instead, and reopen for correction before changing saved data. Select the saved series from history to verify its stored window and level. This saves a selection only. RIS exam end/completion and instructor image review are available as described below; PACS transfer remains planned.
 
 Changing preview using a series link or drop keeps an unsent plan in the current browser page. A reload, leaving the console, or saving the PACS selection can rebuild the plan from the displayed series. Recheck the preset and parameters before the next run; unacquired edits are not a saved protocol. Series numbers identify saved acquisitions and may skip numbers across different exams.
 
@@ -232,7 +244,7 @@ Changing preview using a series link or drop keeps an unsent plan in the current
 1. Start with **Routine brain MRI** cleared by screening and explicitly begun with **Begin exam**. Run **T1 spin echo** with the default geometry and note the series number.
 2. Keep the geometry and matrix the same. Select **T2 spin echo** and run another scan.
 3. Open each series in **Acquisition history** and compare the same slice with the same window and level. Pick a slice through the simulated ventricles near the middle of the stack. Fluid appears darker on T1 and brighter on T2 in the training phantom.
-4. Reopen the first series, set a different window and level, and save it for PACS. Return to the console from RIS and verify the second series previews by default. Drag the first series into **Series preview** and confirm its saved window and level. Compare the values under **Scan parameters** before and after the drop to confirm the plan stays in place.
+4. Select the first series, set a different window and level, and save it for PACS while the exam remains at Exam Begin. Return to the console from RIS and verify the second series previews by default. Drag the first series into **Series preview** and confirm its saved window and level. Compare the values under **Scan parameters** before and after the drop to confirm the plan stays in place.
 
 ## End, complete, review, and correct an exam
 
@@ -331,7 +343,8 @@ Use this short acceptance exercise after setup or a role-related update:
 | Site does not open | Confirm the exact HTTPS address including port 8443 and local-network access. Ask the host operator to check ThinkPad power, Ethernet, Caddy, and the application service. |
 | Certificate warning | Follow the host's [certificate-trust instructions](LAN_HOSTING.md#4-connect-a-tester) for that device before testing. |
 | Sign-in fields clear / sign-in fails | Re-enter the supplied username/password, confirm the URL/version, and contact the host if it repeats. There is no browser password-reset action. A saved password may refer to another server or user. |
-| Too many sign-in attempts | Pause before retrying. Repeated attempts for one account are throttled. |
+| Too many sign-in attempts | Pause before retrying. Repeated attempts for one account are throttled, and a burst above 64 simultaneous sign-in checks may also be temporarily throttled. This is not a 64-user active-session limit. |
+| Another role appears in another tab | Tabs in one browser profile share a sign-in cookie. Use separate profiles/browsers for different accounts; use distinct student accounts for independent saved work. |
 | Wrong version | Reload after the operator verifies deployment. Provide the version shown below the sign-in panel and the expected version. |
 | Pending request missing from RIS | It must first be reviewed and scheduled. Scheduling returns to the queue; it does not open screening. |
 | Scheduled exam absent today | Select its actual appointment date. Also confirm account/owner/institution. Older exams may be on their original creation date. |
@@ -387,4 +400,4 @@ Planned capabilities include scanner/room availability and resource conflicts; i
 
 The five supplied reference documents guide workflow understanding. Our interface, implementation, examples, and screenshots are original. The [topic index](REFERENCE_INDEX.md) routes development tasks to relevant pages; the [decision log](REFERENCE_WORKFLOWS.md) distinguishes confirmed targets from unresolved requirements. The guide documents the actual simulator, even where a source product offers more features.
 
-This guide, all three tip sheets, printable copies, and affected screenshots are maintained with each delivered change. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records how to verify and refresh them. Retained screenshots were captured on November 22, 2026 against V 1.0.3 using fictional demo accounts and patients. All screen images are pending recapture for V 1.0.5 because navigation and workflow changed; they are omitted from the current guide/tips. Browser capture is unavailable in this session. Local automated HTTP checks verify behavior, but rendered canvas and browser/print layout verification remain pending. LAN deployment verification is recorded separately in the milestone handoff.
+This guide, all three tip sheets, printable copies, and affected screenshots are maintained with each delivered change. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records how to verify and refresh them. Retained screenshots were captured on November 22, 2026 against V 1.0.3 using fictional demo accounts and patients. All screen images are pending recapture for V 1.0.6 because navigation and workflow changed; they are omitted from the current guide/tips. Browser capture is unavailable in this session. Local automated HTTP checks verify behavior, but rendered canvas and browser/print layout verification remain pending. LAN deployment verification is recorded separately in the milestone handoff.

@@ -1,12 +1,16 @@
 # Instructor quick tips
 
-**MedImagingSim V 1.0.5 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
+**MedImagingSim V 1.0.6 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
 
 **Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Confirm Instructor in the header. You start in Order queue and see requests in your institution.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Screenshot refresh pending for V 1.0.5.** Current screen images are omitted until browser capture is available.
+**Release status:** instructions match local V 1.0.6. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.6.** Current screen images are omitted; browser/print verification remains pending.
+
+## Concurrent classroom use
+
+Provide one student account per learner and use separate profiles/devices for different signed-in identities. The default build is configured for 30-user classes and has passed a local 60-student workflow exercise; host/LAN capacity still needs validation. Students remain isolated by ownership; your instructor account sees the institution's cases. Simultaneous appointment times do not yet enforce resource conflicts.
 
 ## Review a learner's intake work
 
@@ -28,8 +32,6 @@ Use **Training help** in the simulator for the guide section and your role’s t
 Before review, all roles can Reopen for correction on an accessible ended/completed study. **As instructor, use the row's Reopen for correction action before opening the patient**, because opening locks it. Reopening preserves scans, selection, notes, and history; it requires end verification and completion again. Instructors can acquire and end during an unlocked correction cycle, but cannot submit initial screening, perform initial Begin exam, or reschedule.
 
 **Progress:** Ordered → Scheduled → Screened → Exam Begin → Exam End → Completed. No arrival action. End requires a saved acquisition and performed-exam confirmation; notes are optional. Mark completed is an explicit RIS action and does not transfer images to PACS. The main guide has [full lifecycle instructions](../USER_GUIDE.md#end-complete-review-and-correct-an-exam).
-
-Screen images are pending refresh for V 1.0.5; browser/LAN verification remains pending.
 
 ## Plan a session
 

@@ -1,4 +1,8 @@
-# Run MedImagingSim on the local network
+# macOS hosting fallback (not the current tester host)
+
+**Current status — November 23, 2026:** the dedicated tester host is the ThinkPad T450s at [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in), managed through the [ThinkPad hosting runbook](LAN_HOSTING.md). This document preserves an alternative macOS setup; it does not describe the active host or prove a deployment. Local release V 1.0.5 is prepared; deployed commit, HTTPS sign-in and workflow verification remain pending. Follow this fallback only if the hosting target is deliberately changed.
+
+## Alternative setup overview
 
 Use the current Mac for development, GitHub as the source of published code, and the older Intel MacBook Pro as the tester host. The host checks GitHub's `main` branch every 60 seconds while awake and signed in. It runs the tests and checks the database migration on a snapshot before switching to a new release. Testers use a single HTTPS address and reload their browser to pick up changes.
 

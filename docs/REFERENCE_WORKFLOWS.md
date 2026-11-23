@@ -1,6 +1,6 @@
 # Functional reference review and decisions
 
-Reviewed November 22, 2026. This is an original project interpretation and topic index for the five PDFs in `Reference Docs`. Consult the relevant source sections for each new functional task. This summary guides discovery; it does not replace the PDFs or establish that a referenced feature is implemented in MedImagingSim.
+Reference review November 22, 2026; implementation/decision status updated November 23, 2026 for local V 1.0.5. Publication and browser/LAN verification remain pending. This is an original project interpretation and topic index for the five PDFs in `Reference Docs`. Consult the relevant source sections for each new functional task. This summary guides discovery; it does not replace the PDFs or establish that a referenced feature is implemented in MedImagingSim.
 
 ## Sources and intended use
 
@@ -24,13 +24,13 @@ The three new companions substantially improve workflow and configuration covera
 
 | Previous uncertainty | New evidence | Assessment and remaining decision |
 | --- | --- | --- |
-| Order, appointment, and study progress | RAD100 pp. 55, 61–62, 70, 89–92 | The conceptual distinction is documented. The user confirmed separate appointment/exam progress for our target design. Exact states and correction permissions still need specification for implementation. |
-| Check-in and arrival | RAD100 pp. 62, 70, 85 | The meaning of arrival and timing of check-in are documented, including avoiding check-in for tomorrow merely because an appointment exists. Our patient identity checks and arrival actor still need definition. |
-| Begin/end exam work and image capture | RAD100 pp. 83–92 | Preparation, explicit start, acquisition outside RIS documentation, performed-order verification, and end documentation are described. Our precise required fields and image-handoff completion contract remain open. |
+| Order, appointment, and study progress | RAD100 pp. 55, 61–62, 70, 89–92 | Separate appointment data and exam progress are implemented locally in V 1.0.5. Exact stage, correction, and review-lock rules are resolved by the November 23 user decisions below; resource scheduling remains separate future work. |
+| Check-in and arrival | RAD100 pp. 62, 70, 85 | The meaning of arrival and timing of check-in are documented, including avoiding check-in for tomorrow merely because an appointment exists. The user explicitly excluded a Mark arrived/check-in step from our current simulator on November 23. Any future identity-check or arrival feature would need its own requirements. |
+| Begin/end exam work and image capture | RAD100 pp. 83–92 | Preparation, explicit start, acquisition outside RIS documentation, performed-order verification, and end documentation are described. V 1.0.5 requires clear screening and explicit Begin exam; End exam requires a saved acquisition and performed-exam confirmation, with optional notes. Completed is a manual RIS status. The actual image-handoff contract remains open. |
 | Resource scheduling | RAD100 pp. 55–62, 67–70; RAD400 pp. 55–63, 76–87, 299–301 | Availability, duration, pools, additional resources, and permission-sensitive exceptions are documented concepts. Real resource lists, default durations, operating hours, and exception rules remain project decisions. |
 | Rescheduling versus changing an order | RAD100 pp. 65–66, 71–72, 90 | The distinction is documented. Existing appointment correction remains supported; cancellation, procedure changes, and approval behavior are not implemented by this review. |
 | MRI screening | RAD100 pp. 86–87; RAD400 pp. 295–298 | Screening completion, readiness decisions, alerts, and access control are described. This partially closes the gap; it does not supply a complete MRI safety questionnaire or clearance policy. |
-| Completed exams and corrections | RAD100 pp. 94–96, 179–180 | Retrieval and correction after ending are documented. The user chose a separate Completed/Recent view as a design target. Correction limits and history rules remain to be defined. |
+| Completed exams and corrections | RAD100 pp. 94–96, 179–180 | Retrieval and correction after ending are documented. Completed/Recent and the correction/history rules are implemented locally in V 1.0.5: reopen to Exam Begin before instructor review; opening as instructor locks the study; only instructor send-back releases it. Student ownership and institution limits remain enforced. |
 | Questions and documentation scope | RAD400 pp. 123–128, 138–152, 165–176 | Ordering/scheduling/performing stages, appointment-wide versus exam-specific data, and conditional questions are described. Our wording, requiredness, branching, and treatment of stale answers need explicit rules. |
 | Worklist filtering versus display | RAD400 pp. 216–226; RAD100 pp. 83–86 | Filtering which records appear, choosing their displayed information, and authorizing actions are distinct concerns. Our exact filters and defaults remain user/project decisions. |
 | Workspace roles versus permission checks | CLN pp. 158–179, 189–199 | Presentation, authorization, login identity, clinical attribution, and equipment resources are distinct concepts. This does not replace our server-side permissions or institution/ownership checks. |
@@ -48,19 +48,19 @@ The three new companions substantially improve workflow and configuration covera
 
 ## Confirmed design targets from this review
 
-The user selected the following directions on November 22, 2026. They establish planning intent. They do not mark those features complete or request their implementation as part of this document review.
+The following records the November 22 planning targets, with current implementation notes added for V 1.0.5. The November 23 lifecycle decisions below supersede the earlier arrival requirement and resolve the implemented start/end/completion/correction rules. Resource scheduling and grading remain planning targets.
 
 1. **Full student workflow.** Students should be able to practice order review, scheduling, and technologist responsibilities within their learning role. A separate production-style job role for each task is not currently required. Clarify how instructor supervision, assignments, and permissions apply when implementing a new stage.
 2. **Resource scheduling.** Plan scanner/room selection, exam duration, available slots, and conflict handling. Before implementing, clarify resource definitions, operating hours, duration rules, capacity, maintenance, and whether overbooking is ever permitted. Current implementation remains appointment date/time without resource capacity management.
-3. **Explicit exam stages.** Plan arrival, preparation/screening, exam start, exam end, and image handoff. Before implementation, agree on each transition's trigger, required information, allowed roles, blocking checks, reversals, and recorded timestamps. Current Ordered / Screening hold / Ready for console behavior remains until deliberately changed.
+3. **Explicit exam stages.** Implemented locally in V 1.0.5 as Ordered → Scheduled → Screened → Exam Begin → Exam End → Completed, with a separate screening-hold blocker. The user removed arrival/check-in from scope. Begin/end prerequisites, timestamps, and correction transitions are resolved below; actual PACS image handoff remains unimplemented.
 
 The subsequent review of RAD100, RAD400, and CLN251–252 produced three additional confirmed targets:
 
 4. **Instructor-selectable scheduling mode.** Plan isolated student availability for individual practice and a shared cohort schedule for collaborative exercises. Define the assignment/session scope and switching rules before implementation. Neither mode may cross institution boundaries or silently expand access to other students' orders.
-5. **Separate appointment and exam progress.** Track scheduling/arrival independently from preparation, exam start, and exam completion. Agree on exact states and transition prerequisites when implementing the lifecycle. Keep screening readiness as a distinct concept.
-6. **Completed/Recent exams view.** Keep ended exams out of the active technologist workflow while retaining a separate route for review and permitted corrections. Define who can correct, reopen, or reverse an exam and what audit evidence is retained before implementing.
+5. **Separate appointment and exam progress.** Implemented locally: appointment date/time and revisions, screening readiness, and exam-workflow state are stored separately. There is no arrival state in the current user-approved workflow.
+6. **Completed/Recent exams view.** Implemented locally: Exam End/Completed studies leave the active worklist and are retrieved by appointment date. Accessible unlocked cases can reopen to Exam Begin; instructor opening locks them, and instructor send-back releases correction. Workflow history retains actors, times, end notes and correction reasons.
 
-These targets do not change current appointment, worklist, or status behavior as part of this review.
+The original November 22 reference review itself did not implement these targets. The later user-requested V 1.0.5 lifecycle change implements the stages and correction behavior described above; resource modes, full PACS transport, assignments and grading remain pending.
 
 MRI remains the initial-release modality. CT remains deferred until after MRI go-live and institutional integration, as specified in the milestone plan. These references do not expand that scope automatically.
 
@@ -99,7 +99,7 @@ For a task touching one of these areas, explain that the exact behavior remains 
 | Area | Clarification needed before dependent implementation |
 | --- | --- |
 | Resource scheduling | Instructor-selectable isolated/shared scheduling is confirmed. Clarify scanners/rooms, schedule scope, institution/department ownership, horizon, duration, slot interval, capacity, conflicts, maintenance, holidays, overrides, and changes of mode. |
-| Arrival and exam lifecycle | The sources now explain check-in, begin/end, and correction concepts. Clarify exact simulator states, who marks arrival, no-show/cancellation/late/add-on behavior, preparation requirements, timestamps, and transition reversals. Separate appointment/exam progress and a Completed/Recent view are confirmed targets. |
+| Additional lifecycle exceptions | The current no-arrival sequence, begin/end/completion prerequisites, review lock, send-back and recent view are resolved and implemented locally in V 1.0.5. No-show, cancellation, late/add-on handling, procedure changes, advanced preparation and other reversal workflows remain unspecified and unimplemented. Do not re-ask the resolved lifecycle decisions. |
 | MRI screening and protocol approval | Required questions and documents, escalation responsibilities, how a hold is cleared, allowed exceptions, and which prerequisites block the next stage. Do not invent clinical thresholds or clearance rules. |
 | MRI console and image simulation | Actual console parameter ranges and dependencies, image effects, safety limits, sequence behavior, and image-quality validation. None of the five supplied PDFs is a full scanner operation or MRI physics specification. Consult the existing coverage inventory and obtain task-specific requirements. |
 | Instructor assessment | Learning objectives, pass/fail rules, rubric weights, correction credit, deliberate error frequency, supervision, and feedback timing. These educational requirements are not defined for MedImagingSim by the source training exercises or answer keys. |
@@ -121,3 +121,10 @@ November 22, 2026 documentation delivery decision: the user explicitly requested
 
 
 November 23, 2026 — V 1.0.4 worklist decision. The user requested an MRN column and automatic appointment-date filtering without a Show appointments button. RAD400 PDF p. 219 supports the distinction between row-selection criteria and display columns; the exact column and interaction are explicit project decisions. Use the saved intake Patient ID / MRN, with Not supplied for older exams lacking it. Preserve existing date eligibility, role/ownership, and institution checks.
+
+
+## November 23, 2026 — V 1.0.6 independent classroom sessions
+
+The user explicitly requested support for at least 30 concurrent users, each in an independent session. This is a runtime-capacity and isolation requirement, not a new clinical/scheduling transition, and no source-product training configuration is used as a capacity specification. Local V 1.0.6 has passed full 60-student credential/session workflows through the real request handler and a real localhost HTTP server using disposable databases. An extra pre-provisioned second-institution session verifies tenant isolation; no institution-picker behavior is added.
+
+Per-user session tokens, student ownership filters, institution context, expiry, role authorization and token-specific sign-out are retained. Defaults now permit 64 waiting scan plans in addition to a CPU-aware 1–4 worker pool. Validated host overrides allow 1–8 workers and 1–256 waiting plans. Disk SQLite uses WAL with FULL durability and a five-second busy timeout; snapshot readers and consistent online backup are tested alongside writes. One local application service is the classroom configuration. Shared cohort resource availability, multiple replicas, grading and a large institutional pilot remain separate planned work. Browser profiles/tabs are documented accurately: tabs in one profile share identity, and one account shares saved cases even across separate tokens. HTTPS/ThinkPad classroom capacity remains unverified until the host/client exercise in docs/LAN_HOSTING.md is completed.

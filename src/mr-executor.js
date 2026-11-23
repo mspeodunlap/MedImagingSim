@@ -1,8 +1,9 @@
-import { availableParallelism } from "node:os";
 import { Worker } from "node:worker_threads";
+import { readScanLimits } from "./runtime-limits.js";
 
-const workerLimit = Math.min(4, Math.max(1, availableParallelism() - 1));
-const queueLimit = 32;
+export const scanLimits = readScanLimits();
+const workerLimit = scanLimits.workers;
+const queueLimit = scanLimits.waiting;
 const workers = new Set();
 const queue = [];
 

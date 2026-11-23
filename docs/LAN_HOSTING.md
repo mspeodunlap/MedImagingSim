@@ -181,6 +181,10 @@ MEDSIM_DB="$HOST/data/medimagingsim.sqlite" "$NODE" "$HOST/current/src/create-us
 
 ## 5. Publish builds from the development Mac
 
+**V 1.0.5 handoff — November 23, 2026:** the user will handle the pending commit/push. No release commit, successful push, active host SHA, or live V 1.0.5 is verified from this session. Include the new lifecycle source/tests and documentation with the pending work; exclude local databases, credentials and unrelated edits. Check the working tree before committing, and never force-push. Routine automatic publication remains authorized for later tasks when execution access permits it.
+
+After the push, verify the active commit and HTTPS sign-in from a separate LAN device. Test Scheduled RIS rows and unscheduled exclusion; clear screening → Begin exam → saved scan → performed-exam confirmation → End exam → Completed/Recent → Mark completed; then reopen, end/complete, instructor-open lock, and instructor Send back for correction. Verify that a locked case rejects student/admin corrections and that the sent-back student can resume at Exam Begin. Confirm the original saved case/scan/selection survives. Completed records RIS progress only; a missing PACS transfer is expected in this release. Record the actual commit, version, device, browser and result in MILESTONE_PLAN.md. Screenshot/browser checks remain pending as recorded there.
+
 The development assistant is authorized to commit and push each completed, checked feature or fix automatically, with a descriptive commit message, following `AGENTS.md`. Its execution environment must permit writes to the repository's `.git` directory and network access to GitHub. macOS file ownership alone does not override a read-only session sandbox. Adjust access through the development app's permissions controls; changing who reviews approvals alone does not expand file or network access. Report publication as pending until a push succeeds, and report ThinkPad/LAN verification separately.
 
 For the existing build and every new build, run `npm test` in `~/Developer/MedImagingSim`, commit the release files, and push or merge to GitHub `main`. In Terminal, use `git push origin main` after committing on `main`. Keep development accounts and SQLite data local.
@@ -229,3 +233,30 @@ To undo the override, remove `/etc/systemd/logind.conf.d/90-medimagingsim-lid.co
 - When the publisher itself changes, refresh the installed copies in section 3 from the approved release. Regular deploys switch the application code. Check disk use periodically for growing release directories and backups.
 
 See the [macOS fallback runbook](MACOS_LAN_HOSTING.md) if the tester host changes in the future.
+
+
+## Concurrent classroom operation
+
+**Current candidate: V 1.0.6 (November 23, 2026).** Defaults support 30-user classroom use with headroom, verified locally through 60-student request-handler and real localhost HTTP workloads. The user handles the pending commit/push. No deployed V 1.0.6 or ThinkPad/LAN load result has been verified from this session. Earlier dated V 1.0.5 notes above remain historical.
+
+| Setting | Default | Accepted override / effect |
+| --- | --- | --- |
+| `MEDSIM_SCAN_WORKERS` | CPU-aware: `min(4, max(1, availableParallelism() - 1))` | Integer 1–8. CPU work runs in worker threads, not the request thread. |
+| `MEDSIM_SCAN_QUEUE_LIMIT` | 64 waiting scan plans | Integer 1–256. In addition to active workers; excessive backlog returns HTTP 503 with Retry-After: 2. |
+| Active sessions | No classroom-count cap | Separate random session tokens, server-side institution context, eight-hour expiry. One sign-out removes only that token. |
+| Sign-in protection | 64 in-flight checks; 20 attempts per username per minute | Excess attempts return HTTP 429. This is separate from the number of signed-in users. |
+| Disk database | SQLite WAL; synchronous FULL; busy timeout 5,000 ms | Use local writable storage. One writer commits at a time; snapshot readers can coexist with writes. |
+
+Defaults require no changes to the existing service unit. If tuning is necessary, add the two `Environment=` settings through a service override, run `systemctl --user daemon-reload`, and restart `medimagingsim.service` during a class break. Restarting interrupts unfinished requests/scans; it preserves committed work and unexpired stored sessions. The startup log reports worker and queue limits. Invalid overrides fail startup instead of silently exceeding a limit. More workers can increase host contention; a larger queue does not create more CPU capacity. Test after any override and avoid values below classroom demand without informing the instructor.
+
+Provision distinct student accounts before the class; account creation remains a host command, not a browser registration screen. Each learner uses their own profile/device. Separate tabs in one profile share cookies. The local workload uses 60 real credential sign-ins at the handler and a separately provisioned second-institution session for isolation checks; it does not add an institution picker or SSO capability.
+
+The deployment updater already uses the SQLite online backup API, which includes committed WAL data. Do not back up a running WAL database by copying only `medimagingsim.sqlite`. Its `-wal` and `-shm` files are runtime state; never delete them while the app or another database connection is active. Keep `/data` and credentials out of Git. Do not put this database on network-mounted/shared storage or start multiple app replicas against it as a substitute for the planned hosted architecture.
+
+Before calling the host classroom-ready:
+
+1. On the intended checked-out release, run `npm test` and `npm run test:classroom`. The classroom command runs the workload twice on new disposable databases: through the request handler and through a real localhost HTTP server with real worker generation. It never opens the tester database and does not measure Caddy/HTTPS or the LAN. If the environment forbids local listeners, the HTTP case is explicitly skipped rather than reported as verified.
+2. Verify the deployed commit, startup worker/queue log, and V 1.0.6 over HTTPS from a separate LAN client.
+3. Have at least 30 distinct student accounts work concurrently, including sign-in, separate intake/scheduling, screening/begin, simultaneous scans, selection, end/completion, and reopening. Verify that worklists, images and writes remain scoped correctly. Use fictional cases and retain the tester database.
+4. While scans run, check worklist responsiveness and instructor review under the agreed roles. Record client count, host CPU/RAM, worker/queue settings, request/scan timing, busy/error rate, and lost/duplicate or cross-user data checks. Confirm signing out one session leaves another active and committed work survives a planned restart.
+5. Record actual host results and any limits in MILESTONE_PLAN.md. Until that check passes, local 60-user measurements demonstrate correctness and headroom in development, not a response-time guarantee for the ThinkPad. Larger institutional pilots and multi-replica hosting retain their separate architecture/load requirements.

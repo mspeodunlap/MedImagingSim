@@ -1,12 +1,16 @@
 # Administrator quick tips
 
-**MedImagingSim V 1.0.5 · November 23, 2026** · [Full guide](../USER_GUIDE.md#administrator-instructions)
+**MedImagingSim V 1.0.6 · November 23, 2026** · [Full guide](../USER_GUIDE.md#administrator-instructions)
 
 **Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Confirm Admin in the header. Admin actions span accessible orders within the current institution.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Screenshot refresh pending for V 1.0.5.** Current screen images are omitted until browser capture is available.
+**Release status:** instructions match local V 1.0.6. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.6.** Current screen images are omitted; browser/print verification remains pending.
+
+## Concurrent classroom use
+
+The default build provides 64 waiting scan slots plus 1–4 CPU workers and independent signed-in sessions; a local 60-student workflow exercise passed. Use separate student accounts and browser profiles/devices. Follow the hosting runbook for worker/queue tuning, WAL-safe backups and ThinkPad classroom validation. Active sessions are not capped at 30 or 64; sign-in bursts and scan backlog have separate safeguards.
 
 ## Support a learner
 
@@ -23,14 +27,14 @@ Use **Training help** in the simulator for the guide section and your role’s t
 
 **Review lock:** an instructor opening an ended/completed study locks corrections for every role. Admin cannot reopen, change acquisitions or selection, mark completed, or release that lock. Only an instructor's Send back for correction action with a reason unlocks it and returns it to Exam Begin. Instructor home access under an admin account does not give the admin an instructor review identity.
 
-Screen images are pending refresh for V 1.0.5; browser/LAN verification remains pending. See the [detailed lifecycle steps](../USER_GUIDE.md#end-complete-review-and-correct-an-exam).
+See the [detailed lifecycle steps](../USER_GUIDE.md#end-complete-review-and-correct-an-exam).
 
 ## Release check
 
 | Check | Evidence |
 | --- | --- |
 | Deployment finished | Active ThinkPad commit matches the intended GitHub commit. |
-| Correct build | Version below sign-in matches the release; this guide is V 1.0.5. |
+| Correct build | Version below sign-in matches the release; this guide is V 1.0.6. |
 | LAN access | A separate network device can sign in over HTTPS. |
 | Workflow works | Changed feature behaves as documented under the appropriate roles. |
 | Saved work survives | Existing order, screening, scans, and PACS selection still open; check the appointment date. |

@@ -1,14 +1,18 @@
 # Student quick tips
 
-**MedImagingSim V 1.0.5 · November 23, 2026** · [Full guide](../USER_GUIDE.md)
+**MedImagingSim V 1.0.6 · November 23, 2026** · [Full guide](../USER_GUIDE.md)
 
-**Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Check V 1.0.5 below the sign-in box, sign in with your supplied account, and confirm Student in the header.
+**Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Check V 1.0.6 below the sign-in box, sign in with your supplied account, and confirm Student in the header.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Screenshot refresh pending for V 1.0.5.** Current screen images are omitted until browser capture is available.
+**Release status:** instructions match local V 1.0.6. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.6.** Current screen images are omitted; browser/print verification remains pending.
 
-## From request to scan
+## Concurrent classroom use
+
+Use your own student account and browser profile/device. Tabs in the same profile share sign-in; a shared account shares saved cases. Other students cannot access your cases. If the scanner is busy, wait briefly and retry Run scan; sign-out affects only your current session.
+
+## From order to completion
 
 1. **Order queue:** select Quick order, use Manual order, or create a Practice scenario. Open the request number.
 2. **Review:** check first/last name, MRN, DOB, recorded sex, exam, and reason. If details are missing, use Return for missing information. Correct only from the exercise data and Save corrections.
@@ -26,7 +30,7 @@ Use **Training help** in the simulator for the guide section and your role’s t
 
 **Review lock:** an instructor opening an ended/completed study locks all corrections. Only an instructor can Send back for correction with a reason. After send-back, read Workflow history and resume from Exam Begin. Review images is read-only for saved data; preview window/level changes are temporary. No grading is assigned yet.
 
-Screen images are pending refresh for V 1.0.5; browser/LAN verification remains pending. See the [detailed lifecycle steps](../USER_GUIDE.md#end-complete-review-and-correct-an-exam).
+See the [detailed lifecycle steps](../USER_GUIDE.md#end-complete-review-and-correct-an-exam).
 
 ## Remember
 
@@ -44,4 +48,4 @@ Screen images are pending refresh for V 1.0.5; browser/LAN verification remains 
 | Invalid coverage | Reduce stack span or move its center toward zero. |
 | Returning/reloading | Recheck the preset/plan; unacquired edits are not a saved protocol. |
 
-**Capture for help:** version, role, accession, date filter, browser, steps, and error. Sign out on shared devices. Use fictional data; screenshot names/dates are examples.
+**Capture for help:** version, role, accession, date filter, browser, steps, and error. Sign out on shared devices. Use fictional data and the appointment date supplied for the exercise.

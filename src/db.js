@@ -146,6 +146,11 @@ export function openDatabase(filename = process.env.MEDSIM_DB ?? "data/medimagin
   const db = new DatabaseSync(filename);
   try {
     db.exec("PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = ON;");
+    // A long-lived reader (for example a backup) must not block classroom writes.
+    // In-memory fixtures retain SQLite's memory journal; disk databases use WAL.
+    const journal = db.prepare("PRAGMA journal_mode = WAL").get().journal_mode;
+    if (!["wal", "memory"].includes(journal)) throw new Error("The database requires WAL journaling on local writable storage.");
+    db.exec("PRAGMA synchronous = FULL;");
     migrateUsers(db);
     db.exec(`
     CREATE TABLE IF NOT EXISTS sessions (

@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { createRequestHandler } from "../src/app.js";
 import { createUser, openDatabase } from "../src/db.js";
 import { defaultPlan } from "../src/mr.js";
-import { generateMr, ScanQueueFull } from "../src/mr-executor.js";
+import { generateMr, ScanQueueFull, scanLimits } from "../src/mr-executor.js";
 import { requestThrough } from "../test-support/request.js";
 
 test("a classroom sign-in burst fits the local limit while repeated sign-ins to one account are throttled", async () => {
@@ -25,10 +25,12 @@ test("a classroom sign-in burst fits the local limit while repeated sign-ins to 
 
 test("MRI workers bound the scan backlog and accept more work after draining", async () => {
   const plan = { ...defaultPlan, slices: 1 };
-  const burst = await Promise.allSettled(Array.from({ length: 40 }, () => generateMr(plan)));
+  const capacity = scanLimits.waiting + scanLimits.workers;
+  const burst = await Promise.allSettled(Array.from({ length: capacity + 4 }, () => generateMr(plan)));
   const completed = burst.filter(task => task.status === "fulfilled");
   const rejected = burst.filter(task => task.status === "rejected");
-  assert.ok(completed.length >= 33 && completed.length <= 36);
+  assert.equal(completed.length, capacity);
+  assert.equal(rejected.length, 4);
   assert.ok(rejected.every(task => task.reason instanceof ScanQueueFull));
   assert.ok(completed.every(task => task.value.pixels.length === plan.matrix ** 2));
   assert.equal((await generateMr(plan)).pixels.length, plan.matrix ** 2);
