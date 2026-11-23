@@ -30,7 +30,7 @@ export function orderQueue(user, requests, key, message = "", draft) {
     return `<tr><td><a href="/queue/${request.id}">Order ${request.id}</a></td>
       <td>${escape(details.patientName || "Not supplied")}</td>
       <td>${escape(exams[details.examKey]?.examName ?? "Not supplied")}</td>
-      ${privileged ? `<td>${escape(request.owner)}</td>` : ""}<td>${request.last_action === "needs_information" ? "Needs information" : "Awaiting review"}</td>
+      ${privileged ? `<td>${escape(request.owner)}</td>` : ""}<td><span class="status ordered">Ordered</span><p>${request.last_action === "needs_information" ? "Needs information" : "Awaiting review"}</p></td>
       <td>${escape(request.created_at)} UTC</td></tr>`;
   }).join("");
   return page("Order queue", `<div class="page-title"><h1>Order queue</h1>
@@ -73,7 +73,7 @@ export function intakeReview(user, request, reviews, message = "", draft, { time
       ${checked ? `<p>Verified — ${escape(checked)}</p>` : ""}</li>`;
   }).join("");
   return page("Order review", `<a class="back" href="/queue">← Back to order queue</a>
-    <div class="page-title"><h1>Order review</h1><p>Order ${request.id} · ${scheduled ? "Scheduled" : "Awaiting review"}</p></div>
+    <div class="page-title"><h1>Order review</h1><p>Order ${request.id} · ${scheduled ? "Scheduled" : "Ordered · Awaiting review"}</p></div>
     ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
     ${scheduled ? `<section class="panel"><p>Scheduled under ${request.accession}.</p><p>Appointment: ${escape(request.appointment_date)} ${escape(request.appointment_time)} (${escape(timeZone)})</p><a href="/ris?date=${escape(request.appointment_date)}">Open RIS worklist</a></section>`
     : `<form method="post" action="/queue/${request.id}" class="panel stack">

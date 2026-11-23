@@ -3,10 +3,11 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { promisify } from "node:util";
-import { canUseWorkspace, roles } from "./roles.js";
+import { roles } from "./roles.js";
 import { ageAtToday } from "./intake.js";
 import { exams } from "./exams.js";
 import { defaultTimeZone, futureOrder, localAppointment } from "./scheduling.js";
+import { canOperate, migrateWorkflow, recordExamEvent } from "./lifecycle.js";
 
 const sessionDurationMs = 8 * 60 * 60 * 1000;
 const sessionDigest = token => createHash("sha256").update(token).digest("hex");
@@ -226,6 +227,7 @@ export function openDatabase(filename = process.env.MEDSIM_DB ?? "data/medimagin
       ) STRICT;
       CREATE INDEX IF NOT EXISTS reviews_request ON order_reviews(request_id, id);
     `);
+    migrateWorkflow(db);
     return db;
   } catch (error) {
     db.close();
@@ -298,44 +300,71 @@ export function launchOrder(db, user, scenario, exam, launchKey, appointment = l
     ON CONFLICT (student_id, launch_key) DO NOTHING
   `).run(accession, studentId, scenario.examKey, exam.modality, exam.examName, scenario.patient,
     scenario.age, scenario.indication, scenario.history, scopedKey, institutionId, appointment.date, appointment.time, institutionId, studentId);
-  return db.prepare("SELECT accession FROM orders WHERE institution_id = ? AND student_id = ? AND launch_key = ?")
+  const saved = db.prepare("SELECT accession FROM orders WHERE institution_id = ? AND student_id = ? AND launch_key = ?")
     .get(institutionId, studentId, scopedKey)?.accession;
+  if (saved) db.prepare("INSERT INTO exam_workflow (accession, state) VALUES (?, 'scheduled') ON CONFLICT DO NOTHING").run(saved);
+  return saved;
 }
 
-export function visibleOrders(db, user, date = localAppointment(new Date(), institutionTimeZone(db, user.institutionId)).date) {
-  return db.prepare(`SELECT o.*, u.username AS owner,
-    (SELECT id FROM order_requests WHERE accession = o.accession) AS intake_id
+export function visibleOrders(db, user, date = localAppointment(new Date(), institutionTimeZone(db, user.institutionId)).date, recent = false) {
+  return db.prepare(`SELECT o.*, w.state AS workflow_status, w.revision AS workflow_revision,
+    w.locked_by, w.locked_at, w.correction_cycle, u.username AS owner,
+    r.id AS intake_id, json_extract(r.details, '$.patientId') AS patient_mrn
     FROM orders o JOIN users u ON u.id = o.student_id
+    JOIN exam_workflow w ON w.accession = o.accession
+    LEFT JOIN order_requests r ON r.accession = o.accession
     WHERE o.institution_id = ? AND (? <> 'student' OR o.student_id = ?) AND o.appointment_date = ?
+      AND (w.state IN ('exam_end', 'completed')) = ?
     ORDER BY o.appointment_time, o.id
-  `).all(user.institutionId, user.role, user.id, date);
+  `).all(user.institutionId, user.role, user.id, date, Number(recent));
 }
 
 export function accessibleOrder(db, user, accession) {
-  if (!canUseWorkspace(user, "student")) return undefined;
-  if (user.role === "admin") {
+  if (!user || !roles.includes(user.role)) return undefined;
+  if (user.role !== "student") {
     return db.prepare(`
-      SELECT o.*, (SELECT time_zone FROM institutions WHERE id = o.institution_id) AS time_zone,
+      SELECT o.*, w.state AS workflow_status, w.revision AS workflow_revision, w.begun_at, w.ended_at,
+        w.completed_at, w.locked_by, w.locked_at, w.correction_cycle, w.performed_verified, w.notes,
+        (SELECT time_zone FROM institutions WHERE id = o.institution_id) AS time_zone,
         r.details AS intake_details, r.id AS intake_id FROM orders o
+      JOIN exam_workflow w ON w.accession = o.accession
       LEFT JOIN order_requests r ON r.accession = o.accession
       WHERE o.institution_id = ? AND o.accession = ?
     `).get(user.institutionId, accession);
   }
   return db.prepare(`
-    SELECT o.*, (SELECT time_zone FROM institutions WHERE id = o.institution_id) AS time_zone,
+    SELECT o.*, w.state AS workflow_status, w.revision AS workflow_revision, w.begun_at, w.ended_at,
+        w.completed_at, w.locked_by, w.locked_at, w.correction_cycle, w.performed_verified, w.notes,
+        (SELECT time_zone FROM institutions WHERE id = o.institution_id) AS time_zone,
         r.details AS intake_details, r.id AS intake_id FROM orders o
+    JOIN exam_workflow w ON w.accession = o.accession
     LEFT JOIN order_requests r ON r.accession = o.accession
     WHERE o.institution_id = ? AND o.student_id = ? AND o.accession = ?
   `)
     .get(user.institutionId, user.id, accession);
 }
 
-export function saveScreening(db, order, screening) {
+export function saveScreening(db, order, screening, actorId = order.student_id) {
   if (futureOrder(order)) return { changes: 0 };
-  return db.prepare(`
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    const result = db.prepare(`
     UPDATE orders SET status = ?, answers = ?, screened_at = CURRENT_TIMESTAMP
     WHERE institution_id = ? AND accession = ? AND status = 'ordered'
+      AND EXISTS (SELECT 1 FROM exam_workflow w WHERE w.accession = orders.accession
+        AND w.state = 'scheduled' AND w.locked_by IS NULL)
   `).run(screening.status, JSON.stringify(screening.answers), order.institution_id, order.accession);
+    if (result.changes) {
+      const next = screening.status === "ready" ? "screened" : "scheduled";
+      db.prepare("UPDATE exam_workflow SET state = ?, revision = revision + 1 WHERE accession = ?").run(next, order.accession);
+      recordExamEvent(db, order.accession, actorId, screening.status === "held" ? "screening_hold" : "screening", "scheduled", next);
+    }
+    db.exec("COMMIT");
+    return result;
+  } catch (error) {
+    if (db.isTransaction) db.exec("ROLLBACK");
+    throw error;
+  }
 }
 
 export function listAcquisitions(db, institutionId, accession) {
@@ -361,20 +390,23 @@ export function findScan(db, institutionId, accession, scanKey) {
   `).get(institutionId, accession, scanKey);
 }
 
-export function saveAcquisition(db, user, accession, scanKey, acquisition) {
+export function saveAcquisition(db, user, accession, scanKey, acquisition, expectedRevision) {
   const current = accessibleOrder(db, user, accession);
-  if (!current || futureOrder(current)) return undefined;
+  if (!current || futureOrder(current) || current.workflow_status !== "exam_begin" || !canOperate(user, current)) return undefined;
+  if (expectedRevision !== undefined && current.workflow_revision !== expectedRevision) return undefined;
   db.prepare(`
     INSERT INTO acquisitions (accession, scan_key, operator_id, source_version, engine_version,
                               geometry, parameters, pixels)
     SELECT o.accession, ?, m.user_id, ?, ?, ?, ?, ?
     FROM orders AS o JOIN institution_memberships AS m ON m.institution_id = o.institution_id
     WHERE o.institution_id = ? AND o.accession = ? AND o.status = 'ready' AND m.user_id = ?
-      AND (m.role = 'admin' OR (m.role = 'student' AND m.user_id = o.student_id))
+      AND (m.role = 'admin' OR (m.role = 'student' AND m.user_id = o.student_id)
+        OR (m.role = 'instructor' AND EXISTS (SELECT 1 FROM exam_workflow w WHERE w.accession = o.accession AND w.correction_cycle > 0)))
+      AND EXISTS (SELECT 1 FROM exam_workflow w WHERE w.accession = o.accession AND w.state = 'exam_begin' AND w.locked_by IS NULL AND w.revision = ?)
     ON CONFLICT (accession, scan_key) DO NOTHING
   `).run(scanKey, acquisition.sourceVersion, acquisition.engineVersion,
     JSON.stringify(acquisition.geometry), JSON.stringify(acquisition.parameters), acquisition.pixels,
-    user.institutionId, accession, user.id);
+    user.institutionId, accession, user.id, current.workflow_revision);
   return findScan(db, user.institutionId, accession, scanKey)?.id;
 }
 
@@ -399,6 +431,7 @@ export function savePacsSelection(db, institutionId, accession, id, { width, lev
     SELECT a.accession, a.id, ?, ?
     FROM acquisitions AS a JOIN orders AS o ON o.accession = a.accession
     WHERE o.institution_id = ? AND a.accession = ? AND a.id = ?
+      AND EXISTS (SELECT 1 FROM exam_workflow w WHERE w.accession = o.accession AND w.state = 'exam_begin' AND w.locked_by IS NULL)
     ON CONFLICT (accession) DO UPDATE SET acquisition_id = excluded.acquisition_id,
       window_width = excluded.window_width, window_level = excluded.window_level
   `).run(width, level, institutionId, accession, id).changes > 0;

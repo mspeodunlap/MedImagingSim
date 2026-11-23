@@ -181,6 +181,8 @@ MEDSIM_DB="$HOST/data/medimagingsim.sqlite" "$NODE" "$HOST/current/src/create-us
 
 ## 5. Publish builds from the development Mac
 
+The development assistant is authorized to commit and push each completed, checked feature or fix automatically, with a descriptive commit message, following `AGENTS.md`. Its execution environment must permit writes to the repository's `.git` directory and network access to GitHub. macOS file ownership alone does not override a read-only session sandbox. Adjust access through the development app's permissions controls; changing who reviews approvals alone does not expand file or network access. Report publication as pending until a push succeeds, and report ThinkPad/LAN verification separately.
+
 For the existing build and every new build, run `npm test` in `~/Developer/MedImagingSim`, commit the release files, and push or merge to GitHub `main`. In Terminal, use `git push origin main` after committing on `main`. Keep development accounts and SQLite data local.
 
 On the ThinkPad the timer stages the new commit, runs its tests, checks a database migration against a snapshot, switches the release link, then restarts the application. A test or migration failure leaves the previous release live. The deployment itself can briefly interrupt an in-progress scan. The live tester database stays at `~/MedImagingSim-host/data/medimagingsim.sqlite`.

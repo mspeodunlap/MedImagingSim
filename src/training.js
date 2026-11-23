@@ -10,9 +10,11 @@ const topics = {
   "Order queue": ["Order queue guide", "review-and-schedule-an-incoming-order"],
   "Order review": ["Order review guide", "review-and-schedule-an-incoming-order"],
   "RIS worklist": ["RIS worklist guide", "find-and-screen-an-exam-in-ris"],
+  "Completed/Recent": ["Exam lifecycle guide", "end-complete-review-and-correct-an-exam"],
   "MRI console": ["MRI console guide", "plan-and-run-an-mri-scan"],
   "Instructor home": ["Instructor guide", "instructor-instructions"],
   screening: ["Screening guide", "find-and-screen-an-exam-in-ris"],
+  lifecycle: ["Exam lifecycle guide", "end-complete-review-and-correct-an-exam"],
 };
 const link = (path, label) => `<a href="${path}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`;
 export function trainingHelp(user, topic) {

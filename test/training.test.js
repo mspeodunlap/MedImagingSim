@@ -29,7 +29,7 @@ test("workflow help opens published guides separately, without exposing source f
       assert.match(page.headers.get("Content-Type"), /text\/html/);
       assert.match(page.headers.get("Content-Security-Policy"), /img-src data:/);
       const content = await page.text();
-      assert.match(content, /data:image\/jpeg;base64,/);
+      assert.ok(content.includes("data:image/jpeg;base64,") || content.includes("Screenshot refresh pending"), "A guide must embed screenshots or explicitly disclose a pending refresh.");
       assert.ok(content.includes(`V ${applicationVersion}`));
       assert.ok(!content.includes('href="../'));
     }

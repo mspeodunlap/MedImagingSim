@@ -92,7 +92,7 @@ function localizers(base) {
   </section>`;
 }
 
-export function acquisitionViewer(base, series, selection) {
+export function acquisitionViewer(base, series, selection, readOnly = false) {
   if (!series) return '<div class="mr-preview-empty"><p>Run a scan to preview its slices.</p></div>';
   const geometry = JSON.parse(series.geometry);
   const parameters = JSON.parse(series.parameters);
@@ -124,19 +124,19 @@ export function acquisitionViewer(base, series, selection) {
           ${parameters.satAxis === "none" ? "" : `<dt>Spatial saturation</dt><dd>Band center ${parameters.satOffset} mm · ${parameters.satWidth} mm thick</dd>`}`}
         </dl>
       </details>
-        <form id="mr-presentation" action="${base}/selection/${series.id}" method="post" class="stack">
+        <form id="mr-presentation" action="${base}/selection/${series.id}" method="post" class="stack"${readOnly ? ' data-preview-only' : ""}>
           <div class="mr-fields">
             ${Object.entries(presentationFields).map(([key, field]) => numberInput(key, field, presentation[key])).join("")}
           </div>
-          <button>Save PACS selection</button>
+          ${readOnly ? '<p>Image review only. Window and level changes here are temporary.</p>' : '<button>Save PACS selection</button>'}
         </form>
   </div>`;
 }
 
-function protocolPanel(base, plan, acquisitions, viewed, selection) {
+function protocolPanel(base, plan, acquisitions, viewed, selection, readOnly) {
   return `<section class="panel mr-protocol">
     <h2>Protocol and sequences</h2>
-    <label>Preset<select name="preset" form="mr-plan">${Object.entries(presets).map(([key, preset]) => `
+    <label>Preset<select name="preset" form="mr-plan"${readOnly ? " disabled" : ""}>${Object.entries(presets).map(([key, preset]) => `
       <option value="${key}" data-tr="${preset.tr}" data-te="${preset.te}" data-ti="${preset.ti ?? ""}"
         data-flip="${preset.flip ?? ""}" data-echo-train="${preset.echoTrain ?? ""}" data-sequence="${preset.sequence}"
         ${key === plan.preset ? "selected" : ""}>${preset.label}</option>`).join("")}</select></label>
@@ -154,7 +154,7 @@ function protocolPanel(base, plan, acquisitions, viewed, selection) {
   </section>`;
 }
 
-export function mrConsole(user, handoff, order, { acquisitions, selection, viewed, scanKey, message, plan }) {
+export function mrConsole(user, handoff, order, { acquisitions, selection, viewed, scanKey, message, plan, readOnly = false }) {
   const { accession, consolePath } = handoff;
   const base = `${consolePath}/${accession}`;
   const scanPlan = plan ?? planFromAcquisition(viewed);
@@ -164,15 +164,16 @@ export function mrConsole(user, handoff, order, { acquisitions, selection, viewe
       <p class="muted">Synthetic brain phantom · Training simulation</p>
     </header>
     ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
+    ${readOnly ? '<p class="notice">Image review only. Reopen the study for correction to acquire images or save a PACS selection. Instructor review locks the study until it is sent back.</p>' : ""}
     <div class="mr-layout">
       ${patientExam(order)}
-      ${localizers(base)}
-      ${protocolPanel(base, scanPlan, acquisitions, viewed, selection)}
-      ${planner(base, scanPlan, scanKey)}
+      ${readOnly ? "" : localizers(base)}
+      ${protocolPanel(base, scanPlan, acquisitions, viewed, selection, readOnly)}
+      ${readOnly ? "" : planner(base, scanPlan, scanKey)}
       <section class="panel mr-preview" id="mr-preview" aria-labelledby="mr-preview-title" data-base="${base}">
         <h2 id="mr-preview-title">Series preview</h2>
         <p class="mr-hint" id="mr-preview-status" role="status" hidden></p>
-        <div id="mr-preview-content">${acquisitionViewer(base, viewed, selection)}</div>
+        <div id="mr-preview-content">${acquisitionViewer(base, viewed, selection, readOnly)}</div>
       </section>
-    </div>`, user, { script: "/mr-console.js" });
+    </div>`, user, { script: "/mr-console.js", helpTopic: readOnly ? "lifecycle" : "MRI console" });
 }

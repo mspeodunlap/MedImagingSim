@@ -58,6 +58,8 @@ test("a screened order retains repeat scan bytes, geometry and the PACS selectio
     assert.equal((await request(order + "/screening", student.cookie, clear)).status, 303);
     assert.equal((await request(`/ris/orders/${held}/screening`, student.cookie, { ...clear, implant: "yes" })).status, 303);
     assert.equal((await request(`/ris/orders/${differentAccession}/screening`, student.cookie, clear)).status, 303);
+    assert.equal((await request(order + "/begin", student.cookie, { workflowRevision: 1 })).status, 303);
+    assert.equal((await request(`/ris/orders/${differentAccession}/begin`, student.cookie, { workflowRevision: 1 })).status, 303);
     assert.ok((await (await request(order, student.cookie)).text()).includes(`href="${consolePath}"`));
     assert.doesNotMatch(await (await request(`/ris/orders/${held}`, student.cookie)).text(), /Open MRI console/);
     assert.equal((await request(heldConsole, admin.cookie)).status, 404);

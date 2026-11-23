@@ -87,7 +87,7 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
     assert.match(routinePath, /^\/ris\/orders\/SIM-[A-F0-9]{16}$/);
 
     assert.match(await (await request(routinePath, { cookie: student })).text(), /Persistent headaches/);
-    assert.equal((await request(routinePath, { cookie: faculty })).status, 403);
+    assert.equal((await request(routinePath, { cookie: faculty })).status, 200);
     assert.equal((await request(routinePath, { cookie: other })).status, 404);
 
     const routineAccession = routinePath.split("/").at(-1);
@@ -105,6 +105,8 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
     assert.match(allOrders, /<td>student-a<\/td>/);
     assert.equal((await request(routinePath, { cookie: admin })).status, 200);
     assert.equal((await request(routineScreen, { cookie: admin, fields: clear })).status, 303);
+    assert.equal(consoleHandoff(db, owner, routineAccession), null);
+    assert.equal((await request(routinePath + "/begin", { cookie: student, fields: { workflowRevision: 1 } })).status, 303);
     const expectedHandoff = {
       accession: routineAccession, examKey: "mr-brain-v1", modality: "MR", consolePath: "/console/mr",
     };
@@ -144,7 +146,7 @@ test("superuser exercises both workspaces and ordinary RIS access remains scoped
     const resumed = await signIn("student-a");
     const worklist = await (await request("/ris", { cookie: resumed })).text();
     assert.match(worklist, new RegExp(routineAccession));
-    assert.match(worklist, /Ready for console/);
+    assert.match(worklist, /Exam Begin/);
     assert.match(worklist, /Screening hold/);
     assert.equal((worklist.match(/Morgan Ellis/g) ?? []).length, 1);
     assert.match(await (await request(heldPath, { cookie: resumed })).text(), /saved-answer">Unsure/);

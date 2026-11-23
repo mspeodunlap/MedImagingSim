@@ -16,14 +16,16 @@ import { intakeFields, missingIntake, quickOrder, readIntake, reviewGroups } fro
 import { intakeReview, orderQueue } from "./intake-view.js";
 import { futureOrder, localAppointment, readAppointment, validDate } from "./scheduling.js";
 import { trainingDocuments } from "./training.js";
+import { canOperate, ended, examHistory, transitionExam } from "./lifecycle.js";
 import { instructor, orderPage, problem, signIn, worklist } from "./views.js";
 
 const assets = new Map([
   ["/styles.css", "text/css; charset=utf-8"],
   ["/mr-console.js", "text/javascript; charset=utf-8"],
+  ["/ris-worklist.js", "text/javascript; charset=utf-8"],
   ["/mr-geometry.js", "text/javascript; charset=utf-8"],
 ].map(([path, type]) => [path, { type, bytes: readFileSync(new URL(`../public${path}`, import.meta.url)) }]));
-const orderPattern = /^\/ris\/orders\/(SIM-[A-F0-9]{16})(\/(?:screening|reschedule))?$/;
+const orderPattern = /^\/ris\/orders\/(SIM-[A-F0-9]{16})(\/(?:screening|reschedule|begin|end|complete|reopen|return))?$/;
 const mrPattern = /^\/console\/mr\/(SIM-[A-F0-9]{16})(?:\/(?:(scan|localizers)|(pixels|selection|preview)\/([1-9][0-9]{0,15})))?$/;
 const tokenPattern = /(?:^|; *)medsim_session=([0-9a-f]{64})(?:;|$)/;
 let mrLocalizers;
@@ -58,9 +60,10 @@ async function readForm(req, limit = 8192) {
   return { form: new URLSearchParams(Buffer.concat(chunks).toString("utf8")) };
 }
 
-function readyConsole(order) {
+function readyConsole(order, user, readOnly = false) {
   const exam = order && exams[order.exam_key];
   if (order?.status !== "ready" || !exam?.consolePath || futureOrder(order)) return null;
+  if (!(readOnly && ended(order)) && (order.workflow_status !== "exam_begin" || !canOperate(user, order))) return null;
   return {
     accession: order.accession,
     examKey: order.exam_key,
@@ -71,14 +74,24 @@ function readyConsole(order) {
 
 // Shared contract for the acquisition console. Eligibility and ownership are rechecked server-side.
 export function consoleHandoff(db, user, accession) {
-  return readyConsole(accessibleOrder(db, user, accession));
+  return readyConsole(accessibleOrder(db, user, accession), user);
+}
+
+function openExam(db, user, accession) {
+  let order = accessibleOrder(db, user, accession);
+  if (user.role === "instructor" && ended(order) && !order.locked_by) {
+    transitionExam(db, user, accession, undefined, "review");
+    order = accessibleOrder(db, user, accession);
+  }
+  return order;
 }
 
 async function handleMr(db, req, res, url, match, user, token, reject) {
   const [, accession, action, seriesAction, seriesId] = match;
   const { institutionId } = user;
-  const order = accessibleOrder(db, user, accession);
-  const handoff = readyConsole(order);
+  const order = req.method === "GET" ? openExam(db, user, accession) : accessibleOrder(db, user, accession);
+  const readOnly = ended(order);
+  const handoff = readyConsole(order, user, req.method === "GET");
   if (handoff?.examKey !== mrExamKey || handoff.modality !== "MR") return reject(404);
   const base = `${handoff.consolePath}/${accession}`;
   const render = (status, requestedSeries, message, draft) => {
@@ -89,7 +102,7 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
       : acquisitions.find(series => String(series.id) === requestedSeries);
     if (requestedSeries !== null && !viewed) return reject(404);
     return send(res, status, mrConsole(user, handoff, order, {
-      acquisitions, selection, viewed, message, scanKey: randomBytes(16).toString("hex"), ...draft,
+      acquisitions, selection, viewed, message, readOnly, scanKey: randomBytes(16).toString("hex"), ...draft,
     }));
   };
 
@@ -103,7 +116,7 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     }
     if (seriesAction === "preview" && Number.isSafeInteger(id)) {
       const series = acquisitionDetails(db, institutionId, accession, id);
-      if (series) return send(res, 200, acquisitionViewer(base, series, pacsSelection(db, institutionId, accession)));
+      if (series) return send(res, 200, acquisitionViewer(base, series, pacsSelection(db, institutionId, accession), readOnly));
     }
     return reject(404);
   }
@@ -131,7 +144,7 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     }
     const operator = sessionUser(db, token);
     if (!operator) return redirect(res, "/sign-in");
-    const id = saveAcquisition(db, operator, accession, scanKey, acquisition);
+    const id = saveAcquisition(db, operator, accession, scanKey, acquisition, order.workflow_revision);
     if (!id) return reject(404);
     return redirect(res, `${base}?series=${id}`);
   }
@@ -287,14 +300,15 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
       const mrMatch = path.match(mrPattern);
       if (mrMatch) return await handleMr(db, req, res, url, mrMatch, user, token, reject);
       if (path !== "/ris" && !path.startsWith("/ris/")) return reject(404);
-      if (req.method === "GET" && path === "/ris") {
+      if (req.method === "GET" && (path === "/ris" || path === "/ris/recent")) {
         const timeZone = institutionTimeZone(db, user.institutionId);
         const date = url.searchParams.get("date") ?? localAppointment(new Date(), timeZone).date;
         if (url.searchParams.getAll("date").length > 1 || !validDate(date)) return reject(400);
-        return send(res, 200, worklist(user, visibleOrders(db, user, date), { date, timeZone }));
+        const recent = path === "/ris/recent";
+        return send(res, 200, worklist(user, visibleOrders(db, user, date, recent), { date, timeZone, recent }));
       }
-      if (!canUseWorkspace(user, "student")) return reject(403);
       if (req.method === "POST" && path === "/ris/orders") {
+        if (!canUseWorkspace(user, "student")) return reject(403);
         const { form, error } = await readForm(req);
         if (error) return reject(error);
         const key = form.get("scenario");
@@ -314,18 +328,34 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
       const match = path.match(orderPattern);
       if (!match) return reject(404);
       const [, accession, screeningRoute] = match;
-      const order = accessibleOrder(db, user, accession);
+      const order = req.method === "GET" && !screeningRoute ? openExam(db, user, accession) : accessibleOrder(db, user, accession);
       if (!order) return reject(404);
       const exam = exams[order.exam_key];
-      if (req.method === "GET" && !screeningRoute) return send(res, 200, orderPage(user, order, exam, "", appointmentHistory(db, accession)));
+      const renderOrder = (code, current, message = "") => send(res, code, orderPage(user, current, exam, message,
+        appointmentHistory(db, accession), examHistory(db, accession), listAcquisitions(db, user.institutionId, accession), pacsSelection(db, user.institutionId, accession)));
+      if (req.method === "GET" && !screeningRoute) return renderOrder(200, order);
       if (req.method !== "POST" || !screeningRoute) return reject(404);
 
-      const { form, error } = await readForm(req);
+      const { form, error } = await readForm(req, ["/end", "/return"].includes(screeningRoute) ? 65536 : 8192);
       if (error) return reject(error);
       const currentUser = sessionUser(db, token);
       if (!currentUser) return redirect(res, "/sign-in");
       const currentOrder = accessibleOrder(db, currentUser, accession);
       if (!currentOrder) return reject(404);
+      if (["/begin", "/end", "/complete", "/reopen", "/return"].includes(screeningRoute)) {
+        const revision = form.get("workflowRevision");
+        if (form.getAll("workflowRevision").length !== 1 || !/^\d+$/.test(revision)) return reject(400);
+        const details = screeningRoute === "/end" ? {
+          performedVerified: form.getAll("performedVerified").length === 1 && form.get("performedVerified") === "yes",
+          notes: form.getAll("notes").length <= 1 ? form.get("notes") ?? "" : null,
+        } : screeningRoute === "/return" ? { reason: form.getAll("reason").length === 1 ? form.get("reason") : null } : {};
+        if (!transitionExam(db, currentUser, accession, Number(revision), screeningRoute.slice(1), details)) {
+          return renderOrder(409, accessibleOrder(db, currentUser, accession),
+            "The study changed, is locked, or this action's prerequisites are not met. Reload and check the current stage. End exam requires a saved acquisition and performed-exam confirmation; sending back requires a correction reason.");
+        }
+        return redirect(res, `/ris/orders/${accession}`);
+      }
+      if (!canUseWorkspace(currentUser, "student")) return reject(403);
       if (screeningRoute === "/reschedule") {
         const appointment = readAppointment(form);
         const revision = form.get("scheduleRevision");
@@ -341,7 +371,7 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
       if (currentOrder.status !== "ordered") return reject(409);
       const screening = readScreening(exam, form);
       if (!screening) return send(res, 400, orderPage(user, order, exam, "Answer each screening question."));
-      if (!saveScreening(db, currentOrder, screening).changes) return reject(409);
+      if (!saveScreening(db, currentOrder, screening, currentUser.id).changes) return reject(409);
       return redirect(res, `/ris/orders/${accession}`);
     } catch (error) {
       console.error(error);

@@ -88,6 +88,17 @@ test("dated scheduling, worklist filters, safe rescheduling, and future exam gua
     const futureList = await (await request(`/ris?date=${tomorrow}`, student)).text();
     assert.ok(futureList.includes(order.accession));
     assert.match(futureList, /13:30/);
+    assert.match(futureList, /<th scope="col">MRN<\/th>/);
+    assert.ok(futureList.includes(complete.patientId));
+    assert.ok(!futureList.includes("Show appointments"));
+    assert.match(futureList, /data-ris-date-filter/);
+    assert.match(futureList, /src="\/ris-worklist.js"/);
+    assert.equal((await request("/ris-worklist.js", student)).status, 200);
+    for (const reviewer of [admin, instructor]) {
+      const list = await (await request(`/ris?date=${tomorrow}`, reviewer)).text();
+      assert.ok(list.includes(complete.patientId));
+      assert.match(list, /<th scope="col">MRN<\/th>/);
+    }
     assert.match(futureList, /Future date — cannot start/);
     assert.match(futureList, /Reschedule appointment/);
     for (const date of ["2026-02-30", "not-a-date", ""]) assert.equal((await request(`/ris?date=${date}`, student)).status, 400);
@@ -126,6 +137,8 @@ test("dated scheduling, worklist filters, safe rescheduling, and future exam gua
     assert.ok(history.includes(`${tomorrow} 13:30 → ${today} 10:15`));
     assert.match(history, /Submit screening/);
     assert.equal((await request(base + "/screening", student, clear)).status, 303);
+    assert.equal(consoleHandoff(db, student, order.accession), null);
+    assert.equal((await request(base + "/begin", student, { workflowRevision: 1 })).status, 303);
     assert.equal((await request(base + "/reschedule", admin, { ...reschedule, scheduleRevision: 1 })).status, 409);
     assert.ok(consoleHandoff(db, student, order.accession));
     db.close();
@@ -139,6 +152,13 @@ test("dated scheduling, worklist filters, safe rescheduling, and future exam gua
     const past = launchOrder(db, student, scenarios["routine-brain"], exams["mr-brain-v1"], key(), { date: yesterday, time: "08:00" });
     assert.ok((await (await request(`/ris?date=${yesterday}`, admin)).text()).includes(past));
     assert.equal((await request(`/ris/orders/${past}/reschedule`, admin, reschedule)).status, 303);
+    assert.match(await (await request("/ris", student)).text(), /<td>Not supplied<\/td>/);
+    const requestId = db.prepare("SELECT id FROM order_requests WHERE accession = ?").get(order.accession).id;
+    const intake = JSON.parse(db.prepare("SELECT details FROM order_requests WHERE id = ?").get(requestId).details);
+    db.prepare("UPDATE order_requests SET details = ? WHERE id = ?").run(JSON.stringify({ ...intake, patientId: '<img src=x onerror="bad">' }), requestId);
+    const escaped = await (await request("/ris", student)).text();
+    assert.ok(escaped.includes("&lt;img src=x onerror=&quot;bad&quot;&gt;"));
+    assert.ok(!escaped.includes('<img src=x'));
   } finally {
     if (db.isOpen) db.close();
     rmSync(directory, { recursive: true, force: true });
@@ -154,6 +174,7 @@ test("appointment migration preserves existing exam state and backfills creation
     const student = { id: db.prepare("SELECT id FROM users").get().id, institutionId: 1, role: "student" };
     const accession = launchOrder(db, student, scenarios["routine-brain"], exams["mr-brain-v1"], key());
     db.prepare("UPDATE orders SET created_at = '2026-11-22 03:15:00', status = 'ready', answers = ?").run(JSON.stringify(clear));
+    db.prepare("UPDATE exam_workflow SET state = 'exam_begin' WHERE accession = ?").run(accession);
     const acquisition = acquireMr(defaultPlan);
     const scanId = saveAcquisition(db, student, accession, key(), acquisition);
     assert.ok(scanId);

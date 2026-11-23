@@ -89,6 +89,7 @@ function drawStack(ctx, view, plan) {
 
 async function setupPlanner() {
   const form = document.getElementById("mr-plan");
+  if (!form) return;
   const fields = form.elements;
   const canvases = [...document.querySelectorAll("canvas[data-plane]")];
   const output = document.getElementById("mr-coverage");
@@ -168,6 +169,7 @@ async function setupViewer(root, signal) {
   const count = Number(slice.max);
   const output = root.querySelector("#mr-slice-number");
   const form = root.querySelector("#mr-presentation");
+  if (form.hasAttribute("data-preview-only")) form.addEventListener("submit", event => event.preventDefault());
   const { width, level } = form.elements;
   const ctx = canvas.getContext("2d");
   const sliceSize = canvas.width * canvas.height;

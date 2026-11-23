@@ -1,8 +1,9 @@
 import { applicationVersion } from "./version.js";
 import { trainingHelp } from "./training.js";
 import { defaultTimeZone, futureOrder, localAppointment } from "./scheduling.js";
-import { screeningAnswers, statusLabels } from "./exams.js";
+import { screeningAnswers } from "./exams.js";
 import { canUseWorkspace } from "./roles.js";
+import { canOperate, ended, workflowLabels } from "./lifecycle.js";
 
 export const escape = value => String(value).replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -10,7 +11,7 @@ export const escape = value => String(value).replace(/[&<>"']/g, char => ({
 
 const version = applicationVersion;
 
-const status = value => `<span class="status ${value}">${statusLabels[value]}</span>`;
+const status = order => `<span class="status ${order.status === "held" ? "held" : order.workflow_status}">${workflowLabels[order.workflow_status]}</span>${order.status === "held" ? ' <span class="status held">Screening hold</span>' : ""}`;
 const title = (label, detail) => `<div class="page-title"><h1>${label}</h1><p>${detail}</p></div>`;
 
 export function page(name, content, user, { script, helpTopic = name } = {}) {
@@ -29,7 +30,7 @@ ${script ? `<script type="module" src="${escape(script)}"></script>` : ""}
   <div class="shell-inner">
     <a class="wordmark" href="${home}"><span class="brand-mark" aria-hidden="true"></span>MedImagingSim</a>
     ${user ? `<nav class="workspace-nav" aria-label="Workspaces">
-      <a href="/queue">Order queue</a><a href="/ris">RIS worklist</a>
+      <a href="/queue">Order queue</a><a href="/ris">RIS worklist</a><a href="/ris/recent">Completed/Recent</a>
       ${canUseWorkspace(user, "instructor") ? '<a href="/instructor">Instructor home</a>' : ""}</nav>` : ""}
     ${user ? `<div class="account"><span>${escape(user.username)} <small>${user.role}</small></span>
       <form method="post" action="/sign-out"><button class="secondary">Sign out</button></form></div>` : ""}
@@ -53,8 +54,8 @@ export function signIn(message = "") {
 }
 
 export function instructor(user) {
-  return page("Instructor home", `${title("Instructor home", "Assignments and submission review will appear here when grading is available.")}
-    <section class="panel"><h2>Submissions</h2><p class="muted">No submissions to review.</p></section>`, user);
+  return page("Instructor home", `${title("Instructor home", "Review ended studies and return cases for correction.")}
+    <section class="panel"><h2>Study review</h2><p>An instructor opening an ended or completed study locks it against corrections. Only an instructor can Send back for correction to allow further work.</p><a class="action" href="/ris/recent">Completed/Recent</a><p class="muted">Assignment dispatch and grading are planned.</p></section>`, user);
 }
 
 function rescheduleForm(order, today) {
@@ -69,43 +70,81 @@ function rescheduleForm(order, today) {
     </form></details>`;
 }
 
-export function worklist(user, orders, { date, timeZone = defaultTimeZone } = {}) {
+export function worklist(user, orders, { date, timeZone = defaultTimeZone, recent = false } = {}) {
   const today = localAppointment(new Date(), timeZone).date;
   date ??= today;
   const showOwner = user.role !== "student";
   const rows = orders.map(order => {
-    let patient = `<a href="/ris/orders/${order.accession}">${escape(order.patient_name)}</a>`;
-    if (user.role === "instructor") {
-      patient = order.intake_id ? `<a href="/queue/${order.intake_id}">${escape(order.patient_name)}</a>` : escape(order.patient_name);
-    }
+    const patient = `<a href="/ris/orders/${order.accession}">${escape(order.patient_name)}</a>`;
     return `<tr>
     <td>${patient}</td>
+    <td>${escape(order.patient_mrn || "Not supplied")}</td>
     ${showOwner ? `<td>${escape(order.owner)}</td>` : ""}
     <td>${escape(order.exam_name)}</td>
     <td class="accession">${order.accession}</td>
     <td>${escape(order.appointment_date)} ${escape(order.appointment_time)}</td>
-    <td>${status(order.status)}</td>
+    <td>${status(order)}${order.locked_by ? '<p>Locked for instructor review</p>' : ""}</td>
     <td>${order.appointment_date > today ? "Future date — cannot start" : ""}
-      ${user.role !== "instructor" ? rescheduleForm(order, today) : ""}</td>
+      ${recent ? (!order.locked_by ? workflowForm(order, "reopen", "Reopen for correction") : "") : user.role !== "instructor" ? rescheduleForm(order, today) : ""}</td>
   </tr>`;
   }).join("");
-  return page("RIS worklist", `${title("RIS worklist", "Open an imaging order to review the patient history and record screening.")}
-    <section class="panel"><form method="get" action="/ris" class="intake-actions">
+  const name = recent ? "Completed/Recent" : "RIS worklist";
+  const base = recent ? "/ris/recent" : "/ris";
+  return page(name, `${title(name, recent ? "Ended and completed studies. Instructor opening locks a study; use Reopen for correction before review." : "Scheduled exams awaiting screening, acquisition, or exam end. Unscheduled orders remain in Order queue.")}
+    <section class="panel"><form method="get" action="${base}" class="intake-actions" data-ris-date-filter>
       <label>Appointment date<input type="date" name="date" value="${escape(date)}" min="1900-01-01" required></label>
-      <button>Show appointments</button><a class="action" href="/ris">Today</a>
-    </form><p>Appointments for ${escape(date)} · ${escape(timeZone)}. Future-dated exams cannot be started.</p></section>
+      <a class="action" href="${base}">Today</a>
+    </form><noscript><p>Enable JavaScript to update appointments automatically when choosing a date.</p></noscript><p>Appointments for ${escape(date)} · ${escape(timeZone)}. Future-dated exams cannot be started.</p></section>
     <div class="worklist-layout">
       <section class="panel"><h2>Orders <span class="count">${orders.length}</span></h2>
         ${orders.length ? `<div class="table-wrap" tabindex="0" role="region" aria-label="Imaging orders"><table>
-          <thead><tr><th scope="col">Patient</th>${showOwner ? '<th scope="col">Owner</th>' : ""}<th scope="col">Exam</th><th scope="col">Accession</th><th scope="col">Appointment</th><th scope="col">Status</th><th scope="col">Scheduling</th></tr></thead>
+          <thead><tr><th scope="col">Patient</th><th scope="col">MRN</th>${showOwner ? '<th scope="col">Owner</th>' : ""}<th scope="col">Exam</th><th scope="col">Accession</th><th scope="col">Appointment</th><th scope="col">Status</th><th scope="col">${recent ? "Corrections" : "Scheduling"}</th></tr></thead>
           <tbody>${rows}</tbody>
-        </table></div>` : '<p class="muted">No exams are scheduled for this date. Check another appointment date or schedule an order from the order queue.</p>'}
+        </table></div>` : `<p class="muted">${recent ? "No ended or completed exams for this appointment date." : "No active exams are scheduled for this date. Check another appointment date or schedule an order from the order queue."}</p>`}
       </section>
       <aside class="panel"><h2>Incoming orders</h2><p>Review and schedule new orders from the order queue.</p><a class="action" href="/queue">Open order queue</a></aside>
-    </div>`, user);
+    </div>`, user, { script: "/ris-worklist.js" });
 }
 
-export function orderPage(user, order, exam, message = "", appointments = []) {
+export function workflowForm(order, action, label, content = "") {
+  return `<form method="post" action="/ris/orders/${order.accession}/${action}" class="stack">
+    <input type="hidden" name="workflowRevision" value="${order.workflow_revision}">
+    ${content}<button>${label}</button></form>`;
+}
+
+function workflowPanel(user, order, acquisitions, selection, events) {
+  const closed = ended(order);
+  const editable = canOperate(user, order);
+  const base = `/console/mr/${order.accession}`;
+  const eventLabels = { screening: "Screening submitted", screening_hold: "Screening hold", begin: "Begin exam",
+    end: "End exam", complete: "Mark completed", reopen: "Reopen for correction", review: "Opened for instructor review", return: "Send back for correction" };
+  return `<section class="panel"><h2>Exam workflow</h2>
+    <p>Ordered → Scheduled → Screened → Exam Begin → Exam End → Completed</p>
+    <p>Current stage: <strong>${workflowLabels[order.workflow_status]}</strong></p>
+    ${order.locked_by ? '<p class="notice hold">Locked for instructor review. Corrections require an instructor to send the case back.</p>' : ""}
+    ${order.workflow_status === "screened" && editable && !futureOrder(order) ? workflowForm(order, "begin", "Begin exam") : ""}
+    ${order.workflow_status === "exam_begin" && editable ? `<a class="action" href="${base}">Open MRI console</a>
+      <p>Saved acquisitions: ${acquisitions.length}. At least one is required before ending.</p>
+      ${workflowForm(order, "end", "End exam", `<label><input type="checkbox" name="performedVerified" value="yes" required>Performed exam matches the ordered exam: ${escape(order.exam_name)}</label>
+      <label>Technologist notes (optional)<textarea name="notes" maxlength="4000" rows="4">${escape(order.notes)}</textarea></label>`)}` : ""}
+    ${closed ? `<p>Performed exam confirmed: ${order.performed_verified ? "Yes" : "Pending correction"}. Saved acquisitions: ${acquisitions.length}.</p>
+      <p>Technologist notes: ${escape(order.notes || "None recorded")}</p><a class="action" href="${base}">Review images</a>
+      <p>PACS selection: ${selection ? `Series ${selection.id}` : "Not selected"}. RIS completion does not send images to PACS or confirm delivery.</p>
+      ${order.workflow_status === "exam_end" && !order.locked_by ? workflowForm(order, "complete", "Mark completed") : ""}
+      ${!order.locked_by ? workflowForm(order, "reopen", "Reopen for correction") : user.role === "instructor" ? workflowForm(order, "return", "Send back for correction",
+        '<label>Correction reason<textarea name="reason" maxlength="4000" rows="3" required></textarea></label>') : ""}` : ""}
+    <dl><dt>Exam begin (UTC)</dt><dd>${escape(order.begun_at || "Not recorded")}</dd>
+    <dt>Exam end (UTC)</dt><dd>${escape(order.ended_at || "Not recorded")}</dd>
+    <dt>Completed (UTC)</dt><dd>${escape(order.completed_at || "Not recorded")}</dd></dl>
+    <p>Correction cycles: ${order.correction_cycle}. Earlier timestamps remain in history; after reopening, displayed end/completion times refer to the previous cycle until recorded again.</p>
+    <details><summary>Workflow history</summary>${events.length ? `<ul>${events.map(event => {
+      const details = JSON.parse(event.details);
+      return `<li>${escape(eventLabels[event.action] || event.action)} · ${escape(event.username || "System")} · ${escape(event.created_at)} UTC · ${escape(workflowLabels[event.to_state])}${details.reason ? `<p>${escape(details.reason)}</p>` : ""}${details.notes ? `<p>${escape(details.notes)}</p>` : ""}</li>`;
+    }).join("")}</ul>` : "<p>No workflow actions recorded. Older studies retain their saved data.</p>"}</details>
+  </section>`;
+}
+
+export function orderPage(user, order, exam, message = "", appointments = [], events = [], acquisitions = [], selection) {
   const future = futureOrder(order);
   const today = localAppointment(new Date(), order.time_zone).date;
   const demographics = order.intake_details && JSON.parse(order.intake_details);
@@ -118,13 +157,15 @@ export function orderPage(user, order, exam, message = "", appointments = []) {
           <label><input type="radio" name="${id}" value="${value}" required>${text}</label>`).join("")}</div>`}
     </fieldset>`).join("");
   return page(order.exam_name, `
-    <a class="back" href="/ris">← Back to worklist</a>
+    <a class="back" href="${ended(order) ? "/ris/recent" : "/ris"}?date=${escape(order.appointment_date)}">← Back to ${ended(order) ? "Completed/Recent" : "worklist"}</a>
     <div class="order-heading">
       ${title(escape(order.exam_name), `<span class="accession">${order.accession}</span>`)}
-      ${status(order.status)}
+      ${status(order)}
     </div>
+    ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
+    ${workflowPanel(user, order, acquisitions, selection, events)}
     <section class="panel"><h2>Appointment</h2><p>${escape(order.appointment_date)} ${escape(order.appointment_time)} · ${escape(order.time_zone)}</p>
-      ${rescheduleForm(order, today)}
+      ${user.role !== "instructor" ? rescheduleForm(order, today) : ""}
       ${appointments.length ? `<details><summary>Appointment history</summary><ul>${appointments.map(change =>
         `<li>${escape(change.username)} · ${escape(change.created_at)} UTC · ${change.previous_date ? `${escape(change.previous_date)} ${escape(change.previous_time)} → ` : "Scheduled: "}${escape(change.appointment_date)} ${escape(change.appointment_time)} (${escape(change.time_zone)})</li>`).join("")}</ul></details>` : ""}
     </section>
@@ -138,15 +179,13 @@ export function orderPage(user, order, exam, message = "", appointments = []) {
         <dt>Clinical history</dt><dd>${escape(order.history)}</dd></dl>
       </section>
       <section class="panel"><h2>Safety screening</h2>
-        ${message ? `<p class="notice error" role="alert">${escape(message)}</p>` : ""}
         ${future ? `<p class="notice hold">This exam is scheduled for a future date and cannot be started. Confirm the intended appointment and use Reschedule appointment to correct it to today if needed.</p>` : order.status === "ordered"
-          ? `<form method="post" action="/ris/orders/${order.accession}/screening">${questions}<button>Submit screening</button></form>`
+          ? user.role !== "instructor" ? `<form method="post" action="/ris/orders/${order.accession}/screening">${questions}<button>Submit screening</button></form>` : '<p>Screening has not been submitted.</p>'
           : `${questions}${order.status === "held"
               ? '<p class="notice hold">Screening requires further review. This exam is on hold.</p>'
-              : `<p class="notice cleared">Screening complete. This order is ready for the console.</p>
-                 <a class="action" href="${escape(exam.consolePath)}/${order.accession}">Open ${escape(exam.consoleLabel)}</a>`}`}
+              : '<p class="notice cleared">Screening complete. Use Exam workflow for the next step.</p>'}`}
       </section>
-    </div>`, user, { helpTopic: "screening" });
+    </div>`, user, { helpTopic: order.workflow_status === "scheduled" ? "screening" : "lifecycle" });
 }
 
 export function problem(code, user) {

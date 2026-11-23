@@ -60,6 +60,7 @@ th:first-child, td:first-child { padding-left: 0; }
 .status { display: inline-block; width: fit-content; border: 1px solid currentColor; border-radius: 1rem; padding: .12rem .55rem; font-size: .78rem; font-weight: 650; white-space: nowrap; color: #bed1df; }
 .status.held { color: #ffd397; }
 .status.ready { color: var(--accent); }
+.status.screened, .status.exam_begin, .status.completed { color: var(--accent); }
 dl { margin: 0; }
 dt { color: var(--muted); font-size: .86rem; }
 dd { margin: 0 0 .8rem; }

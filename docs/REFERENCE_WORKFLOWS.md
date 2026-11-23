@@ -80,6 +80,20 @@ These choices came from the user and existing project requirements, not a claim 
 
 ## Gaps to resolve when relevant work is requested
 
+### November 23, 2026 — V 1.0.5 RIS exam lifecycle decisions
+
+The user explicitly requested the displayed progression **Ordered → Scheduled → Screened → Exam Begin → Exam End → Completed**, Scheduled on newly scheduled RIS rows, and exclusion of unscheduled orders from RIS. This supersedes the earlier planning-only status sequence; it does not remove separate appointment progress or screening holds.
+
+Reviewed RAD100 PDF pp. 83–92 and 94–96, plus RAD400 PDF pp. 191–199 and 218–220, against the source fingerprints in reference-sources.json. Covered concepts: scheduled versus unscheduled lists, screening, explicit begin before acquisition, performed-order verification/end documentation, and retrieval/correction of ended exams. Partly covered: arrival and preparation gates, procedure-dependent end requirements, and correction authority. Unspecified for our simulator: the trigger separating Exam End from Completed, image-handoff success requirements, exact required end fields, and reversal permissions. Do not treat saved PACS selection as delivered images.
+
+The user resolved the simulator-specific gaps: no arrival/check-in step; clear screening plus explicit Begin exam before acquisition; at least one saved acquisition and performed-versus-ordered confirmation to End exam; optional technologist notes; Completed is explicit RIS progress independent of PACS transfer. Ended studies move to Completed/Recent. All roles can reopen accessible ended/completed studies before instructor review, preserving student ownership and institution isolation. In the follow-up choices, the user selected return to Exam Begin on reopen and an immediate lock when an instructor opens an ended/completed study. Only instructor Send back for correction releases the lock. This overrides the earlier planned arrival step for this requested lifecycle.
+
+Implementation: a separate additive exam_workflow record holds Scheduled, Screened, Exam Begin, Exam End, or Completed; original orders.status retains legacy screening readiness for data compatibility. Incoming unscheduled requests display Ordered in Order queue and do not appear in RIS. Screening hold is a separate blocker, not progression to Screened. Initial screening/start and rescheduling permissions are preserved; instructors may acquire/end during unlocked correction cycles. Completed/Recent retains the existing appointment-date filter rather than introducing a new time-window default. Ended images can be reviewed without mutating saved presentation; instructors entering details or image review automatically lock the study. Reopening is available on recent-list rows so instructors can choose it without first opening and locking the study. A correction reason is required for send-back, appears in workflow history, and does not send an external notification.
+
+Each transition checks fresh membership, ownership, revision, state, and lock within a transaction; begin/resume retains the future-date rule. Acquisition persistence also rejects a workflow revision change during scan generation. Saved scans remain immutable, correction adds scans, and end notes and event timestamps are retained in history. Legacy ready exams with acquisitions migrate to Exam Begin using their earliest saved acquisition time; clear exams without acquisitions migrate to Screened, and unscreened/held exams to Scheduled. Migration never claims an old exam was ended, completed, reviewed, or delivered to PACS. Existing appointments, screening, pixels, selections, identities, sessions, and later locks are preserved.
+
+Clinical hold clearance, procedure changes, full MRI safety clearance, grading, resource scheduling, and the PACS technical delivery contract remain outside this change. Source coverage is conceptual; exact completion, role corrections and review locking above are explicit user decisions rather than source-product defaults. Local checks and publication/browser limitations are recorded in MILESTONE_PLAN.md.
+
 For a task touching one of these areas, explain that the exact behavior remains unspecified or only partly specified in the five supplied reference documents and ask the user for the missing decisions. Existing explicit user decisions do not need to be reconfirmed.
 
 | Area | Clarification needed before dependent implementation |
@@ -104,3 +118,6 @@ For a task touching one of these areas, explain that the exact behavior remains 
 
 
 November 22, 2026 documentation delivery decision: the user explicitly requested full three-component versioning starting at 1.0.3, next 1.0.4, with 1.0.9 rolling to 1.1.0, and contextual links from the simulator to our guide/role tip sheets in a new browsing context. This project-specific behavior is defined by the user request. The app publishes only the four original generated user-facing documents; source training PDFs and arbitrary project paths remain outside the training allowlist.
+
+
+November 23, 2026 — V 1.0.4 worklist decision. The user requested an MRN column and automatic appointment-date filtering without a Show appointments button. RAD400 PDF p. 219 supports the distinction between row-selection criteria and display columns; the exact column and interaction are explicit project decisions. Use the saved intake Patient ID / MRN, with Not supplied for older exams lacking it. Preserve existing date eligibility, role/ownership, and institution checks.
