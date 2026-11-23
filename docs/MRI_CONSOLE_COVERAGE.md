@@ -1,6 +1,6 @@
 # MRI console parameter coverage
 
-**Implementation inventory: local V 1.0.8 · November 23, 2026.** This lists implemented code and remaining model coverage, not proof of tester deployment or educator/clinical validation. The dictionary/starter workflow passed local browser verification; wider screenshot refresh, print layout and ThinkPad/LAN checks remain pending. See the [user guide](USER_GUIDE.md) for the current working controls and the [milestone handoff](../MILESTONE_PLAN.md) for release verification.
+**Implementation inventory: local V 1.0.9 · November 23, 2026.** This lists implemented code and remaining model coverage, not proof of tester deployment or educator/clinical validation. The dictionary/starter workflow passed local browser verification; wider screenshot refresh, print layout and ThinkPad/LAN checks remain pending. See the [user guide](USER_GUIDE.md) for the current working controls and the [milestone handoff](../MILESTONE_PLAN.md) for release verification.
 
 This inventory tracks the controls an MRI technologist uses across routine and advanced exams. The simulator currently supports one brain exam type, a generic console, and reusable ordered multi-sequence acquisition protocols created by staff/students. Individual scanner features depend on the vendor, scanner model, software release, coil, and licensed options. The inventory uses public Siemens syngo MR, GE SIGNA, Philips, and Fujifilm/legacy Hitachi references. It establishes a baseline for the shared model and the future console profiles.
 
@@ -29,6 +29,10 @@ This inventory tracks the controls an MRI technologist uses across routine and a
 
 For each new control, document the applicable sequence or protocol, accepted range and units, effect on images or workflow, and stored metadata. Verify the effect with a controlled comparison, preserve older acquisitions, and update the [user guide](USER_GUIDE.md).
 
-## V 1.0.8 dictionary coverage
+## V 1.0.9 dictionary coverage
 
 Implemented a read-only, authenticated anatomy/sequence/exam/source catalog: 92 regions, 32 concepts, 58 references, 43 selected parameter examples, 36 primary sources and seven full supported teaching plans. Teaching plans copy into the library editor or directly into eligible case copies; staff may install missing institution-default snapshots without overwriting any existing name. Dictionary provenance survives personal/default saves. No anatomy/clinical sequence implementation is inferred from catalog presence. See [research assessment](MRI_PROTOCOL_RESEARCH.md) for supported-versus-reference distinctions and staged engine work. Existing default/personal isolation and review locks remain enforced.
+
+## V 1.0.9 technologist workflow
+
+Added task-focused Setup / Plan & scan / Review / Finish, persistent identifiers and RIS stage, compact sequence/library rail, essential/all parameter views, supported-axis visual stack drag, unsaved-draft notices, linked sequence progress and model-time estimates shared with generation. Review adds previous/next slice, temporary Reset display, targeted geometry reuse and next-planned-sequence guidance. End and explicit RIS completion reuse existing guarded transitions in the console. Additive case-copy identity metadata and acquisition context preserve honest linkage without altering old images or protocol payloads. Legacy scans without revision linkage remain usable but do not imply sequence progress. See [manufacturer research](MR_CONSOLE_WORKFLOW_RESEARCH.md). Acquisition remains synthetic brain only; physical setup, prescan/calibration, SAR, monitoring, hardware stop/pause, clinical quality scoring, PACS delivery and automated sequence execution remain unimplemented.

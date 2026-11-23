@@ -12,6 +12,7 @@ import { transitionExam } from "../src/lifecycle.js";
 import { examProtocol, validateProtocol } from "../src/protocols.js";
 import { requestThrough } from "../test-support/request.js";
 import { dictionary, dictionaryVersion, teachingStarter, teachingStarters } from "../src/mri-dictionary.js";
+import { copyGeometry, sequenceProgress } from "../src/console-workflow.js";
 
 const document = { sequences: [
   { name: "Axial T1", plan: { ...defaultPlan } },
@@ -308,4 +309,87 @@ test("built-in starters load as independent case copies and cannot bypass refere
     assert.equal((await f.request(endpoint, f.student, { protocolRevision: 2, protocolAction: "load", protocolVersion: "starter:brain-fluid" })).status, 404);
     assert.equal(JSON.parse(examProtocol(f.db, 1, accession).payload).sequences[0].plan.tr, 650);
   } finally { f.close(); }
+});
+
+test("console sequence evidence follows the exact loaded instance and index, survives restart, and detects changed plans", async () => {
+  const f = setup();
+  try {
+    const accession=f.launch(), base=`/console/mr/${accession}`, endpoint=base+'/protocol';
+    await f.request(endpoint,f.student,{protocolRevision:0,protocolAction:'load',protocolVersion:'starter:brain-weighting'});
+    const original=examProtocol(f.db,1,accession), plan=JSON.parse(original.payload).sequences[0].plan;
+    const flat=p=>Object.fromEntries(Object.entries(p).filter(([,v])=>v!==null));
+    const key=randomBytes(16).toString('hex');
+    const response=await f.request(base+'/scan',f.student,{...flat(plan),scanKey:key,protocolRevision:original.revision});
+    assert.equal(response.status,303); assert.match(response.headers.get('Location'),/#review$/);
+    const series=()=>f.db.prepare('SELECT id,geometry,parameters FROM acquisitions WHERE accession=? ORDER BY id DESC').all(accession);
+    let copy=examProtocol(f.db,1,accession), progress=sequenceProgress(copy,series());
+    assert.deepEqual(progress.map(p=>p.state),['Acquired','Planned','Planned']);
+    const context=JSON.parse(series()[0].parameters).protocolContext;
+    assert.equal(context.instanceKey,original.instance_key);assert.equal(context.sequenceIndex,0);
+    assert.equal((await f.request(base+'/scan',f.student,{...flat(plan),scanKey:key,protocolRevision:original.revision})).status,303,'An already saved scan remains idempotent even when its form revision is old');
+    assert.equal((await f.request(base+'/scan',f.student,{...flat(plan),scanKey:randomBytes(16).toString('hex'),protocolRevision:original.revision})).status,409);
+    assert.equal(series().length,1);
+    await f.request(endpoint,f.student,{...flat({...plan,tr:650}),protocolRevision:copy.revision,protocolAction:'update'});
+    copy=examProtocol(f.db,1,accession);
+    assert.equal(sequenceProgress(copy,series())[0].state,'Settings changed');
+    const payload=copy.payload, rev=copy.revision, instance=copy.instance_key;
+    // Simulate upgrading a pre-instance-key database; no image/payload/revision is changed.
+    f.db.exec('ALTER TABLE mri_exam_protocols DROP COLUMN instance_key');
+    f.restart();copy=examProtocol(f.db,1,accession);
+    assert.ok(copy.instance_key);assert.equal(copy.payload,payload);assert.equal(copy.revision,rev);
+    assert.equal(series().length,1);assert.notEqual(copy.instance_key,instance);
+    assert.equal(sequenceProgress(copy,series())[0].state,'Planned','Legacy series must not fabricate linkage after migration');
+    await f.request(endpoint,f.student,{protocolRevision:copy.revision,protocolAction:'load',protocolVersion:'starter:brain-weighting'});
+    const reloaded=examProtocol(f.db,1,accession);
+    assert.notEqual(reloaded.instance_key,copy.instance_key);
+    assert.ok(sequenceProgress(reloaded,series()).every(p=>p.state==='Planned'));
+    const identitySeries={...series()[0],parameters:JSON.stringify({...JSON.parse(series()[0].parameters),protocolContext:{instanceKey:reloaded.instance_key,sequenceIndex:0}})};
+    assert.equal(sequenceProgress(reloaded,[identitySeries])[0].state,'Acquired');
+    assert.equal(sequenceProgress(reloaded,[identitySeries])[1].state,'Planned','Another index cannot inherit progress from contrast-name similarity');
+  } finally {f.close();}
+});
+
+test("copying acquired geometry keeps target contrast/timing and cannot read a peer series or mutate a case", async () => {
+  const f=setup();
+  try {
+    const accession=f.launch(), base=`/console/mr/${accession}`;
+    const source={...defaultPlan,plane:'coronal',angle:10,offset:5,fov:200,slices:12,thickness:4,gap:1,phaseFov:90};
+    const fields=p=>Object.fromEntries(Object.entries(p).filter(([,v])=>v!==null));
+    const scan=await f.request(base+'/scan',f.student,{...fields(source),scanKey:randomBytes(16).toString('hex'),protocolRevision:0});
+    const id=new URL(scan.headers.get('Location'),'http://localhost').searchParams.get('series');
+    const series=f.db.prepare('SELECT geometry,parameters FROM acquisitions WHERE id=?').get(id);
+    const target={...defaultPlan,preset:'gre',tr:35,te:8,flip:25};
+    const copied=copyGeometry(target,series);
+    assert.equal(copied.plane,'coronal');assert.equal(copied.fov,200);assert.equal(copied.tr,35);assert.equal(copied.te,8);assert.equal(copied.flip,25);assert.equal(copied.preset,'gre');
+    const response=await f.request(base+'/protocol',f.student,{...fields(target),protocolRevision:0,protocolAction:`geometry:${id}`});
+    assert.equal(response.status,200);assert.match(await response.text(),/Geometry copied to the current draft/);
+    assert.equal(examProtocol(f.db,1,accession),undefined,'Geometry copy is an unsaved draft');
+    assert.equal((await f.request(base+'/protocol',f.student,{...fields({...target,acquisition:'3D',gap:0}),protocolRevision:0,protocolAction:`geometry:${id}`})).status,400);
+    const peer=f.launch(f.peer);
+    assert.equal((await f.request(`/console/mr/${peer}/protocol`,f.peer,{...fields(target),protocolRevision:0,protocolAction:`geometry:${id}`})).status,404);
+    assert.equal((await f.request(base+'/protocol',f.student,{...fields(target),protocolRevision:99,protocolAction:`geometry:${id}`})).status,409);
+    assert.equal(f.db.prepare('SELECT count(*) n FROM acquisitions').get().n,1);
+  } finally {f.close();}
+});
+
+test("console finish uses the existing end/complete guards and returns to its finish view without implying PACS delivery", async () => {
+  const f=setup();
+  try {
+    const accession=f.launch(), base=`/console/mr/${accession}`, order=`/ris/orders/${accession}`;
+    let page=await (await f.request(base)).text();
+    assert.match(page,/data-console-stage="setup"/);assert.match(page,/data-console-stage="finish"/);
+    assert.match(page,/Acquire at least one series before ending/);
+    assert.equal((await f.request(order+'/end',f.student,{workflowRevision:2,performedVerified:'yes',notes:'',returnToConsole:'yes'})).status,409);
+    await f.request(base+'/scan',f.student,{...Object.fromEntries(Object.entries(defaultPlan).filter(([,v])=>v!==null)),scanKey:randomBytes(16).toString('hex'),protocolRevision:0});
+    assert.equal((await f.request(order+'/end',f.student,{workflowRevision:2,returnToConsole:'yes'})).status,409);
+    const end=await f.request(order+'/end',f.student,{workflowRevision:2,performedVerified:'yes',notes:'Coverage reviewed',returnToConsole:'yes'});
+    assert.equal(end.headers.get('Location'),base+'#finish');
+    page=await (await f.request(base)).text();
+    assert.doesNotMatch(page,/Run scan|Save PACS selection/);assert.match(page,/Mark completed/);
+    assert.match(page,/not a transfer or receipt/);
+    const complete=await f.request(order+'/complete',f.student,{workflowRevision:3,returnToConsole:'yes'});
+    assert.equal(complete.headers.get('Location'),base+'#finish');
+    assert.match(await (await f.request(base)).text(),/RIS completion recorded/);
+    assert.equal(f.db.prepare('SELECT count(*) n FROM pacs_selections').get().n,0);
+  } finally {f.close();}
 });

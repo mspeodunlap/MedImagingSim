@@ -2,6 +2,7 @@ import { defaultPlan, presets, readPlan } from "./mr.js";
 import { futureOrder } from "./scheduling.js";
 import { recordExamEvent } from "./lifecycle.js";
 import { dictionaryVersion, teachingStarter } from "./mri-dictionary.js";
+import { randomUUID } from "node:crypto";
 
 export const sequenceLimit = 32;
 const cleanName = value => typeof value === "string" ? value.trim().replace(/\s+/g, " ") : "";
@@ -62,6 +63,10 @@ export function migrateProtocols(db) {
     selected_sequence INTEGER NOT NULL DEFAULT 0,
     revision INTEGER NOT NULL
   ) STRICT;`);
+  if (!db.prepare("PRAGMA table_info(mri_exam_protocols)").all().some(column => column.name === "instance_key")) {
+    db.exec("ALTER TABLE mri_exam_protocols ADD COLUMN instance_key TEXT NOT NULL DEFAULT ''");
+  }
+  db.exec("UPDATE mri_exam_protocols SET instance_key = lower(hex(randomblob(16))) WHERE instance_key = ''");
 }
 
 function membership(db, user) {
@@ -145,6 +150,7 @@ export function changeExamProtocol(db, user, accession, revision, action, { vers
     }
     if ((current?.revision ?? 0) !== revision) { db.exec("ROLLBACK"); return { error: "conflict" }; }
     let document, sourceId = current?.source_version_id ?? null, sequence = current?.selected_sequence ?? 0;
+    const instanceKey = action === "load" || !current ? randomUUID() : current.instance_key;
     if (action === "load") {
       const starter = starterId ? teachingStarter(starterId) : null;
       const version = starterId ? null : accessibleProtocol(db, user, versionId);
@@ -168,10 +174,10 @@ export function changeExamProtocol(db, user, accession, revision, action, { vers
     }
     const valid = validateProtocol(document);
     if (!valid) { db.exec("ROLLBACK"); return { error: "invalid" }; }
-    db.prepare(`INSERT INTO mri_exam_protocols (accession, source_version_id, payload, selected_sequence, revision)
-      VALUES (?, ?, ?, ?, ?) ON CONFLICT(accession) DO UPDATE SET source_version_id = excluded.source_version_id,
-        payload = excluded.payload, selected_sequence = excluded.selected_sequence, revision = excluded.revision`)
-      .run(accession, sourceId, JSON.stringify(valid), sequence, revision + 1);
+    db.prepare(`INSERT INTO mri_exam_protocols (accession, source_version_id, payload, selected_sequence, revision, instance_key)
+      VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(accession) DO UPDATE SET source_version_id = excluded.source_version_id,
+        payload = excluded.payload, selected_sequence = excluded.selected_sequence, revision = excluded.revision, instance_key = excluded.instance_key`)
+      .run(accession, sourceId, JSON.stringify(valid), sequence, revision + 1, instanceKey);
     recordExamEvent(db, accession, user.id, `protocol_${action}`, "exam_begin", "exam_begin", { sourceVersion: sourceId, selectedSequence: sequence + 1 });
     db.exec("COMMIT"); return { revision: revision + 1 };
   } catch (error) { if (db.isTransaction) db.exec("ROLLBACK"); throw error; }

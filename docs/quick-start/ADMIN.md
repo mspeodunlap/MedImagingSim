@@ -1,12 +1,20 @@
 # Administrator quick tips
 
-**MedImagingSim V 1.0.8 · November 23, 2026** · [Full guide](../USER_GUIDE.md#administrator-instructions)
+**MedImagingSim V 1.0.9 · November 23, 2026** · [Full guide](../USER_GUIDE.md#administrator-instructions)
 
 **Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Confirm Admin in the header. Admin actions span accessible orders within the current institution.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Release status:** instructions match local V 1.0.8. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.8.** Current dictionary, installation and console screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the new protocol workflow was checked in a disposable browser environment.
+**Release status:** instructions match local V 1.0.9. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.9.** Current dictionary, installation and console screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the guided console workflow was checked in a disposable browser environment.
+
+## Guided console workflow
+
+**Setup → Plan & scan → Review → Finish** changes workspace view, not RIS status. Check the persistent patient/MRN/DOB/exam ribbon. Expand **Choose or manage protocol** to load a starting copy. In planning, **Essential** shows common controls; **All parameters** opens sampling/saturation. Drag an orthogonal localizer to move stack center; numeric angle/geometry controls remain available. **Run scan** acquires only the active sequence, then opens Review.
+
+The rail's **Acquired** means a linked image matches saved settings, not quality approval. A new protocol copy does not inherit progress from older images. In Review, inspect slices/W/L, use **Reset display** or **Copy geometry from displayed series**, and select **Next planned sequence** without auto-scanning. Geometry reuse keeps target timing/contrast and requires a save/acquisition to persist. **Save or edit full protocol** contains personal save controls.
+
+**Finish** summarizes images/selection and reuses the performed-exam confirmation and notes. **End exam**, then **Mark completed** explicitly; both return to Finish. Missing sequences and PACS selection are advisory, and completion does not deliver images. Existing role/review-lock/correction rules remain in force. [Detailed console guide](../USER_GUIDE.md#use-the-guided-console-workspace).
 
 ## MRI dictionary and starting protocols
 
@@ -50,7 +58,7 @@ See the [detailed lifecycle steps](../USER_GUIDE.md#end-complete-review-and-corr
 | Check | Evidence |
 | --- | --- |
 | Deployment finished | Active ThinkPad commit matches the intended GitHub commit. |
-| Correct build | Version below sign-in matches the release; this guide is V 1.0.8. |
+| Correct build | Version below sign-in matches the release; this guide is V 1.0.9. |
 | LAN access | A separate network device can sign in over HTTPS. |
 | Workflow works | Changed feature behaves as documented under the appropriate roles. |
 | Saved work survives | Existing order, screening, scans, and PACS selection still open; check the appointment date. |

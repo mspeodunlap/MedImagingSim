@@ -1,10 +1,10 @@
 # MedImagingSim user guide
 
-**Guide version: V 1.0.8 · Locally checked November 23, 2026; protocol browser walkthrough passed; print/LAN verification pending · MRI training release**
+**Guide version: V 1.0.9 · Locally checked November 23, 2026; guided-console browser walkthrough passed; print/LAN verification pending · MRI training release**
 
-This guide covers the working simulator, with separate instructions for students, instructors, and administrators. Use fictional patients and the synthetic brain phantom for exercises. Sign-in, dictionary/reference, default-installation and protocol-console images were captured and inspected in a disposable fictional-data environment for V 1.0.8. Older workflow screenshots remain pending refresh and are omitted. The protocol workflow passed a local browser walkthrough; print and ThinkPad/LAN verification remain pending.
+This guide covers the working simulator, with separate instructions for students, instructors, and administrators. Use fictional patients and the synthetic brain phantom for exercises. Sign-in and the four console-task views were captured and inspected in a disposable fictional-data environment for V 1.0.9. Dictionary examples retain their V 1.0.8 captures because that layout is unchanged. Older workflow screenshots remain pending refresh and are omitted. The protocol workflow passed a local browser walkthrough; print and ThinkPad/LAN verification remain pending.
 
-**Release status:** these instructions describe the local V 1.0.8 code. The user is handling the pending commit/push; the ThinkPad deployment and live version have not been verified. The protocol workflow passed a local browser walkthrough. Other screen refresh, print-layout and live-host checks remain pending.
+**Release status:** these instructions describe the local V 1.0.9 code. The user is handling the pending commit/push; the ThinkPad deployment and live version have not been verified. The guided-console workflow passed a local browser walkthrough. Other screen refresh, print-layout and live-host checks remain pending.
 
 **Internal test server:** [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in). Connect to the same local network and complete the host's certificate trust setup first. The ThinkPad hosts the tester build; your Mac is a client and development machine.
 
@@ -21,24 +21,24 @@ This guide covers the working simulator, with separate instructions for students
 | Browser/print-friendly copies | [Full guide](print/USER_GUIDE.html), [student](print/STUDENT.html), [instructor](print/INSTRUCTOR.html), [admin](print/ADMIN.html). Open the HTML file in a browser and use Print or Save as PDF. |
 | An error or missing exam | [Troubleshooting](#troubleshoot-an-issue). |
 
-Contents: [Access](#open-the-simulator-and-sign-in) · [Roles](#roles-and-navigation) · [Order review](#review-and-schedule-an-incoming-order) · [RIS and dates](#find-and-screen-an-exam-in-ris) · [MRI controls](#plan-and-run-an-mri-scan) · [Series review](#review-repeat-and-select-a-series) · [Exam lifecycle](#end-complete-review-and-correct-an-exam) · [Instructor](#instructor-instructions) · [Admin](#administrator-instructions) · [Troubleshooting](#troubleshoot-an-issue) · [Glossary](#glossary) · [Planned features](#current-limits-and-planned-work)
+Contents: [Console workflow](#use-the-guided-console-workspace) · [Access](#open-the-simulator-and-sign-in) · [Roles](#roles-and-navigation) · [Order review](#review-and-schedule-an-incoming-order) · [RIS and dates](#find-and-screen-an-exam-in-ris) · [MRI controls](#plan-and-run-an-mri-scan) · [Series review](#review-repeat-and-select-a-series) · [Exam lifecycle](#end-complete-review-and-correct-an-exam) · [Instructor](#instructor-instructions) · [Admin](#administrator-instructions) · [Troubleshooting](#troubleshoot-an-issue) · [Glossary](#glossary) · [Planned features](#current-limits-and-planned-work)
 
 ## Open the simulator and sign in
 
 **Before you start:** obtain your account and password from the host/instructor, confirm which role you should use, and connect to the tester network. The app has no self-registration or password-reset screen.
 
 1. Open the internal test address above in Safari, Chrome, or your device's browser. For development on the same Mac that runs the server, use [http://127.0.0.1:3000/sign-in](http://127.0.0.1:3000/sign-in). Do not use localhost to reach the ThinkPad from another device.
-2. Check the version centered **below** the sign-in box. For this guide it is **V 1.0.8**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
+2. Check the version centered **below** the sign-in box. For this guide it is **V 1.0.9**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
 3. Enter **Username**, then **Password**, and select **Sign in**. Passwords are case-sensitive. Use your supplied account rather than a name shown in a screenshot.
 4. Confirm the account name and role in the top-right header. Successful sign-in opens **Order queue** for all current roles.
 5. Use **Training help** on the screen to open the relevant guide section or your role's quick tips. The sign-in page offers tips for all three roles. Each simulator help link requests a new tab/window, leaving the current workflow open; browser preferences decide which. If a browser blocks it, allow the user-initiated opening or use its Open Link in New Tab action. The guide and screenshots are delivered by this simulator, so the ThinkPad needs the current documentation files in the release.
 6. Select **Sign out** before switching roles or leaving a shared device. If your session expires, sign in again and reopen the saved order. The app preserves submitted orders, screening, scans, and PACS selection; unsaved field edits may be lost.
 
-![Sign-in showing V 1.0.8 below the panel](screenshots/sign-in.jpg)
+![Sign-in showing V 1.0.9 below the panel](screenshots/sign-in.jpg)
 
 ### Version numbering
 
-The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.0.8**; the next delivered change is **1.0.9**. After **1.0.9**, the next is **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
+The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.0.9**; the next delivered change is **1.1.0**. After **1.0.9**, the next is **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
 
 ## Roles and navigation
 
@@ -203,18 +203,18 @@ A **protocol** is an ordered set of 1–32 named sequences. Each sequence stores
 
 ### Load a starting point and edit the case copy (student or eligible console operator)
 
-1. Open a screened case, select **Begin exam**, then **Open MRI console**. Under **Saved MRI protocols**, choose a **Saved protocol version** (built-in teaching starter, institution default or your own version), then **Load protocol copy**. Nothing loads automatically or runs a scan automatically.
-2. The first sequence fills **Preset** and **Scan parameters**. The **Case working copy** notice identifies the protocol, source version and current sequence. Loading a different protocol replaces this case copy; save a personal version first if you want to retain its edits. Acquired images remain unchanged.
+1. Open a screened case, select **Begin exam**, then **Open MRI console**. In **Protocol and sequences**, expand **Choose or manage protocol** and choose a **Saved protocol version** (built-in teaching starter, institution default or your own version), then **Load protocol copy**. Nothing loads automatically or runs a scan automatically.
+2. The first sequence fills **Preset** and **Scan parameters**. The sequence rail identifies the working protocol, source version and current sequence. Loading a different protocol replaces this case copy; save a personal version first if you want to retain its edits. Acquired images remain unchanged.
 3. Adjust the current plan. Select another numbered sequence button to save the displayed settings into this case copy and load that sequence. Select **Save sequence settings** to keep current settings without switching. Invalid plans cannot be saved or switched; correct the message first.
 4. Select **Run scan** separately for each sequence you intend to acquire. A successful scan also retains its plan in an already-loaded case copy if that copy has not changed while the scan was running. It does not advance through or run the entire protocol, and it does not publish a saved library version. Use Save sequence settings, a sequence switch, or Save my protocol version to retain edits without acquiring. Acquisition history remains distinct from protocol definitions.
-5. To add, remove, rename or reorder sequences for the full case copy, first save its current settings, then select **Edit full protocol**. The library editor opens a snapshot. Save a personal version there, return to the case console, choose that saved version and select **Load protocol copy**. Library edits do not automatically change the case's working copy.
+5. To add, remove, rename or reorder sequences for the full case copy, first expand **Save or edit full protocol**, save its current settings, then select **Edit full protocol**. The library editor opens a snapshot. Save a personal version there, return to the case console, choose that saved version and select **Load protocol copy**. Library edits do not automatically change the case's working copy.
 6. Without a loaded library protocol, **Save sequence settings** creates a one-sequence case copy from the current scan plan. Use Edit full protocol to expand it into a multi-sequence personal protocol.
 
-![Student personal protocol at sequence 2 of 3 with rendered localizers and an acquired axial T2 FSE series](screenshots/protocol-console.jpg)
+![Focused planning workspace with patient ribbon, sequence progress, three localizers and essential parameters](screenshots/protocol-console.jpg)
 
 ### Save personal versions without changing the default
 
-1. Enter **Personal protocol name** in the console and select **Save my protocol version**. This captures the complete case protocol, including the current unsaved valid sequence settings and the other saved sequence plans. The case's source becomes the new personal version.
+1. In the sequence rail, expand **Save or edit full protocol**. Enter **Personal protocol name** and select **Save my protocol version**. This captures the complete case protocol, including the current unsaved valid sequence settings and the other saved sequence plans. The case's source becomes the new personal version.
 2. Make further changes and save with the same personal name to add version 2, 3, and so on. Earlier saved versions remain immutable. You can also open your latest **My version** entry in MRI protocols, edit the full definition, and use **Save my protocol version** there.
 3. Keeping an institution default's name is safe: the personal copy is stored separately under your account. Students never receive **Save institution default version** and server checks reject attempts to bypass that restriction.
 4. To branch from an older saved version or when that personal name already has newer work, use a different name, or load the latest version before continuing. A conflict retains the saved originals rather than overwriting them. Personal definitions survive sign-out/restart and can be loaded in later cases.
@@ -222,12 +222,38 @@ A **protocol** is an ordered set of 1–32 named sequences. Each sequence stores
 
 
 
+## Use the guided console workspace
+
+The four views **Setup → Plan & scan → Review → Finish** organize your tasks. They do not change the RIS lifecycle merely by being selected. The patient ribbon shows name, MRN, DOB, age, ordered exam, accession and RIS status throughout the console. Legacy cases without intake identifiers display **Not supplied**. On desktop, the ribbon remains visible when scrolling. The sequence rail and acquisition history stay available while you change tasks.
+
+### Setup
+
+1. From a clearly screened RIS case, select **Begin exam**, then **Open MRI console**. Check the persistent identifiers against the exercise. The stage must be Exam Begin; future/held/ended/locked cases cannot acquire.
+2. Read **Setup** for the indication, recorded screening and begin timestamp. Head-first-supine, brain/head fixture and coil context describe the fixed teaching model, not a real positioning or safety clearance.
+3. In **Protocol and sequences**, expand **Choose or manage protocol**, select a built-in starter, institution default or your personal version, then **Load protocol copy**. Or continue with an ad hoc single plan. Loading replaces the case copy and unsaved draft, not acquired images.
+4. Select **Continue to planning** or **Plan & scan**. Changing task views preserves the unsaved plan. Full navigation away, reloading or a server submission can replace an unsaved draft; use Save sequence settings to retain it.
+
+![Setup view retaining patient identity, recorded screening and fixed training context](screenshots/console-setup.jpg)
+
+### Read the sequence rail
+
+| Indicator | Meaning |
+| --- | --- |
+| Planned | No acquisition linked to this particular loaded copy and sequence. |
+| Acquired · Series N | The latest linked image matches that sequence's saved supported settings. This is not a quality score or instructor approval. |
+| Settings changed | Saved settings differ from the latest linked acquisition. Check whether to reacquire. |
+| Draft changed · not acquired | Current unsaved form differs from its saved plan. Saving alone does not acquire an image. |
+| Count such as 2/3 | Two sequences in this loaded copy have matching acquisitions. It is not an exam-end requirement. |
+
+Old/unlinked images remain in **Acquisition history**, without making a new protocol look acquired. Reloading a protocol starts a fresh copy and its linkage count; it does not delete images. Selecting a numbered sequence saves the displayed valid plan and opens that sequence. It does not run a scan. **Next planned sequence** in Review similarly opens a waiting sequence. You may select any sequence for a repeat.
+
 ## Plan and run an MRI scan
 
-1. Open a **Screened** exam, select **Begin exam**, then **Open MRI console**. Optionally load a saved protocol copy using the steps above. The stage must be **Exam Begin**; acquisition is blocked before begin and after end. Check **Patient and exam** in the upper left. Confirm the patient, exam, and accession match your RIS order. Select **Back to RIS order** to return at any time.
-2. Across the top, under **Positioning localizers**, inspect the axial, coronal, and sagittal views. The orientation letters label the image edges. The cyan overlay shows the projected field of view and slice stack on all three views. An amber overlay marks the saturation band when enabled. Change a planning control and watch the overlay update.
-3. In the lower-left **Protocol and sequences** panel, choose a **Preset**. Use **Scan parameters** below the localizers to set geometry, timing, sampling and encoding, or spatial saturation. Choose the preset before editing timing because choosing a new preset reloads its timing defaults.
-4. Select **Run scan**. The newest series opens automatically in **Series preview**, beside the parameters on a wide screen. Open **Series details** to confirm that its geometry and timing match the plan you entered.
+1. Select **Plan & scan**. The heading identifies the active sequence. Choose **Preset** first, then set plane, geometry and timing. Changing preset resets timing defaults for that preset.
+2. Inspect **Positioning localizers**. Cyan shows the projected slice stack and FOV; amber shows spatial saturation when enabled. These are fixed reference localizers, not a newly acquired scout. Drag an orthogonal localizer to adjust **Stack center (mm)** along the supported stack-normal axis. A view parallel to the slice plane cannot move that axis. Use **Angulation (°)** to rotate; numeric controls remain available for keyboard use.
+3. **Essential** emphasizes geometry/timing; irrelevant timing fields are omitted. **All parameters** opens **Sampling and encoding** and **Spatial saturation**. Either section may be opened separately. These views change visibility, not saved settings. A model-time estimate updates with timing/sampling changes; it is not elapsed time or a clinical scanner prediction.
+4. Check **Unsaved draft changes**, coverage and timing before selecting **Run scan**. While the request is pending, the button prevents duplicate submission and a message describes image generation/shared scanner availability. There is no simulated prescan, hardware pause/stop or fake scan countdown.
+5. A successful acquisition opens **Review** and adds a permanent series to history. It retains the plan in an unchanged loaded case copy but does not publish a library version. A stale protocol from another tab is rejected: reload, inspect the current plan and retry. A busy classroom scanner returns a retry message.
 
 ### Slice geometry controls
 
@@ -295,20 +321,24 @@ For parameter coverage and upcoming controls, see the [MRI console parameter inv
 
 ## Review, repeat, and select a series
 
-1. In **Series preview**, use the **Slice** slider to step through the series. Compare images at the same slice number when geometry is unchanged.
-2. Adjust **Window width** and **Window level** beside the image. Width controls the displayed intensity range and level shifts its midpoint. The preview updates as you change valid values.
-3. To repeat a scan, change a setting under **Scan parameters** and select **Run scan** again. Each run appears in **Acquisition history**. To preview an earlier run, drag its series row onto **Series preview**. You can also click the row or press **Enter** while it has keyboard focus. Your current scan settings stay in place. Open **Series details** to inspect the displayed series metadata.
-4. To prepare a series for PACS, open that series, set the desired window and level, and select **Save PACS selection**. Confirm the **Selected for PACS** notice lists the intended series number and values. Saving a different series replaces the saved selection for this exam. Each scan remains in the history.
-5. While the exam is at **Exam Begin**, revisit its console and check the **Selected for PACS** notice. A fresh console visit previews the latest acquisition. After Exam End/Completed use **Review images** instead, and reopen for correction before changing saved data. Select the saved series from history to verify its stored window and level. This saves a selection only. RIS exam end/completion and instructor image review are available as described below; PACS transfer remains planned.
+1. **Review** gives the image more space. Use **Acquisition history** to select a series or drag it into **Series preview**. This does not replace the current draft. Series numbers identify saved acquisitions and may skip numbers across different cases.
+2. Use the slice slider, **Previous slice**, **Next slice**, and **Window width/level**. **Reset display** restores temporary W/L 210/105; it does not change a saved PACS selection until you save again. Expand **Series details** for geometry, timing, sampling and estimated duration.
+3. Follow the prompts to assess coverage, contrast, slice positions and artifacts. There is no automatic diagnostic quality assessment. To repeat, choose **Back to planning**, adjust the current sequence and **Run scan**; original images remain.
+4. **Copy geometry from displayed series** copies plane/angle/center/FOV/slices/thickness/gap and phase geometry into the current draft while keeping target contrast, timing, matrix, averages and bandwidth. Nothing scans or saves automatically. Review the copied draft, then save settings or acquire. Incompatible geometry, including nonzero gap into a 3D GRE slab, is rejected.
+5. Select **Save PACS selection** for the intended series and display settings. Confirm the series and W/L in history. This is a saved selection, not image transfer or delivery confirmation. Saving it reloads the page, so save any other draft edits first.
+6. **Next planned sequence** opens a waiting plan without acquiring. **Continue to finish** opens the final summary. Selecting these views does not complete the RIS case.
 
-Changing preview using a series link or drop keeps an unsent plan in the current browser page. With a loaded case protocol, a reload restores its last saved selected-sequence settings. Without one, a reload, leaving the console, or saving the PACS selection can rebuild the plan from the displayed series. Recheck the preset and parameters before the next run; unacquired edits are not a saved protocol until you use Save sequence settings, switch protocol sequences, or Save my protocol version. Series numbers identify saved acquisitions and may skip numbers across different exams.
+![Dedicated image review with slice and display controls, geometry reuse and next-sequence guidance](screenshots/console-review.jpg)
 
-### Practice comparing contrast and preserving a repeat scan
+### Finish in the console
 
-1. Start with **Routine brain MRI** cleared by screening and explicitly begun with **Begin exam**. Run **T1 spin echo** with the default geometry and note the series number.
-2. Keep the geometry and matrix the same. Select **T2 spin echo** and run another scan.
-3. Open each series in **Acquisition history** and compare the same slice with the same window and level. Pick a slice through the simulated ventricles near the middle of the stack. Fluid appears darker on T1 and brighter on T2 in the training phantom.
-4. Select the first series, set a different window and level, and save it for PACS while the exam remains at Exam Begin. Return to the console from RIS and verify the second series previews by default. Drag the first series into **Series preview** and confirm its saved window and level. Compare the values under **Scan parameters** before and after the drop to confirm the plan stays in place.
+1. Open **Finish** and review saved acquisitions, PACS selection and RIS status. Missing or changed protocol sequences are advisory: follow the exercise, but the application requires only at least one saved acquisition before End exam.
+2. Confirm **Performed exam matches the ordered exam**, add optional **Technologist notes** (up to 4,000 characters), then **End exam**. The console returns to Finish with RIS status Exam End and acquisition controls removed.
+3. Select **Mark completed** explicitly. The console confirms RIS completion. This does not transfer images, acknowledge PACS delivery or automatically lock corrections.
+4. Use **RIS details and correction workflow** for reopening or instructor send-back, or **Completed/Recent** to leave the console. Existing instructor opening/review-lock rules still apply. End/complete may also be performed through the RIS detail page.
+
+![Finish summary showing an advisory unacquired sequence, performed-exam confirmation and notes](screenshots/console-finish.jpg)
+
 
 ## End, complete, review, and correct an exam
 
@@ -337,11 +367,13 @@ The main workflow is **Ordered → Scheduled → Screened → Exam Begin → Exa
 
 1. As instructor, open an **Exam End** or **Completed** study from Completed/Recent. Opening its RIS details or image-review URL immediately records **Opened for instructor review** and locks corrections. There is no separate Mark reviewed button. Listing rows or reading intake completeness history alone does not lock the study.
 2. Review the saved screening, performed-exam confirmation, notes, workflow history, and **Review images**. Repeated visits do not duplicate the lock event. The lock survives sign-out and server restart.
-3. While locked, no role—including admin or instructor—can reopen, acquire, change the saved PACS selection, or mark the study completed. Stale browser tabs do not bypass this rule. An instructor reviewing at Exam End must send the case back if the student still needs to complete it.
+3. In an ended or locked console, **Plan & scan** is unavailable. **Review** retains temporary slice/window controls, while **Finish** displays the recorded performed-exam confirmation and notes. While locked, no role—including admin or instructor—can reopen, acquire, change the saved PACS selection, or mark the study completed. Stale browser tabs do not bypass this rule. An instructor reviewing at Exam End must send the case back if the student still needs to complete it.
 4. To allow corrections, enter a **Correction reason** (required, up to 4,000 characters) and select **Send back for correction**. Only an instructor within the same institution has this action; admin access does not release an instructor lock.
 5. The case unlocks, returns to **Exam Begin**, and appears on its appointment date in RIS worklist. The student can read the reason in Workflow history, correct the case, end, and complete again. Instructor visits during active correction do not relock it. Opening it again after the next end/completion creates a new review lock.
 
 Instructors may acquire images and end an exam during a correction cycle. Initial screening, initial Begin exam, and appointment rescheduling remain student/admin actions. A screening hold is not cleared by reopening or sending back. Future appointment dates still block beginning or resuming acquisition. No automatic score or instructor approval grade is assigned by the review lock.
+
+![Instructor image review after the completed study was locked, with planning and write actions unavailable](screenshots/console-review-locked.jpg)
 
 ## Instructor instructions
 
@@ -467,4 +499,4 @@ Planned capabilities include scanner/room availability and resource conflicts; i
 
 The five supplied reference documents guide workflow understanding. Our interface, implementation, examples, and screenshots are original. The [topic index](REFERENCE_INDEX.md) routes development tasks to relevant pages; the [decision log](REFERENCE_WORKFLOWS.md) distinguishes confirmed targets from unresolved requirements. The guide documents the actual simulator, even where a source product offers more features.
 
-This guide, role tips and printable copies are maintained with releases. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records the workflow. V 1.0.8 sign-in, dictionary/reference, default-installation and protocol-console screenshots were captured and inspected in an isolated fictional-data database. The local browser walkthrough verified filtering/source values, repeat-safe default installation, student starter loading, sequence switching, personal saving and acquisition. The built-in/default first-sequence TR remained 550 while the student's personal copy retained TR 650. Older workflow/library screenshots remain preserved and refresh-pending, omitted until recaptured. ThinkPad/LAN and print-layout checks remain pending; the milestone handoff records verification limits.
+This guide, role tips and printable copies are maintained with releases. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records the workflow. V 1.0.9 sign-in, Setup, Plan & scan, Review and Finish images were captured and inspected in a disposable fictional-data environment. The local walkthrough checked visual stack movement, task-switch draft retention, essential/all parameters, geometry reuse preserving timing, linked acquisitions, personal protocol saving, display reset, saved PACS selection, end/completion and correction reopening. Older screenshots retain their capture version or are refresh-pending. ThinkPad/LAN and full print-layout checks remain pending. [Manufacturer workflow research](MR_CONSOLE_WORKFLOW_RESEARCH.md) records primary sources, adopted interaction principles and model limitations.

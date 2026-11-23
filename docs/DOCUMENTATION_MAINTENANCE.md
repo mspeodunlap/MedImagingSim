@@ -2,7 +2,7 @@
 
 This is the ongoing release workflow for the detailed user guide, all role tip sheets, printable copies, and screenshots. It applies to each delivered change, introduced in V 1.3 and updated for V 1.0.3. The application version source remains `package.json`.
 
-**Current documentation release: V 1.0.8 (November 23, 2026).** Added the MRI anatomy/protocol dictionary, sourced reference settings, seven runnable teaching starters and repeat-safe staff default installation. Sign-in, dictionary/reference, default-installation and console captures were checked in a disposable fictional environment; older screenshots remain preserved and refresh-pending. Four HTML exports are rebuilt. Local tests and the dictionary/starter browser walkthrough are complete; print layout and ThinkPad/LAN checks remain pending. The user handles commit/push. Historical verification entries below retain original dates/versions.
+**Current documentation release: V 1.0.9 (November 23, 2026).** Added the guided MR console and manufacturer workflow research. Updated the full guide, all role tips, four HTML exports and console screenshot set. Current sign-in/Setup/planning/Review/Finish captures use an isolated fictional database; unchanged dictionary images retain V 1.0.8 metadata. Other historical captures remain refresh-pending. Local functional/role tests and browser walkthrough are recorded in the milestone handoff; full print layout and ThinkPad/LAN checks remain pending. The user handles commit/push.
 
 ## Maintained files
 

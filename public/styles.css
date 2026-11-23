@@ -186,3 +186,104 @@ textarea { display: block; width: 100%; margin-top: .3rem; padding: .6rem .7rem;
 .guest .workflow-help { justify-content: center; text-align: center; margin-top: 1rem; }
 .dictionary-table { overflow-x: auto; margin: 1rem 0; }
 .dictionary-table td, .dictionary-table th { text-align: left; vertical-align: top; padding: .6rem; }
+
+/* The examination workspace keeps the active task large and controls secondary. */
+main:has(.mr-console) { width: min(100rem, 100%); padding: 1rem clamp(.8rem, 2vw, 2rem) 2rem; }
+main:has(.mr-console) > .workflow-help { margin-bottom: .75rem; font-size: .78rem; }
+.mr-console .mr-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: .5rem 1rem; margin-bottom: .75rem; }
+.mr-console .mr-heading h1 { font-size: 1.45rem; }
+.mr-console .mr-heading .back { margin: 0; }
+.mr-training-label { font-size: .78rem; color: var(--muted); margin-left: auto; }
+.mr-identity { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 2rem; padding: .85rem 1rem; border: 1px solid var(--border); background: #1a2933; border-radius: .65rem; position: sticky; top: 0; z-index: 4; }
+.mr-identity div { display: grid; gap: .15rem; }
+.mr-identity div:first-child { flex: 1; }
+.mr-identity strong { font-size: 1rem; }
+.mr-identity span:not(.status) { color: var(--muted); font-size: .8rem; }
+.mr-workflow-nav { display: flex; gap: .3rem; margin: .75rem 0 1rem; border-bottom: 1px solid var(--border); }
+.mr-workflow-nav a { flex: 1; padding: .65rem .8rem; text-decoration: none; color: var(--muted); border-bottom: 3px solid transparent; font-size: .92rem; font-weight: 650; }
+.mr-workflow-nav a span { font-size: .75rem; margin-right: .65rem; }
+.mr-workflow-nav a[aria-current] { border-color: var(--accent); color: var(--accent); background: #1a2b32; border-radius: .4rem .4rem 0 0; }
+.mr-console-workspace { display: grid; grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.mr-console-rail, .mr-console-main { min-width: 0; }
+.mr-console-rail { display: grid; gap: .8rem; }
+.mr-console-rail .panel { padding: 1rem; }
+.mr-console-rail h2 { font-size: 1rem; margin-bottom: .5rem; }
+.mr-count { font-size: .8rem; color: var(--muted); font-weight: 500; }
+.mr-protocol-name { margin: .6rem 0 0; font-size: .9rem; font-weight: 650; }
+.mr-sequence-list { list-style: none; padding: 0; margin: .9rem 0; display: grid; gap: .45rem; }
+.mr-sequence-list li { border: 1px solid var(--border); border-radius: .5rem; padding: .65rem .6rem; }
+.mr-sequence-list li.is-current { border-color: var(--accent); background: #1a3037; }
+.mr-sequence-button { display: flex; align-items: start; gap: .5rem; width: 100%; text-align: left; padding: 0; color: #e8eef1; background: transparent; font-size: .87rem; line-height: 1.3; }
+.mr-sequence-button:hover { background: transparent; color: var(--accent); }
+.mr-sequence-number { color: var(--muted); font-size: .75rem; padding-top: .1rem; }
+.mr-sequence-meta { font-size: .73rem; color: var(--muted); margin: .3rem 0 .15rem; }
+.mr-sequence-state { font-size: .73rem; color: var(--accent); }
+.mr-library { margin-top: .75rem; border-top: 1px solid var(--border); padding-top: .7rem; font-size: .82rem; }
+.mr-library summary { cursor: pointer; font-weight: 650; }
+.mr-library .stack { margin-top: .7rem; }
+.mr-library label { font-size: .8rem; }
+.mr-library select, .mr-library input { font-size: .8rem; }
+.mr-console-rail .mr-series { border-top: 0; margin: 0; padding: .3rem 0 0; }
+.mr-console-rail .mr-series a { font-size: .78rem; }
+.mr-console-rail .mr-series li span { font-size: .73rem; }
+.mr-stage[hidden] { display: none; }
+.mr-eyebrow { margin: 0 0 .35rem; color: var(--accent); font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.mr-planning-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 .2rem .85rem; }
+.mr-planning-bar h2 { margin: 0; font-size: 1.1rem; }
+.mr-run { white-space: nowrap; padding: .7rem 1.4rem; }
+.mr-console .mr-localizers { padding: .85rem 1rem; margin-bottom: .75rem; }
+.mr-console .mr-localizers h2 { font-size: .9rem; margin-bottom: .5rem; }
+.mr-console .mr-localizer-grid { max-width: 58rem; margin: auto; gap: .8rem; }
+.mr-console .mr-localizer-grid canvas { touch-action: none; cursor: move; }
+.mr-console .mr-controls { padding: 1rem; }
+.mr-console .mr-plan-fields { gap: .8rem; }
+.mr-console .mr-preset { grid-column: 1 / -1; max-width: 25rem; }
+.mr-console .mr-fields label:has(input:disabled) { display: none; }
+.mr-console .mr-fields { gap: .5rem .75rem; }
+.mr-console .mr-fields label { font-size: .78rem; }
+.mr-console .mr-fields input, .mr-console .mr-fields select { padding: .3rem .5rem; }
+.mr-console legend { font-size: .84rem; }
+.mr-console .mr-advanced summary { font-size: .83rem; }
+.mr-parameter-views { display: flex; gap: .35rem; }
+.mr-parameter-views button { font-size: .75rem; }
+.mr-parameter-views [aria-pressed=true] { border-color: var(--accent); color: var(--accent); }
+.mr-console .mr-patient { padding: 0; border: 0; background: transparent; margin: 1rem 0; }
+.mr-console .mr-patient h2 { display: none; }
+.mr-console .mr-patient dl { display: grid; grid-template-columns: 6rem 1fr; gap: .35rem .75rem; }
+.mr-setup-facts { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: 1rem 0; }
+.mr-setup-facts p { display: grid; padding: .75rem; background: #101a22; border-radius: .4rem; font-size: .85rem; margin: 0; }
+.mr-review-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(13rem, .8fr); gap: .85rem; align-items: start; }
+.mr-console .mr-preview { padding: 1rem; }
+.mr-console .mr-image { max-height: 65vh; object-fit: contain; image-rendering: pixelated; }
+.mr-console .mr-review-guidance { padding: 1rem; font-size: .85rem; }
+.mr-review-guidance ol { padding-left: 1.2rem; line-height: 1.6; }
+.mr-review-guidance button, .mr-review-guidance .action { width: 100%; margin-bottom: .75rem; text-align: center; }
+.mr-image-tools { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; }
+.mr-image-tools button { font-size: .75rem; }
+.mr-finish-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin: 1rem 0; }
+.mr-finish-summary p { display: grid; padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; font-size: .8rem; margin: 0; }
+.mr-finish-summary strong { font-size: 1.1rem; }
+.mr-confirm { display: flex; align-items: start; gap: .5rem; }
+.mr-confirm input[type=checkbox] { display: inline-block; width: auto; margin-top: .4rem; }
+@media (max-width: 1000px) {
+  .mr-console-workspace { grid-template-columns: minmax(13rem, 15rem) minmax(0, 1fr); }
+  .mr-review-layout { grid-template-columns: 1fr; }
+  .mr-review-guidance { max-width: none; }
+}
+@media (max-width: 720px) {
+  .mr-console-workspace { grid-template-columns: 1fr; }
+  .mr-console-rail { display: block; }
+  .mr-console-rail > .panel { margin-bottom: .75rem; }
+  .mr-console-rail .mr-series { max-height: 12rem; overflow-y: auto; }
+  .mr-sequence-list { grid-template-columns: repeat(auto-fit,minmax(10rem,1fr)); }
+  .mr-workflow-nav a { padding: .65rem .25rem; font-size: .8rem; text-align: center; }
+  .mr-workflow-nav a span { display: block; margin: 0; }
+  .mr-identity { position: static; }
+  .mr-setup-facts, .mr-finish-summary { grid-template-columns: 1fr; }
+}
+.mr-console-rail { grid-template-columns: minmax(0, 1fr); }
+.mr-console-rail > .panel { grid-area: auto; }
+.mr-console .mr-preview, .mr-console .mr-controls, .mr-console .mr-localizers, .mr-console .mr-patient, .mr-console .mr-protocol { grid-area: auto; }
+.mr-console .mr-image { max-height: 32rem; }
+.mr-step-unavailable { flex: 1; padding: .65rem .8rem; color: var(--muted); opacity: .55; font-size: .92rem; font-weight: 650; border-bottom: 3px solid transparent; }
+.mr-step-unavailable > span { font-size: .75rem; margin-right: .65rem; }

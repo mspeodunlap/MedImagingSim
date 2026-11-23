@@ -20,6 +20,7 @@ import { accessibleProtocol, changeExamProtocol, examProtocol, protocolVersions,
 import { protocolLibrary, readProtocolDraft } from "./protocol-view.js";
 import { dictionary, dictionaryVersion, teachingStarter, teachingStarters } from "./mri-dictionary.js";
 import { dictionaryPage } from "./mri-dictionary-view.js";
+import { copyGeometry } from "./console-workflow.js";
 import { canOperate, ended, examHistory, transitionExam } from "./lifecycle.js";
 import { instructor, orderPage, problem, signIn, worklist } from "./views.js";
 
@@ -202,7 +203,7 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
       : acquisitions.find(series => String(series.id) === requestedSeries);
     if (requestedSeries !== null && !viewed) return reject(404);
     return send(res, status, mrConsole(user, handoff, order, {
-      acquisitions, selection, viewed, message, readOnly, protocols: protocolVersions(db, user), workingProtocol: examProtocol(db, institutionId, accession), scanKey: randomBytes(16).toString("hex"), ...draft,
+      acquisitions, selection, viewed, message, messageKind: status >= 400 ? "error" : "cleared", readOnly, protocols: protocolVersions(db, user), workingProtocol: examProtocol(db, institutionId, accession), scanKey: randomBytes(16).toString("hex"), ...draft,
     }));
   };
 
@@ -231,6 +232,16 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     const revision = form.get("protocolRevision"), operation = form.get("protocolAction");
     if (form.getAll("protocolRevision").length !== 1 || !/^\d+$/.test(revision) || form.getAll("protocolAction").length !== 1) return reject(400);
     const selecting = operation?.match(/^select:(\d+)$/);
+    const geometry = operation?.match(/^geometry:([1-9]\d{0,14})$/);
+    if (geometry) {
+      const current = examProtocol(db, institutionId, accession);
+      if (Number(revision) !== (current?.revision ?? 0)) return render(409, null, "The case protocol changed. Reload before copying geometry.");
+      const source = acquisitionDetails(db, institutionId, accession, Number(geometry[1]));
+      if (!source) return reject(404);
+      const target = readPlan(form), draft = target && copyGeometry(target, source);
+      if (!draft) return render(400, String(geometry[1]), "Geometry is incompatible with the current plan. Check the parameters; a 3D GRE slab needs zero gap.", target ? { plan: target } : undefined);
+      return render(200, String(geometry[1]), "Geometry copied to the current draft. Timing and contrast are unchanged. Save sequence settings or run a scan to keep it.", { plan: draft });
+    }
     if (!["load", "update", "save"].includes(operation) && !selecting) return reject(400);
     const plan = operation === "load" ? undefined : readPlan(form);
     if (operation !== "load" && !plan) return render(400, null, "Check all sequence parameters before saving or changing sequences.");
@@ -242,7 +253,7 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     if (result.error === "forbidden") return reject(403);
     if (result.error) return render(result.error === "conflict" ? 409 : 400, null,
       result.error === "conflict" ? "This case or named protocol changed. Reload the latest version or choose a different personal protocol name." : "Check the protocol name and sequence settings.", plan ? { plan } : undefined);
-    return redirect(res, base);
+    return redirect(res, `${base}#planning`);
   }
   if (action === "scan") {
     const startingCopy = examProtocol(db, institutionId, accession);
@@ -251,7 +262,11 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     const plan = readPlan(form);
     if (!plan) return render(400, null, "Check the slice coverage and sequence parameters before running the scan.");
     const existing = findScan(db, institutionId, accession, scanKey);
-    if (existing) return redirect(res, `${base}?series=${existing.id}`);
+    if (existing) return redirect(res, `${base}?series=${existing.id}#review`);
+    const revision = form.get("protocolRevision");
+    if (form.has("protocolRevision") && (form.getAll("protocolRevision").length !== 1 || !/^\d+$/.test(revision) || Number(revision) !== (startingCopy?.revision ?? 0))) {
+      return render(409, null, "The case protocol changed in another tab. Reload before scanning.", { plan });
+    }
     let acquisition;
     try {
       acquisition = await generateMr(plan);
@@ -262,12 +277,17 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     }
     const operator = sessionUser(db, token);
     if (!operator) return redirect(res, "/sign-in");
+    if (startingCopy && revision !== null) {
+      const document = JSON.parse(startingCopy.payload);
+      acquisition.parameters.protocolContext = { instanceKey: startingCopy.instance_key, sequenceIndex: startingCopy.selected_sequence,
+        sequenceName: document.sequences[startingCopy.selected_sequence].name, protocolRevision: startingCopy.revision };
+    }
     const id = saveAcquisition(db, operator, accession, scanKey, acquisition, order.workflow_revision);
     if (!id) return reject(404);
     // Retain a successfully acquired plan in an already-loaded case copy, without publishing
     // a library version or overwriting a sequence changed while generation was in progress.
     if (startingCopy) changeExamProtocol(db, operator, accession, startingCopy.revision, "update", { plan });
-    return redirect(res, `${base}?series=${id}`);
+    return redirect(res, `${base}?series=${id}#review`);
   }
 
   const id = Number(seriesId);
@@ -275,7 +295,7 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
   const presentation = readPresentation(form);
   if (!presentation) return render(400, seriesId, "Enter a valid window width and level.");
   if (!savePacsSelection(db, institutionId, accession, id, presentation)) return reject(404);
-  return redirect(res, `${base}?series=${id}`);
+  return redirect(res, `${base}?series=${id}#review`);
 }
 
 export function createRequestHandler(db, { publicOrigin } = {}) {
@@ -475,7 +495,8 @@ export function createRequestHandler(db, { publicOrigin } = {}) {
           return renderOrder(409, accessibleOrder(db, currentUser, accession),
             "The study changed, is locked, or this action's prerequisites are not met. Reload and check the current stage. End exam requires a saved acquisition and performed-exam confirmation; sending back requires a correction reason.");
         }
-        return redirect(res, `/ris/orders/${accession}`);
+        return redirect(res, form.get("returnToConsole") === "yes" && ["/end", "/complete"].includes(screeningRoute)
+          ? `/console/mr/${accession}#finish` : `/ris/orders/${accession}`);
       }
       if (!canUseWorkspace(currentUser, "student")) return reject(403);
       if (screeningRoute === "/reschedule") {

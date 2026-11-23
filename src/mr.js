@@ -1,4 +1,5 @@
-import { coverage, localizerFov, localizerSize, patientPoint, planes, sampleGrid, sliceCenter, sliceFrame } from "../public/mr-geometry.js";
+import { coverage, estimateScanSeconds, localizerFov, localizerSize, patientPoint, planes, sampleGrid, sliceCenter, sliceFrame } from "../public/mr-geometry.js";
+export { estimateScanSeconds } from "../public/mr-geometry.js";
 
 export const mrExamKey = "mr-brain-v1";
 const sourceVersion = "synthetic-brain-v1";
@@ -219,12 +220,6 @@ export function acquireMr(plan) {
       durationSeconds: estimateScanSeconds(plan),
     },
   };
-}
-
-export function estimateScanSeconds(plan) {
-  const lines = Math.ceil((plan.phaseMatrix ?? plan.matrix) * (1 + plan.oversampling / 100));
-  const partitions = plan.acquisition === "3D" ? plan.slices : 1;
-  return Math.ceil(lines / (plan.echoTrain ?? 1)) * partitions * plan.averages * plan.tr / 1000;
 }
 
 export function makeLocalizers() {

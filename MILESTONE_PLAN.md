@@ -1,5 +1,20 @@
 # MedImagingSim milestone plan
 
+## V 1.0.9 manufacturer-informed MRI console handoff — November 23, 2026
+
+Researched public primary GE SIGNA One, Siemens syngo/DotGO and Philips MR Workspace/Instructions for Use material. The detailed comparison, release-specific limitations, sources and adoption matrix are in docs/MR_CONSOLE_WORKFLOW_RESEARCH.md. Adopted progressive parameter disclosure, a persistent sequence/progress rail and separate planning/image-review workspaces in an original interface. No vendor assets or proprietary protocol files are distributed; no manufacturer equivalence or clinical scanner capability is claimed.
+
+Implemented Setup, Plan & scan, Review and Finish views with a persistent patient/MRN/DOB/exam/status ribbon. Essential/all parameter controls, three-plane stack dragging with numeric alternatives, shared synthetic scan-time estimates, explicit next-sequence selection, geometry reuse preserving target contrast/timing, slice navigation/display reset and acquisition history support the scanning exercise. Finish summarizes images/PACS selection/RIS state, records the existing performed confirmation/notes and offers the existing end/completion actions. Completed remains independent of PACS delivery. Read-only studies disable planning and omit write actions while retaining temporary image review. Existing ownership, institution, correction and instructor-review locking rules remain authoritative.
+
+Sequence progress is linked to actual saved acquisitions for the current loaded protocol instance and sequence index, with matching settings. It does not infer image quality or backfill legacy series. Loading any library version creates a new instance; edits retain the instance. An additive instance_key migration preserves existing working-copy payloads, revisions, protocol versions and images. Scan requests with a submitted protocol revision reject stale drafts; duplicate-key retries still return the original acquisition. Geometry copy is draft-only and rejects invalid, cross-case or stale requests. No automatic scans, hardware controls, new anatomy, clinical safety checks, contrast administration, pause/abort or PACS transmission were introduced.
+
+Verification: the full suite passed 37/37 tests with zero skips, including classroom isolation through 60-user handler and real HTTP exercises, immutable/default/private protocol rules, three new linked-progress/migration/geometry/Finish tests and existing lifecycle checks. The disposable browser exercise checked Setup, essential/all parameters, stack movement, draft retention, T1/T2 acquisition, personal save, geometry reuse retaining TR, matching queue evidence, slice navigation, display reset, saved PACS selection, ending/completing, correction reopening and instructor read-only lock. Browser error log was empty. Final full-suite verification is recorded in the task result. Narrow-screen CSS is provided; a separate mobile browser usability check remains pending.
+
+Documentation: bumped once from 1.0.8 to 1.0.9 (next 1.1.0). Updated README, PRD current status, full guide, all role tips, reference decisions/index, capability inventory, hosting checks, documentation maintenance and four standalone HTML exports. Captured and inspected original sign-in, planning, Setup, Review, Finish and locked-review images using fictional accounts/patients. Screenshot manifest retains truthful older capture versions; historical refresh and full print-layout checks remain pending.
+
+Publication: user handles commit/push. Baseline HEAD was 31cc1da. No commit, push, deployed SHA or ThinkPad version was verified. Follow the V 1.0.9 LAN checks after publication and preserve tester data. Live ThinkPad/HTTPS/LAN classroom validation remains pending. Only a disposable documentation database was used for browser work.
+
+
 
 ## V 1.0.8 MRI research dictionary handoff — November 23, 2026
 

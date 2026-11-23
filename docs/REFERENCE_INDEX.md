@@ -89,3 +89,7 @@ The following entries are navigation aids. Read their relevant body sections bef
 ## MRI acquisition terminology and protocol examples
 
 The five workflow PDFs do not specify a complete clinical scanner protocol dictionary. For the V 1.0.8 research, use [MRI_PROTOCOL_RESEARCH.md](MRI_PROTOCOL_RESEARCH.md) and the source register embedded in `src/mri-dictionary.js`: ACR quality/practice guidance, AAPM physics education, SCMR consensus, OHSU and UW institution examples, and NRG oncology guidance. The catalog distinguishes educational synthesis, selected source examples, quality limits and runnable phantom settings. A reference entry does not establish acquisition-engine support or clinical approval.
+
+## Manufacturer console workflow and presentation
+
+Use [MR_CONSOLE_WORKFLOW_RESEARCH.md](MR_CONSOLE_WORKFLOW_RESEARCH.md) for the V 1.0.9 GE/Siemens/Philips primary-source register, version-specific findings and adopted task/parameter/review principles. It supplements the workflow manuals without copying vendor interfaces or importing unsupported scanner mechanics.

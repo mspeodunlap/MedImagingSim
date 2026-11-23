@@ -78,7 +78,7 @@ test("a screened order retains repeat scan bytes, geometry and the PACS selectio
     const page = await (await request(consolePath, student.cookie)).text();
     assert.match(page, /src="\/mr-console.js"/);
     assert.match(page, /Patient and exam[\s\S]*Morgan Ellis[\s\S]*Persistent headaches/);
-    assert.match(page, /Positioning localizers[\s\S]*Protocol and sequences[\s\S]*name="preset" form="mr-plan"[\s\S]*Scan parameters[\s\S]*Series preview/);
+    assert.match(page, /Protocol and sequences[\s\S]*Positioning localizers[\s\S]*Scan parameters[\s\S]*name="preset" form="mr-plan"[\s\S]*Series preview/);
     assert.deepEqual([...page.matchAll(/data-plane="([a-z]+)"/g)].map(match => match[1]), ["axial", "coronal", "sagittal"]);
     const localizers = await request(consolePath + "/localizers", student.cookie);
     const localizerBytes = new Uint8Array(await localizers.arrayBuffer());
