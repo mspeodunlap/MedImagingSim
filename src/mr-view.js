@@ -4,6 +4,7 @@ import {
   samplingFields, saturationFields, timingFields,
 } from "./mr.js";
 import { escape, page } from "./views.js";
+import { teachingStarters } from "./mri-dictionary.js";
 
 function numberInput(key, [label, min, max, step], value, disabled = false, readOnly = false) {
   return `<label>${label}<input type="number" name="${key}" min="${min}" max="${max}" step="${step}"
@@ -157,13 +158,14 @@ function protocolPanel(base, plan, acquisitions, viewed, selection, readOnly) {
 
 function savedProtocols(base, protocols, working, readOnly) {
   const document = working && JSON.parse(working.payload);
-  return `<section class="panel"><h2>Saved MRI protocols</h2><p><a href="/protocols/mr">Open protocol library</a> · <a href="/protocols/mr?exam=${base.split("/").at(-1)}">Edit full protocol</a></p>
+  return `<section class="panel"><h2>Saved MRI protocols</h2><p><a href="/protocols/mr">Open protocol library</a> · <a href="/protocols/mr?exam=${base.split("/").at(-1)}">Edit full protocol</a> · <a href="/protocols/mr/dictionary">Anatomy and protocol dictionary</a></p>
     ${working ? `<p>Case working copy: ${escape(working.protocol_name || "Unsaved protocol")} ${working.source_version ? `· source version ${working.source_version}` : ""}. Sequence ${working.selected_sequence + 1} of ${document.sequences.length}. Changes never overwrite an institution default.</p>` : '<p>No library protocol loaded. Choose a saved version, or save your current plan as a personal starting point. Save sequence settings before opening the full editor to copy the current plan.</p>'}
     ${readOnly ? '<p>Ended studies are read-only. Reopen for correction before changing the case protocol.</p>' : `
     <form method="post" action="${base}/protocol" class="intake-actions">
       <input type="hidden" name="protocolRevision" value="${working?.revision ?? 0}">
       <input type="hidden" name="protocolAction" value="load">
       <label>Saved protocol version<select name="protocolVersion" required><option value="">Choose a protocol</option>
+        <optgroup label="Built-in synthetic brain teaching starters">${teachingStarters.map(s => `<option value="starter:${s.id}">${escape(s.name)} · Built-in teaching starter</option>`).join("")}</optgroup>
         ${protocols.map(v => `<option value="${v.id}">${escape(v.name)} · ${v.kind === "default" ? "Institution default" : "My version"} ${v.version}</option>`).join("")}</select></label>
       <button>Load protocol copy</button></form>
     <p>Loading replaces this case's protocol copy with the saved version; save your personal version first to keep edits. It does not run scans or change acquired images.</p>

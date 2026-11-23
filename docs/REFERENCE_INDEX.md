@@ -85,3 +85,7 @@ The following entries are navigation aids. Read their relevant body sections bef
 4. If the selected pages leave a gap, search the topic/chapter map and relevant headings in the other indexed documents before declaring the behavior absent. Mark partial coverage honestly and ask only the unresolved project-specific questions.
 5. Record the documents/pages actually used and confirmed decisions in the task handoff. Update [REFERENCE_WORKFLOWS.md](REFERENCE_WORKFLOWS.md) when an answer changes a gap or decision; update this index for a new topic or source revision.
 6. Keep extracted text, rendered pages, and full bookmark dumps temporary. This index contains original topic descriptions and references, not reproduced training exercises, answers, or screenshots.
+
+## MRI acquisition terminology and protocol examples
+
+The five workflow PDFs do not specify a complete clinical scanner protocol dictionary. For the V 1.0.8 research, use [MRI_PROTOCOL_RESEARCH.md](MRI_PROTOCOL_RESEARCH.md) and the source register embedded in `src/mri-dictionary.js`: ACR quality/practice guidance, AAPM physics education, SCMR consensus, OHSU and UW institution examples, and NRG oncology guidance. The catalog distinguishes educational synthesis, selected source examples, quality limits and runnable phantom settings. A reference entry does not establish acquisition-engine support or clinical approval.

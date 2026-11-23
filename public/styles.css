@@ -184,3 +184,5 @@ textarea { display: block; width: 100%; margin-top: .3rem; padding: .6rem .7rem;
 .workflow-help { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; padding: .7rem 1rem; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: .5rem; font-size: .85rem; }
 .workflow-help small { color: var(--muted); }
 .guest .workflow-help { justify-content: center; text-align: center; margin-top: 1rem; }
+.dictionary-table { overflow-x: auto; margin: 1rem 0; }
+.dictionary-table td, .dictionary-table th { text-align: left; vertical-align: top; padding: .6rem; }

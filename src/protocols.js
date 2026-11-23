@@ -1,6 +1,7 @@
 import { defaultPlan, presets, readPlan } from "./mr.js";
 import { futureOrder } from "./scheduling.js";
 import { recordExamEvent } from "./lifecycle.js";
+import { dictionaryVersion, teachingStarter } from "./mri-dictionary.js";
 
 export const sequenceLimit = 32;
 const cleanName = value => typeof value === "string" ? value.trim().replace(/\s+/g, " ") : "";
@@ -22,7 +23,11 @@ export function validateProtocol(value) {
     if (!plan) return null;
     sequences.push({ name, plan });
   }
-  return { sequences };
+  // Historical provenance remains valid after a later dictionary revision. It is
+  // descriptive metadata, never authorization to load an unsupported sequence.
+  if (value.origin && (typeof value.origin.id !== "string" || !/^[a-z0-9-]{1,80}$/.test(value.origin.id) ||
+    typeof value.origin.version !== "string" || !/^\d{4}-\d{2}-\d{2}\.\d{1,4}$/.test(value.origin.version))) return null;
+  return { sequences, ...(value.origin ? { origin: { id: value.origin.id, version: value.origin.version } } : {}) };
 }
 
 export function migrateProtocols(db) {
@@ -115,14 +120,16 @@ export function saveProtocolVersion(db, user, kind, name, document, sourceId = n
 }
 
 export function examProtocol(db, institutionId, accession) {
-  return db.prepare(`SELECT e.*, p.name AS protocol_name, v.version AS source_version, p.kind AS source_kind
+  const copy = db.prepare(`SELECT e.*, p.name AS protocol_name, v.version AS source_version, p.kind AS source_kind
     FROM mri_exam_protocols e JOIN orders o ON o.accession = e.accession
     LEFT JOIN mri_protocol_versions v ON v.id = e.source_version_id
     LEFT JOIN mri_protocols p ON p.id = v.protocol_id
     WHERE o.institution_id = ? AND e.accession = ?`).get(institutionId, accession);
+  if (copy && !copy.protocol_name) copy.protocol_name = teachingStarter(JSON.parse(copy.payload).origin?.id)?.name ?? null;
+  return copy;
 }
 
-export function changeExamProtocol(db, user, accession, revision, action, { versionId, selected, plan, name } = {}) {
+export function changeExamProtocol(db, user, accession, revision, action, { versionId, starterId, selected, plan, name } = {}) {
   db.exec("BEGIN IMMEDIATE");
   try {
     const order = db.prepare(`SELECT o.*, w.state, w.locked_by, w.correction_cycle, m.role, i.time_zone FROM orders o
@@ -139,9 +146,11 @@ export function changeExamProtocol(db, user, accession, revision, action, { vers
     if ((current?.revision ?? 0) !== revision) { db.exec("ROLLBACK"); return { error: "conflict" }; }
     let document, sourceId = current?.source_version_id ?? null, sequence = current?.selected_sequence ?? 0;
     if (action === "load") {
-      const version = accessibleProtocol(db, user, versionId);
-      if (!version) { db.exec("ROLLBACK"); return { error: "forbidden" }; }
-      document = JSON.parse(version.payload); sourceId = version.id; sequence = 0;
+      const starter = starterId ? teachingStarter(starterId) : null;
+      const version = starterId ? null : accessibleProtocol(db, user, versionId);
+      if (!starter && !version) { db.exec("ROLLBACK"); return { error: "forbidden" }; }
+      document = starter ? { sequences: starter.sequences, origin: { id: starter.id, version: dictionaryVersion } } : JSON.parse(version.payload);
+      sourceId = version?.id ?? null; sequence = 0;
     } else {
       document = current ? JSON.parse(current.payload) : { sequences: [sequenceFromPlan(plan ?? defaultPlan)] };
       if (!plan) { db.exec("ROLLBACK"); return { error: "invalid" }; }

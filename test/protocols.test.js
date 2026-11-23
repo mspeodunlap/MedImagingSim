@@ -11,6 +11,7 @@ import { exams, scenarios } from "../src/exams.js";
 import { transitionExam } from "../src/lifecycle.js";
 import { examProtocol, validateProtocol } from "../src/protocols.js";
 import { requestThrough } from "../test-support/request.js";
+import { dictionary, dictionaryVersion, teachingStarter, teachingStarters } from "../src/mri-dictionary.js";
 
 const document = { sequences: [
   { name: "Axial T1", plan: { ...defaultPlan } },
@@ -196,5 +197,115 @@ test("30 students save independent personal versions from one shared default con
     }
     assert.equal(f.db.prepare("SELECT payload FROM mri_protocol_versions WHERE id = ?").get(first).payload, before);
     assert.deepEqual(f.db.prepare("PRAGMA foreign_key_check").all(), []);
+  } finally { f.close(); }
+});
+
+test("MRI dictionary cross-references are complete and only validated brain starters are runnable", () => {
+  for (const list of [dictionary.categories, dictionary.regions, dictionary.families, dictionary.profiles, dictionary.examRecipes, dictionary.sources, teachingStarters]) {
+    assert.equal(new Set(list.map(v => v.id)).size, list.length);
+  }
+  const has = (list, id) => list.some(v => v.id === id);
+  for (const item of [...dictionary.families, ...dictionary.profiles, ...dictionary.examRecipes]) {
+    assert.ok(item.sources.length);
+    for (const id of item.sources) assert.ok(has(dictionary.sources, id), `${item.id}: missing ${id}`);
+  }
+  for (const recipe of dictionary.examRecipes) {
+    assert.equal(recipe.status, "reference");
+    assert.ok(!teachingStarter(recipe.id), "Clinical recipes must never be cast to runnable plans");
+    assert.ok(has(dictionary.categories, recipe.category));
+    assert.ok(dictionary.regions.some(r => r.category === recipe.category && r.name === recipe.region));
+    for (const id of recipe.sequences) assert.ok(has(dictionary.families, id));
+    for (const id of recipe.profiles) assert.ok(has(dictionary.profiles, id));
+  }
+  for (const p of dictionary.profiles) assert.ok(has(dictionary.families, p.family));
+  for (const id of ["t2fs", "stir", "dwi", "adc", "tof", "t1-3d", "cine"]) assert.equal(dictionary.families.find(f => f.id === id).preset, null);
+  for (const starter of teachingStarters) {
+    assert.deepEqual(validateProtocol(starter).sequences, starter.sequences);
+    const cloned = teachingStarter(starter.id);
+    cloned.sequences[0].plan.tr++;
+    assert.notEqual(cloned.sequences[0].plan.tr, starter.sequences[0].plan.tr);
+  }
+  assert.equal(validateProtocol({ ...document, origin: { id: "retired-teaching-starter", version: "2025-01-01.1" } }).origin.version, "2025-01-01.1");
+});
+
+test("dictionary routes expose sourced references and filters without changing institution data", async () => {
+  const f = setup();
+  try {
+    const before = f.db.prepare("SELECT count(*) n FROM mri_protocol_versions").get().n;
+    for (const user of [f.student, f.instructor, f.admin]) {
+      for (const tab of ["exams", "anatomy", "sequences", "sources", "starters"]) {
+        const response = await f.request(`/protocols/mr/dictionary?tab=${tab}`, user);
+        assert.equal(response.status, 200);
+        const html = await response.text();
+        assert.match(html, /MRI anatomy and protocol dictionary/);
+        assert.equal(html.includes("<button>Install teaching starters"), tab === "starters" && user.role !== "student");
+      }
+    }
+    const filtered = await (await f.request("/protocols/mr/dictionary?category=msk&strength=1.5T&q=knee")).text();
+    assert.match(filtered, /Knee sagittal PD at 1.5T/);
+    assert.ok(!filtered.includes("Knee sagittal PD at 3T"));
+    assert.ok(!filtered.includes("Shoulder rotator cuff survey"));
+    assert.match(await (await f.request("/protocols/mr/dictionary?q=xyz-nothing")).text(), /No matching exams/);
+    const xss = await (await f.request("/protocols/mr/dictionary?q=%3Cscript%3E")).text();
+    assert.ok(!xss.includes("<script>"));
+    assert.match(xss, /&lt;script&gt;/);
+    for (const suffix of ["?tab=bad", "?category=nope", "?strength=7T", "?tab=exams&tab=sources", `?q=${"x".repeat(201)}`]) assert.equal((await f.request(`/protocols/mr/dictionary${suffix}`)).status, 400);
+    const json = await f.request("/protocols/mr/dictionary.json");
+    assert.match(json.headers.get("Content-Type"), /application\/json/);
+    assert.match(json.headers.get("Content-Disposition"), /attachment; filename="mri-dictionary-/);
+    assert.equal(JSON.parse(await json.text()).version, dictionaryVersion);
+    assert.equal((await f.request("/protocols/mr?starter=brain-stroke")).status, 404);
+    assert.equal((await f.request("/protocols/mr?starter=brain-core&version=1")).status, 400);
+    assert.equal(f.db.prepare("SELECT count(*) n FROM mri_protocol_versions").get().n, before);
+  } finally { f.close(); }
+});
+
+test("staff install starter snapshots once per institution, preserving collisions and student ownership", async () => {
+  const f = setup();
+  try {
+    // A local custom default with the same name must survive initial installation.
+    const existing = versionId(await f.request("/protocols/mr/save", f.instructor, fields(document, teachingStarters[0].name)));
+    assert.equal((await f.request("/protocols/mr/install-starters", f.student, {})).status, 403);
+    const first = await f.request("/protocols/mr/install-starters", f.instructor, {});
+    assert.equal(first.status, 303);
+    assert.match(first.headers.get("Location"), /installed=6&skipped=1/);
+    assert.equal(f.db.prepare("SELECT count(*) n FROM mri_protocol_versions").get().n, 7);
+    assert.deepEqual(JSON.parse(f.db.prepare("SELECT payload FROM mri_protocol_versions WHERE id=?").get(existing).payload), document);
+    assert.match((await f.request("/protocols/mr/install-starters", f.admin, {})).headers.get("Location"), /installed=0&skipped=7/);
+    const theirs = await f.request("/protocols/mr/install-starters", f.foreign, {});
+    assert.match(theirs.headers.get("Location"), /installed=7&skipped=0/);
+    const otherId = f.db.prepare("SELECT v.id FROM mri_protocol_versions v JOIN mri_protocols p ON p.id=v.protocol_id WHERE p.institution_id=2 LIMIT 1").get().id;
+    assert.equal((await f.request(`/protocols/mr?version=${otherId}`, f.student)).status, 404);
+    const starter = teachingStarter("brain-weighting");
+    const data = fields(starter, "My weighting lesson", "", "personal");
+    data.catalogOrigin = starter.id; data.catalogVersion = dictionaryVersion;
+    assert.equal((await f.request("/protocols/mr/save", f.student, { ...data, kind: "default" })).status, 403);
+    const personal = versionId(await f.request("/protocols/mr/save", f.student, data));
+    assert.equal(JSON.parse(f.db.prepare("SELECT payload FROM mri_protocol_versions WHERE id=?").get(personal).payload).origin.id, starter.id);
+    assert.equal((await f.request(`/protocols/mr?version=${personal}`, f.peer)).status, 404);
+    f.restart();
+    assert.match((await f.request("/protocols/mr/install-starters", f.instructor, {})).headers.get("Location"), /installed=0&skipped=7/);
+  } finally { f.close(); }
+});
+
+test("built-in starters load as independent case copies and cannot bypass reference or review-lock restrictions", async () => {
+  const f = setup();
+  try {
+    const accession = f.launch(), endpoint = `/console/mr/${accession}/protocol`;
+    assert.equal((await f.request(endpoint, f.student, { protocolRevision: 0, protocolAction: "load", protocolVersion: "starter:brain-stroke" })).status, 400);
+    assert.equal((await f.request(endpoint, f.peer, { protocolRevision: 0, protocolAction: "load", protocolVersion: "starter:brain-core" })).status, 404);
+    assert.equal((await f.request(endpoint, f.student, { protocolRevision: 0, protocolAction: "load", protocolVersion: "starter:brain-core" })).status, 303);
+    const copy = examProtocol(f.db, 1, accession);
+    assert.equal(copy.protocol_name, teachingStarter("brain-core").name);
+    assert.equal(copy.source_version_id, null);
+    assert.deepEqual(JSON.parse(copy.payload).sequences, teachingStarter("brain-core").sequences);
+    const plan = teachingStarter("brain-core").sequences[0].plan;
+    const form = { ...Object.fromEntries(Object.entries({ ...plan, tr: 650 }).filter(([,v]) => v !== null)), protocolRevision: 1, protocolAction: "save", protocolName: "My starter edits" };
+    assert.equal((await f.request(endpoint, f.student, form)).status, 303);
+    assert.equal(teachingStarter("brain-core").sequences[0].plan.tr, 550);
+    assert.equal(JSON.parse(examProtocol(f.db, 1, accession).payload).sequences[0].plan.tr, 650);
+    f.db.prepare("UPDATE exam_workflow SET locked_by=? WHERE accession=?").run(f.instructor.id, accession);
+    assert.equal((await f.request(endpoint, f.student, { protocolRevision: 2, protocolAction: "load", protocolVersion: "starter:brain-fluid" })).status, 404);
+    assert.equal(JSON.parse(examProtocol(f.db, 1, accession).payload).sequences[0].plan.tr, 650);
   } finally { f.close(); }
 });

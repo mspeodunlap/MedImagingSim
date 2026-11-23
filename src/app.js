@@ -18,6 +18,8 @@ import { futureOrder, localAppointment, readAppointment, validDate } from "./sch
 import { trainingDocuments } from "./training.js";
 import { accessibleProtocol, changeExamProtocol, examProtocol, protocolVersions, saveProtocolVersion, sequenceFromPlan, validateProtocol } from "./protocols.js";
 import { protocolLibrary, readProtocolDraft } from "./protocol-view.js";
+import { dictionary, dictionaryVersion, teachingStarter, teachingStarters } from "./mri-dictionary.js";
+import { dictionaryPage } from "./mri-dictionary-view.js";
 import { canOperate, ended, examHistory, transitionExam } from "./lifecycle.js";
 import { instructor, orderPage, problem, signIn, worklist } from "./views.js";
 
@@ -64,18 +66,50 @@ async function readForm(req, limit = 8192) {
 }
 
 async function handleProtocols(db, req, res, url, user, token, reject) {
+  if (req.method === "GET" && url.pathname === "/protocols/mr/dictionary.json") {
+    res.setHeader("Content-Disposition", `attachment; filename="mri-dictionary-${dictionaryVersion}.json"`);
+    return sendBytes(res, Buffer.from(JSON.stringify(dictionary, null, 2)), "application/json; charset=utf-8");
+  }
+  if (req.method === "GET" && url.pathname === "/protocols/mr/dictionary") {
+    const p = url.searchParams;
+    if (["tab", "q", "category", "strength"].some(key => p.getAll(key).length > 1) || (p.get("q") ?? "").length > 200 ||
+      !["exams", "sequences", "anatomy", "starters", "sources"].includes(p.get("tab") ?? "exams") ||
+      (p.get("category") && !dictionary.categories.some(c => c.id === p.get("category"))) ||
+      !["", "1.5T", "3T"].includes(p.get("strength") ?? "")) return reject(400);
+    return send(res, 200, dictionaryPage(user, p));
+  }
+  if (req.method === "POST" && url.pathname === "/protocols/mr/install-starters") {
+    const parsed = await readForm(req);
+    if (parsed.error) return reject(parsed.error);
+    user = sessionUser(db, token);
+    if (!user) return redirect(res, "/sign-in");
+    if (!["instructor", "admin"].includes(user.role)) return reject(403);
+    let installed = 0, skipped = 0;
+    for (const starter of teachingStarters) {
+      const result = saveProtocolVersion(db, user, "default", starter.name,
+        { sequences: starter.sequences, origin: { id: starter.id, version: dictionaryVersion } });
+      if (result.error === "conflict") skipped++;
+      else if (result.error) return reject(result.error === "forbidden" ? 403 : 400);
+      else installed++;
+    }
+    return redirect(res, `/protocols/mr?installed=${installed}&skipped=${skipped}`);
+  }
   if (!["/protocols/mr", "/protocols/mr/edit", "/protocols/mr/save"].includes(url.pathname)) return reject(404);
   let document = { sequences: [sequenceFromPlan({ ...defaultPlan })] };
   let name = "", sourceId = "";
   const render = (code, message = "", saved = false) => send(res, code, protocolLibrary(user, protocolVersions(db, user), document, { name, sourceId, message, saved }));
   if (req.method === "GET" && url.pathname === "/protocols/mr") {
-    const id = url.searchParams.get("version"), accession = url.searchParams.get("exam");
-    if (url.searchParams.getAll("version").length > 1 || url.searchParams.getAll("exam").length > 1 || (id && accession)) return reject(400);
+    const id = url.searchParams.get("version"), accession = url.searchParams.get("exam"), starterId = url.searchParams.get("starter");
+    if (["version", "exam", "starter"].some(key => url.searchParams.getAll(key).length > 1) || [id, accession, starterId].filter(v => v !== null).length > 1) return reject(400);
     if (id !== null) {
       if (!/^[1-9]\d{0,14}$/.test(id)) return reject(400);
       const version = accessibleProtocol(db, user, Number(id));
       if (!version) return reject(404);
       document = JSON.parse(version.payload); name = version.name; sourceId = version.id;
+    } else if (starterId !== null) {
+      const starter = teachingStarter(starterId);
+      if (!starter) return reject(404);
+      document = { sequences: starter.sequences, origin: { id: starter.id, version: dictionaryVersion } }; name = starter.name;
     } else if (accession !== null) {
       const order = accessibleOrder(db, user, accession);
       if (!order) return reject(404);
@@ -85,7 +119,8 @@ async function handleProtocols(db, req, res, url, user, token, reject) {
         sourceId = copy.source_version_id && accessibleProtocol(db, user, copy.source_version_id) ? copy.source_version_id : "";
       }
     }
-    return render(200, url.searchParams.get("saved") === "1" ? "Protocol version saved. Earlier versions are unchanged." : "", url.searchParams.get("saved") === "1");
+    const installed = url.searchParams.get("installed"), skipped = url.searchParams.get("skipped");
+    return render(200, /^\d$/.test(installed) && /^\d$/.test(skipped) ? `${installed} teaching defaults installed; ${skipped} existing names preserved.` : url.searchParams.get("saved") === "1" ? "Protocol version saved. Earlier versions are unchanged." : "", url.searchParams.get("saved") === "1" || installed !== null);
   }
   if (req.method !== "POST" || url.pathname === "/protocols/mr") return reject(404);
   const { form, error } = await readForm(req, 131072);
@@ -199,10 +234,11 @@ async function handleMr(db, req, res, url, match, user, token, reject) {
     if (!["load", "update", "save"].includes(operation) && !selecting) return reject(400);
     const plan = operation === "load" ? undefined : readPlan(form);
     if (operation !== "load" && !plan) return render(400, null, "Check all sequence parameters before saving or changing sequences.");
-    if (operation === "load" && (form.getAll("protocolVersion").length !== 1 || !/^[1-9]\d{0,14}$/.test(form.get("protocolVersion")))) return reject(400);
+    const choice = form.get("protocolVersion"), starterId = choice?.startsWith("starter:") ? choice.slice(8) : null;
+    if (operation === "load" && (form.getAll("protocolVersion").length !== 1 || !(starterId ? teachingStarter(starterId) : /^[1-9]\d{0,14}$/.test(choice)))) return reject(400);
     if (operation === "save" && form.getAll("protocolName").length !== 1) return reject(400);
     const result = changeExamProtocol(db, currentUser, accession, Number(revision), selecting ? "select" : operation,
-      { versionId: Number(form.get("protocolVersion")), selected: selecting ? Number(selecting[1]) : undefined, plan, name: form.get("protocolName") });
+      { versionId: Number(choice), starterId, selected: selecting ? Number(selecting[1]) : undefined, plan, name: form.get("protocolName") });
     if (result.error === "forbidden") return reject(403);
     if (result.error) return render(result.error === "conflict" ? 409 : 400, null,
       result.error === "conflict" ? "This case or named protocol changed. Reload the latest version or choose a different personal protocol name." : "Check the protocol name and sequence settings.", plan ? { plan } : undefined);

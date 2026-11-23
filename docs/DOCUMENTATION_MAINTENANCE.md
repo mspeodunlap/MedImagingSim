@@ -2,7 +2,7 @@
 
 This is the ongoing release workflow for the detailed user guide, all role tip sheets, printable copies, and screenshots. It applies to each delivered change, introduced in V 1.3 and updated for V 1.0.3. The application version source remains `package.json`.
 
-**Current documentation release: V 1.0.7 (November 23, 2026).** This change adds saved acquisition protocols. Sign-in and three original protocol screenshots were captured in a disposable demo and inspected; other workflow recaptures, print-layout and live-host checks remain pending. The user is handling commit/push. Local behavior is checked through automated/request-handler tests; screenshot refresh, rendered browser/print layout, deployed SHA, and ThinkPad/LAN workflows remain pending. Historical capture/verification entries below retain their original versions and dates.
+**Current documentation release: V 1.0.8 (November 23, 2026).** Added the MRI anatomy/protocol dictionary, sourced reference settings, seven runnable teaching starters and repeat-safe staff default installation. Sign-in, dictionary/reference, default-installation and console captures were checked in a disposable fictional environment; older screenshots remain preserved and refresh-pending. Four HTML exports are rebuilt. Local tests and the dictionary/starter browser walkthrough are complete; print layout and ThinkPad/LAN checks remain pending. The user handles commit/push. Historical verification entries below retain original dates/versions.
 
 ## Maintained files
 

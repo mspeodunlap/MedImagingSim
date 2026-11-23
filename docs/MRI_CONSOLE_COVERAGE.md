@@ -1,6 +1,6 @@
 # MRI console parameter coverage
 
-**Implementation inventory: local V 1.0.7 · November 23, 2026.** This lists implemented code and remaining model coverage, not proof of tester deployment or educator/clinical validation. Screenshot refresh and browser/LAN verification remain pending. See the [user guide](USER_GUIDE.md) for the current working controls and the [milestone handoff](../MILESTONE_PLAN.md) for release verification.
+**Implementation inventory: local V 1.0.8 · November 23, 2026.** This lists implemented code and remaining model coverage, not proof of tester deployment or educator/clinical validation. The dictionary/starter workflow passed local browser verification; wider screenshot refresh, print layout and ThinkPad/LAN checks remain pending. See the [user guide](USER_GUIDE.md) for the current working controls and the [milestone handoff](../MILESTONE_PLAN.md) for release verification.
 
 This inventory tracks the controls an MRI technologist uses across routine and advanced exams. The simulator currently supports one brain exam type, a generic console, and reusable ordered multi-sequence acquisition protocols created by staff/students. Individual scanner features depend on the vendor, scanner model, software release, coil, and licensed options. The inventory uses public Siemens syngo MR, GE SIGNA, Philips, and Fujifilm/legacy Hitachi references. It establishes a baseline for the shared model and the future console profiles.
 
@@ -28,3 +28,7 @@ This inventory tracks the controls an MRI technologist uses across routine and a
 | [AAPM lecture on protocol optimization](https://www.aapm.org/meetings/amos2/pdf/26-5964-6323-312.ppt) and [gradient echo signal model](https://pmc.ncbi.nlm.nih.gov/articles/PMC2396302/) | Qualitative sampling, bandwidth and averaging relationships, and signal model for gradient echo. |
 
 For each new control, document the applicable sequence or protocol, accepted range and units, effect on images or workflow, and stored metadata. Verify the effect with a controlled comparison, preserve older acquisitions, and update the [user guide](USER_GUIDE.md).
+
+## V 1.0.8 dictionary coverage
+
+Implemented a read-only, authenticated anatomy/sequence/exam/source catalog: 92 regions, 32 concepts, 58 references, 43 selected parameter examples, 36 primary sources and seven full supported teaching plans. Teaching plans copy into the library editor or directly into eligible case copies; staff may install missing institution-default snapshots without overwriting any existing name. Dictionary provenance survives personal/default saves. No anatomy/clinical sequence implementation is inferred from catalog presence. See [research assessment](MRI_PROTOCOL_RESEARCH.md) for supported-versus-reference distinctions and staged engine work. Existing default/personal isolation and review locks remain enforced.

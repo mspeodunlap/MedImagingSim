@@ -1,12 +1,18 @@
 # Student quick tips
 
-**MedImagingSim V 1.0.7 · November 23, 2026** · [Full guide](../USER_GUIDE.md)
+**MedImagingSim V 1.0.8 · November 23, 2026** · [Full guide](../USER_GUIDE.md)
 
-**Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Check V 1.0.7 below the sign-in box, sign in with your supplied account, and confirm Student in the header.
+**Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Check V 1.0.8 below the sign-in box, sign in with your supplied account, and confirm Student in the header.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Release status:** instructions match local V 1.0.7. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.7.** Current protocol screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the new protocol workflow was checked in a disposable browser environment.
+**Release status:** instructions match local V 1.0.8. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.8.** Current dictionary, installation and console screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the new protocol workflow was checked in a disposable browser environment.
+
+## MRI dictionary and starting protocols
+
+Open **MRI protocols → MRI anatomy and protocol dictionary**. Browse/search 92 regions, 32 sequence concepts, 58 exam references and 43 sourced setting examples. Use **Sequence dictionary** for aliases and unsupported-method labels. Reference values are scanner examples or quality limits, not complete approved clinical recipes. Anatomy listings do not add orderable exams.
+
+The console's **Saved protocol version** selector includes seven **Built-in synthetic brain teaching starters**. Choose one, then **Load protocol copy**; nothing scans automatically. Edit/switch/save sequences in your case copy and **Save my protocol version**. You cannot change built-ins or publish institution defaults. Body/MSK, fat suppression, diffusion/ADC and vascular/cardiac methods remain reference-only. [Full dictionary instructions](../USER_GUIDE.md#use-the-mri-anatomy-and-protocol-dictionary).
 
 ## Use defaults and save your own MRI protocols
 

@@ -1,10 +1,10 @@
 # MedImagingSim user guide
 
-**Guide version: V 1.0.7 · Locally checked November 23, 2026; protocol browser walkthrough passed; print/LAN verification pending · MRI training release**
+**Guide version: V 1.0.8 · Locally checked November 23, 2026; protocol browser walkthrough passed; print/LAN verification pending · MRI training release**
 
-This guide covers the working simulator, with separate instructions for students, instructors, and administrators. Use fictional patients and the synthetic brain phantom for exercises. Sign-in and the new protocol-library/console images were captured and inspected in a disposable fictional-data environment for V 1.0.7. Older workflow screenshots remain pending refresh and are omitted. The protocol workflow passed a local browser walkthrough; print and ThinkPad/LAN verification remain pending.
+This guide covers the working simulator, with separate instructions for students, instructors, and administrators. Use fictional patients and the synthetic brain phantom for exercises. Sign-in, dictionary/reference, default-installation and protocol-console images were captured and inspected in a disposable fictional-data environment for V 1.0.8. Older workflow screenshots remain pending refresh and are omitted. The protocol workflow passed a local browser walkthrough; print and ThinkPad/LAN verification remain pending.
 
-**Release status:** these instructions describe the local V 1.0.7 code. The user is handling the pending commit/push; the ThinkPad deployment and live version have not been verified. The protocol workflow passed a local browser walkthrough. Other screen refresh, print-layout and live-host checks remain pending.
+**Release status:** these instructions describe the local V 1.0.8 code. The user is handling the pending commit/push; the ThinkPad deployment and live version have not been verified. The protocol workflow passed a local browser walkthrough. Other screen refresh, print-layout and live-host checks remain pending.
 
 **Internal test server:** [https://192.168.0.180:8443/sign-in](https://192.168.0.180:8443/sign-in). Connect to the same local network and complete the host's certificate trust setup first. The ThinkPad hosts the tester build; your Mac is a client and development machine.
 
@@ -28,17 +28,17 @@ Contents: [Access](#open-the-simulator-and-sign-in) · [Roles](#roles-and-naviga
 **Before you start:** obtain your account and password from the host/instructor, confirm which role you should use, and connect to the tester network. The app has no self-registration or password-reset screen.
 
 1. Open the internal test address above in Safari, Chrome, or your device's browser. For development on the same Mac that runs the server, use [http://127.0.0.1:3000/sign-in](http://127.0.0.1:3000/sign-in). Do not use localhost to reach the ThinkPad from another device.
-2. Check the version centered **below** the sign-in box. For this guide it is **V 1.0.7**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
+2. Check the version centered **below** the sign-in box. For this guide it is **V 1.0.8**. Tell the host if the deployed version differs. Reload after the host confirms an update; a completed local edit is not evidence of deployment.
 3. Enter **Username**, then **Password**, and select **Sign in**. Passwords are case-sensitive. Use your supplied account rather than a name shown in a screenshot.
 4. Confirm the account name and role in the top-right header. Successful sign-in opens **Order queue** for all current roles.
 5. Use **Training help** on the screen to open the relevant guide section or your role's quick tips. The sign-in page offers tips for all three roles. Each simulator help link requests a new tab/window, leaving the current workflow open; browser preferences decide which. If a browser blocks it, allow the user-initiated opening or use its Open Link in New Tab action. The guide and screenshots are delivered by this simulator, so the ThinkPad needs the current documentation files in the release.
 6. Select **Sign out** before switching roles or leaving a shared device. If your session expires, sign in again and reopen the saved order. The app preserves submitted orders, screening, scans, and PACS selection; unsaved field edits may be lost.
 
-![Sign-in showing V 1.0.7 below the panel](screenshots/sign-in.jpg)
+![Sign-in showing V 1.0.8 below the panel](screenshots/sign-in.jpg)
 
 ### Version numbering
 
-The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.0.7**; the next delivered change is **1.0.8**. After **1.0.9**, the next is **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
+The displayed version uses all three components. The numbering scheme started at **V 1.0.3**. This release is **V 1.0.8**; the next delivered change is **1.0.9**. After **1.0.9**, the next is **1.1.0**. The version below the sign-in box is the application version, while screenshot metadata retains the version at capture.
 
 ## Roles and navigation
 
@@ -163,6 +163,30 @@ Existing exams created before appointment scheduling were assigned their origina
 
 For a clear practice case, create **Routine brain MRI**, review and schedule it for today, then use its history to complete screening. For the hold case, use **Implant review** and reflect the uncertain implant information. Create separate cases for different exercises because submitted screening cannot be reset in this version.
 
+## Use the MRI anatomy and protocol dictionary
+
+Open **MRI protocols → MRI anatomy and protocol dictionary**, or **Anatomy and protocol dictionary** from the console. This release contains 92 regions in nine groups, 32 sequence/contrast entries, 58 exam references, 43 sourced parameter examples and seven complete runnable brain teaching starters. This is a broad educational starting collection, not every possible MRI indication or a clinically approved scanner database.
+
+1. Use **Exam references** to search an indication or anatomy. Choose **Anatomic group** and optionally **Numeric example field strength**, then **Search**. A strength filter returns only recipes with a reviewed numeric example at that strength; it does not approve every sequence in the recipe for that strength.
+2. Expand an exam, then its parameter card. Read the units, source location and evidence label. **Institution example** values are scanner-specific examples. **Accreditation limits** are quality criteria, not a complete prescription. Unlisted settings require scanner-specific review. Some exam entries are planning outlines without numeric prescriptions.
+3. Use **Sequence dictionary** for T1, T2, T2FS, PD/PDFS, FLAIR, STIR, diffusion/ADC, GRE, Dixon, MRCP, vascular and advanced methods. Aliases help searching. **Brain teaching approximation** means a supported approximation; **Reference only** cannot be loaded for scanning. ADC is a derived map. Spatial saturation does not implement fat suppression; generic GRE does not implement TOF, susceptibility or MPRAGE.
+4. **Anatomic regions** provides the full taxonomy. It does not add new RIS orderable exams or new synthetic anatomy. **Sources and review** shows source revisions separately from our review date. **Download dictionary JSON** returns the read-only teaching catalog, not a scanner-import file.
+5. Select **Teaching starters → Copy to protocol editor** to customize a supported complete plan. Students save personal versions; instructors/admins may publish institution defaults. Dictionary provenance follows the saved plan.
+6. Instructors/admins may select **Install teaching starters as institution defaults** to install all seven missing names in their institution. The result reports added and preserved counts. Matching names, existing versions, personal protocols and other institutions remain unchanged, including after repeat installation. To change an installed default, open its latest version and use the normal versioned editor.
+7. In an eligible begun case, **Saved protocol version** also offers the seven **Built-in synthetic brain teaching starters** immediately, without installation. Select one, then **Load protocol copy**. Loading creates a separate case copy and never runs a scan. Switch/save sequences using the existing protocol workflow. Save a personal version before replacing a case copy.
+
+![Instructor filtering to a sourced knee PD example at 1.5T with explicit reference-only status](screenshots/mri-dictionary-reference.jpg)
+
+*The knee values are a named UW scanner example. They are not runnable with the synthetic brain phantom. Other recipes may contain only a planning outline or selected quality criteria.*
+
+![Instructor library after seven teaching defaults were installed while the earlier default remained](screenshots/mri-dictionary-defaults.jpg)
+
+*Repeating installation added zero and preserved seven names in the disposable walkthrough. These snapshots can be revised only by publishing later versions. The built-in definitions stay unchanged.*
+
+The seven starters cover structural brain teaching, T1/T2/PD comparison, SE/FSE timing, fluid suppression, multiplanar planning, GRE 2D/3D, and sampling/signal tradeoffs. They use the existing phantom settings, not 1.5T/3T-specific clinical defaults. The model has no field-strength selector. Teaching matrices are limited to 64/96/128, and stack coverage must be reviewed in localizers. DWI/ADC, fat suppression, additional organs, flow, contrast dynamics and gating remain reference-only capabilities. No contrast dose, sedation, device clearance or clinical safety policy is configured here.
+
+The [research assessment and source register](MRI_PROTOCOL_RESEARCH.md) explains evidence selection, coverage and remaining acquisition-engine work.
+
 ## Create, load, and save MRI protocols
 
 A **protocol** is an ordered set of 1–32 named sequences. Each sequence stores all supported acquisition settings: preset/family, plane, acquisition mode, geometry, timing, frequency/phase matrices, phase direction/FOV/oversampling, averages, bandwidth and spatial saturation. Inactive fields follow the supported preset defaults. These reusable definitions contain no patient details, screening, images, window/level, or PACS selection. They are learning starting points, not a clinical clearance or a sequence-completeness grading rule.
@@ -177,20 +201,16 @@ A **protocol** is an ordered set of 1–32 named sequences. Each sequence stores
 4. Select **Save institution default version**. Every sequence is validated using the console's timing, coverage and parameter rules. The saved library entry displays **Institution default 1**, then later versions.
 5. To revise the same default, open its **latest** version, keep the same name and save again. A new immutable version is added; earlier versions and case copies stay unchanged. Changing the name creates a separate protocol. If another author saved first, load the latest version or use a different name; stale edits never silently replace the newer default.
 
-![Instructor default library with two named sequences and the staff publication control](screenshots/protocol-library.jpg)
-
-*The sequence sections are collapsed for the overview. Expand one to edit its complete acquisition settings. This is fictional teaching content, not a required institutional MRI protocol.*
-
 ### Load a starting point and edit the case copy (student or eligible console operator)
 
-1. Open a screened case, select **Begin exam**, then **Open MRI console**. Under **Saved MRI protocols**, choose a **Saved protocol version**, then **Load protocol copy**. Nothing loads automatically or runs a scan automatically.
+1. Open a screened case, select **Begin exam**, then **Open MRI console**. Under **Saved MRI protocols**, choose a **Saved protocol version** (built-in teaching starter, institution default or your own version), then **Load protocol copy**. Nothing loads automatically or runs a scan automatically.
 2. The first sequence fills **Preset** and **Scan parameters**. The **Case working copy** notice identifies the protocol, source version and current sequence. Loading a different protocol replaces this case copy; save a personal version first if you want to retain its edits. Acquired images remain unchanged.
 3. Adjust the current plan. Select another numbered sequence button to save the displayed settings into this case copy and load that sequence. Select **Save sequence settings** to keep current settings without switching. Invalid plans cannot be saved or switched; correct the message first.
 4. Select **Run scan** separately for each sequence you intend to acquire. A successful scan also retains its plan in an already-loaded case copy if that copy has not changed while the scan was running. It does not advance through or run the entire protocol, and it does not publish a saved library version. Use Save sequence settings, a sequence switch, or Save my protocol version to retain edits without acquiring. Acquisition history remains distinct from protocol definitions.
 5. To add, remove, rename or reorder sequences for the full case copy, first save its current settings, then select **Edit full protocol**. The library editor opens a snapshot. Save a personal version there, return to the case console, choose that saved version and select **Load protocol copy**. Library edits do not automatically change the case's working copy.
 6. Without a loaded library protocol, **Save sequence settings** creates a one-sequence case copy from the current scan plan. Use Edit full protocol to expand it into a multi-sequence personal protocol.
 
-![Student protocol copy at sequence 2 of 2 with rendered localizers and its acquired Coronal T2 series](screenshots/protocol-console.jpg)
+![Student personal protocol at sequence 2 of 3 with rendered localizers and an acquired axial T2 FSE series](screenshots/protocol-console.jpg)
 
 ### Save personal versions without changing the default
 
@@ -200,7 +220,7 @@ A **protocol** is an ordered set of 1–32 named sequences. Each sequence stores
 4. To branch from an older saved version or when that personal name already has newer work, use a different name, or load the latest version before continuing. A conflict retains the saved originals rather than overwriting them. Personal definitions survive sign-out/restart and can be loaded in later cases.
 5. Ended or reviewed/locked studies cannot load/change case protocol copies. Follow the existing **Reopen for correction** / instructor **Send back for correction** rules first. Library editing remains independent and never modifies an already-loaded case copy.
 
-![Student library showing a protected institution default and a separate personal version without staff publication control](screenshots/protocol-student-version.jpg)
+
 
 ## Plan and run an MRI scan
 
@@ -447,4 +467,4 @@ Planned capabilities include scanner/room availability and resource conflicts; i
 
 The five supplied reference documents guide workflow understanding. Our interface, implementation, examples, and screenshots are original. The [topic index](REFERENCE_INDEX.md) routes development tasks to relevant pages; the [decision log](REFERENCE_WORKFLOWS.md) distinguishes confirmed targets from unresolved requirements. The guide documents the actual simulator, even where a source product offers more features.
 
-This guide, role tips and printable copies are maintained with releases. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records the workflow. V 1.0.7 sign-in, instructor library, student version and protocol-console screenshots were captured in an isolated fictional-data database and inspected for role context and rendered canvases. The local browser walkthrough verified default publication, copy loading, sequence switching, personal saving and acquisition; default TR 550 remained unchanged while the personal copy retained TR 650 and TE 110 edits. Other V 1.0.3 screenshots remain preserved and marked refresh-pending, omitted until recaptured. ThinkPad/LAN and print-layout checks remain pending; the milestone handoff records verification limits.
+This guide, role tips and printable copies are maintained with releases. [DOCUMENTATION_MAINTENANCE.md](DOCUMENTATION_MAINTENANCE.md) records the workflow. V 1.0.8 sign-in, dictionary/reference, default-installation and protocol-console screenshots were captured and inspected in an isolated fictional-data database. The local browser walkthrough verified filtering/source values, repeat-safe default installation, student starter loading, sequence switching, personal saving and acquisition. The built-in/default first-sequence TR remained 550 while the student's personal copy retained TR 650. Older workflow/library screenshots remain preserved and refresh-pending, omitted until recaptured. ThinkPad/LAN and print-layout checks remain pending; the milestone handoff records verification limits.

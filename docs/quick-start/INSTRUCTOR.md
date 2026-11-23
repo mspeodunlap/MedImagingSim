@@ -1,12 +1,18 @@
 # Instructor quick tips
 
-**MedImagingSim V 1.0.7 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
+**MedImagingSim V 1.0.8 · November 23, 2026** · [Full guide](../USER_GUIDE.md#instructor-instructions)
 
 **Open:** [Internal test server](https://192.168.0.180:8443/sign-in). Confirm Instructor in the header. You start in Order queue and see requests in your institution.
 
 Use **Training help** in the simulator for the guide section and your role’s tips; links open in a new tab/window without leaving your work.
 
-**Release status:** instructions match local V 1.0.7. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.7.** Current protocol screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the new protocol workflow was checked in a disposable browser environment.
+**Release status:** instructions match local V 1.0.8. Commit/push is being handled by the user; the ThinkPad deployed version and LAN workflow are unverified. **Screenshot refresh pending for V 1.0.8.** Current dictionary, installation and console screenshots are in the full guide. Other workflow screenshots and print/ThinkPad verification remain pending; the new protocol workflow was checked in a disposable browser environment.
+
+## MRI dictionary and starting protocols
+
+Open **MRI protocols → MRI anatomy and protocol dictionary**. Browse/search 92 regions, 32 sequence concepts, 58 exam references and 43 sourced setting examples. Use **Sequence dictionary** for aliases and unsupported-method labels. Reference values are scanner examples or quality limits, not complete approved clinical recipes. Anatomy listings do not add orderable exams.
+
+Under **Teaching starters**, use **Copy to protocol editor** to customize one, or **Install teaching starters as institution defaults** for all seven complete brain plans. Repeat installation skips existing names, preserving custom defaults and versions. Staff publish new default versions; students save private copies. Built-ins are immediately available in eligible consoles even without installation. References for other anatomy/advanced methods are not executable. [Full dictionary instructions](../USER_GUIDE.md#use-the-mri-anatomy-and-protocol-dictionary).
 
 ## Create institution-default MRI protocols
 

@@ -13,6 +13,7 @@ const topics = {
   "Completed/Recent": ["Exam lifecycle guide", "end-complete-review-and-correct-an-exam"],
   "MRI console": ["MRI console guide", "plan-and-run-an-mri-scan"],
   "MRI protocols": ["MRI protocol guide", "create-load-and-save-mri-protocols"],
+  "MRI dictionary": ["MRI dictionary guide", "use-the-mri-anatomy-and-protocol-dictionary"],
   "Instructor home": ["Instructor guide", "instructor-instructions"],
   screening: ["Screening guide", "find-and-screen-an-exam-in-ris"],
   lifecycle: ["Exam lifecycle guide", "end-complete-review-and-correct-an-exam"],
