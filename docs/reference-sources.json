@@ -51,7 +51,7 @@
       "alias": "PHYSICS",
       "path": "Reference Docs/mri-physics.pdf",
       "pdf_pages": 75,
-      "edition": "Preface November 2004; copyright January 2000\u2013November 2004",
+      "edition": "Preface November 2004; copyright January 2000–November 2004",
       "revision_date": null,
       "pdf_modified_date": "2006-02-27",
       "bytes": 2685315,
@@ -76,6 +76,37 @@
       "archive_date": "2025-12-17",
       "repository_license": "MIT",
       "source_identity_note": "Repository citation file remains v1.0/2021; live site footer 2026. Site content fingerprints and exact heading IDs are in page_manifest; repository HEAD is not proof of published build."
+    },
+    {
+      "alias": "VIDEO-CORSMED-01",
+      "kind": "vendor_demonstration_video",
+      "title": "Corsmed MRI Simulator in 6 min – Like a Real MRI Scanner on Your Laptop",
+      "publisher": "Corsmed – MRI Simulator for Colleges & Clinics",
+      "presenter": "Erik Jacobsson (CEO/co-founder per video description)",
+      "url": "https://www.youtube.com/watch?v=aDVdH8Hv9UE",
+      "supplied_url": "https://youtu.be/aDVdH8Hv9UE",
+      "video_id": "aDVdH8Hv9UE",
+      "published_on": "2026-02-26",
+      "duration_seconds": 378,
+      "reviewed_on": "2026-11-23",
+      "index": "docs/MR_CONSOLE_VIDEO_REVIEW.md",
+      "review_scope": "Complete available English auto-caption narrative, expanded description/chapter list and sampled visual checkpoints across the demonstration; not continuous frame-by-frame viewing or hands-on product testing.",
+      "visual_checkpoints_approx_seconds": [
+        37,
+        54,
+        75,
+        113,
+        124,
+        151,
+        189,
+        205,
+        264,
+        302,
+        354
+      ],
+      "evidence_limits": "Vendor demonstration; narrated breadth, accuracy and scanner-equivalence claims are not independent validation. Auto-captions contain transcription errors. No video/media/transcript mirror or stable source-content hash is claimed.",
+      "project_use": "Functionality, teaching-loop and usability candidates V01–V11 / C01–C08. Research only, not implemented controls or physics authority.",
+      "reuse_constraints": "Explicit user prohibition on copying the interface. No competitor layouts, images, assets, descriptions, exercises, patient examples or code imported."
     }
   ]
 }

@@ -80,3 +80,6 @@ V 1.1.0 uses analytic-mr-v3: finite-voxel partial volumes; signed IR and complex
 ## Standing MRI principles reference
 
 For future MRI physics, sequence, image-quality, encoding or reconstruction work, use the [Larson Lab course index and critical assessment](docs/LARSON_MRI_REFERENCE_INDEX.md), then read the relevant original chapter/section. The complete 36-page course catalog, topic routing, verified section IDs and fingerprints are maintained alongside the local PDF references. This reference update leaves the application at V 1.1.0.
+
+
+See the [timestamped MRI simulator video review](docs/MR_CONSOLE_VIDEO_REVIEW.md) for candidate console improvements in sequence duplication, comparison, parameter feedback and graphical planning. These are research proposals, with accuracy caveats and acceptance criteria; the demonstrated interface must not be copied.

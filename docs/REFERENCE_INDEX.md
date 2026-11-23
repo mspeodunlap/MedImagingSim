@@ -2,7 +2,7 @@
 
 Updated November 23, 2026. Start here for a new functional task, then read only the relevant source pages and any cross-references needed to answer it. All page ranges below are **PDF page positions starting at 1**, not the chapter/page labels printed inside the training companions. For example, RAD100 PDF page 83 is printed as 5 • 4.
 
-This index covers six local documents and the standing Larson Lab online MRI course reference. Chapter outlines were surveyed for navigation; the workflow, resource scheduling, questionnaires, worklist, configuration, and access sections relevant to MedImagingSim were examined in more detail. A navigation entry alone does not establish that a feature's behavior has been verified. Review the actual cited pages when using them for a task. The documents describe a source product and training configuration, not an implementation specification for our simulator.
+This index covers six local documents, the standing Larson Lab online MRI course reference, and a timestamped scanner-simulator video assessment. Chapter outlines were surveyed for navigation; the workflow, resource scheduling, questionnaires, worklist, configuration, and access sections relevant to MedImagingSim were examined in more detail. A navigation entry alone does not establish that a feature's behavior has been verified. Review the actual cited pages when using them for a task. The documents describe a source product and training configuration, not an implementation specification for our simulator.
 
 ## Document aliases
 
@@ -106,3 +106,20 @@ Use **PHYSICS**, [mri-physics.pdf](<../Reference Docs/mri-physics.pdf>), Evert J
 ## Standing Larson Lab reference for future MRI work
 
 The user designated [Principles of MRI](https://larsonlab.github.io/MRI-education-resources/Introduction.html) as a standing reference on November 23, 2026. [The complete course index and assessment](LARSON_MRI_REFERENCE_INDEX.md) covers 36 contents pages, 360 section headings, a request-to-topic table, direct section links, implementation checks and source-specific caveats. [The machine index](larson-reference-pages.json) retains retrieval fingerprints and exact heading IDs. Read the applicable source section before relying on it; basic overview, advanced supplement, software pointer and independently validated model are different levels of evidence. The course does not replace clinical/device safety policy, scanner calibration, indication protocols or user-confirmed workflow requirements.
+
+
+## Scanner-simulator video: functionality, fidelity and usability
+
+**VIDEO-CORSMED-01** — [Corsmed six-minute MRI simulator demonstration](https://www.youtube.com/watch?v=aDVdH8Hv9UE), February 26, 2026, duration 6:18; reviewed November 23, 2026. See [MR_CONSOLE_VIDEO_REVIEW.md](MR_CONSOLE_VIDEO_REVIEW.md) for evidence limits, timestamped entries V01–V11, current-state comparison, candidates C01–C08 and acceptance criteria.
+
+| Find this topic | Video index entries | Candidate / corroborating reference |
+| --- | --- | --- |
+| Protocol subsets, raw sequences, duplicate and edit | V02–V04 | C01; existing default/private version rules in USER_GUIDE.md. |
+| Acquired-series comparison; resolution, thickness and noise | V04–V06 | C02–C03; LARSON L18–L20 and MRI_PHYSICS_AUDIT.md. |
+| Model scan duration versus generation runtime | V06–V07 | C04; shared timing contract, not a scanner countdown. |
+| Direct slice planning; oblique acquisition | V03, V08 | C05; current geometry limits in MRI_CONSOLE_COVERAGE.md. |
+| ETL/spacing, artifacts and parameter experiments | V07, V09 | C06; LARSON L22/L24/L25, with source caveats. |
+| Anatomy, coils, fields and advanced sequence scope | V10 | C07; dictionary entries do not imply runnable anatomy/physics. |
+| Instructor analytics, grading and cohorts | V11 | C08; project requirements needed before implementation. |
+
+Use this video as an observational workflow/teaching reference. Its commercial accuracy and scanner-equivalence claims are not independently validated. Read the relevant primary physics source before dependent changes. The user explicitly prohibited copying the interface: implement original screens/interactions and do not import competitor layouts, assets, examples or code. All candidates remain proposed; this reference task leaves V 1.1.0 behavior unchanged.
