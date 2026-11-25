@@ -83,3 +83,8 @@ For future MRI physics, sequence, image-quality, encoding or reconstruction work
 
 
 See the [timestamped MRI simulator video review](docs/MR_CONSOLE_VIDEO_REVIEW.md) for candidate console improvements in sequence duplication, comparison, parameter feedback and graphical planning. These are research proposals, with accuracy caveats and acceptance criteria; the demonstrated interface must not be copied.
+
+
+## Deferred real-time MRI engine strategy
+
+[MRI-ENGINE-001: real-time imaging architecture and implementation plan](docs/REALTIME_MRI_ENGINE_PLAN.md) records the adopted phantom → physics → generated raw k-space → reconstruction direction. Begin with validated hybrid acquisition and a shared job/result contract, then benchmark a GPU Bloch service. Includes data/sequence contracts, numerical safeguards, classroom capacity, phased gates and a resume checklist. Say **resume MRI-ENGINE-001** to return to this plan. Implementation has not started; current application remains V 1.1.0.

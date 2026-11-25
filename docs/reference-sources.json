@@ -107,6 +107,78 @@
       "evidence_limits": "Vendor demonstration; narrated breadth, accuracy and scanner-equivalence claims are not independent validation. Auto-captions contain transcription errors. No video/media/transcript mirror or stable source-content hash is claimed.",
       "project_use": "Functionality, teaching-loop and usability candidates V01–V11 / C01–C08. Research only, not implemented controls or physics authority.",
       "reuse_constraints": "Explicit user prohibition on copying the interface. No competitor layouts, images, assets, descriptions, exercises, patient examples or code imported."
+    },
+    {
+      "alias": "ENGINE-COREMRI",
+      "title": "coreMRI: A high-performance, publicly available MR simulation platform on the cloud",
+      "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0216594",
+      "doi": "10.1371/journal.pone.0216594",
+      "kind": "primary_research",
+      "review_scope": "Methods/architecture, source availability, competing interests and workload-dependent performance. Public service/executables do not establish a fully open-source reusable implementation.",
+      "reviewed_on": "2026-11-23",
+      "index": "docs/REALTIME_MRI_ENGINE_PLAN.md"
+    },
+    {
+      "alias": "ENGINE-KOMA",
+      "title": "KomaMRI.jl",
+      "url": "https://juliahealth.org/KomaMRI.jl/stable/",
+      "kind": "official_engine_documentation",
+      "related_urls": [
+        "https://juliahealth.org/KomaMRI.jl/stable/explanation/7-simulation",
+        "https://juliahealth.org/KomaMRI.jl/stable/explanation/5-seq-events",
+        "https://juliahealth.org/KomaMRI.jl/stable/explanation/3-phantom-format",
+        "https://juliahealth.org/KomaMRI.jl/stable/explanation/9-gpu-explanation",
+        "https://juliahealth.org/KomaMRI.jl/stable/tutorial/gen-04-3DSliceSelectiveAcquisition",
+        "https://raw.githubusercontent.com/JuliaHealth/KomaMRI.jl/master/LICENSE"
+      ],
+      "review_scope": "CPU/GPU backends, simulation blocks/precision/raw output, event/ADC and phantom interfaces, slice-selective example; MIT license text inspected. Not installed, executed, benchmarked or pinned. Candidate only.",
+      "reviewed_on": "2026-11-23",
+      "index": "docs/REALTIME_MRI_ENGINE_PLAN.md"
+    },
+    {
+      "alias": "ENGINE-JEMRIS",
+      "title": "JEMRIS",
+      "url": "https://github.com/JEMRIS/jemris",
+      "kind": "official_engine_repository",
+      "related_urls": [
+        "https://github.com/JEMRIS/jemris/blob/master/COPYING"
+      ],
+      "review_scope": "Repository input concepts and GPL v2-or-later declaration/COPYING. Independent-reference candidate; not installed or integrated.",
+      "reviewed_on": "2026-11-23",
+      "index": "docs/REALTIME_MRI_ENGINE_PLAN.md"
+    },
+    {
+      "alias": "PHANTOM-BRAINWEB",
+      "title": "BrainWeb / McGill Simulated Brain Database anatomy and tissue properties",
+      "url": "https://brainweb.bic.mni.mcgill.ca/brainweb/anatomic_normal.html",
+      "kind": "primary_dataset_documentation",
+      "related_urls": [
+        "https://brainweb.bic.mni.mcgill.ca/brainweb/anatomic_normal_details.html",
+        "https://brainweb.bic.mni.mcgill.ca/brainweb/faq.html",
+        "https://brainweb.bic.mni.mcgill.ca/brainweb/tissue_mr_parameters.txt",
+        "https://brainweb.bic.mni.mcgill.ca/cgi/brainweb1?alias=phantom_1.0mm_normal_crisp&download=1"
+      ],
+      "review_scope": "Fuzzy/discrete anatomy, grid, partial volume, historical tissue parameter table, FAQ and download/citation information. No assets imported/form submitted. Product redistribution rights not established; quantitative property assignment needs explicit version/conditions.",
+      "reviewed_on": "2026-11-23",
+      "index": "docs/REALTIME_MRI_ENGINE_PLAN.md"
+    },
+    {
+      "alias": "ENGINE-EPG",
+      "title": "Extended phase graphs: dephasing, RF pulses, and echoes - pure and simple",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/24737382/",
+      "doi": "10.1002/jmri.24619",
+      "kind": "primary_author_review_abstract",
+      "review_scope": "Abstract only; EPG echo-response concept and limits. Full derivation and matched implementation validation deferred to E3.",
+      "reviewed_on": "2026-11-23",
+      "index": "docs/REALTIME_MRI_ENGINE_PLAN.md"
     }
-  ]
+  ],
+  "data_source_catalog": {
+    "plan_id": "MRI-ENGINE-001",
+    "reviewed_on": "2026-11-23",
+    "index": "docs/MRI_ENGINE_DATA_SOURCES.md",
+    "manifest": "docs/mri-engine-data-sources.json",
+    "candidate_count": 13,
+    "scope": "Primary-page/metadata/terms assessment with per-entry limits; discovery lists and failed sources marked. No asset-level import, approval or accepted data agreement."
+  }
 }

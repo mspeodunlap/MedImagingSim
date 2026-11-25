@@ -88,3 +88,6 @@ Proposed usability exercise, not yet performed: ask students and an instructor t
 The video does not resolve our RIS/safety/ownership policy. Retain **Ordered → Scheduled → Screened → Exam Begin → Exam End → Completed**, no arrival step, explicit completion independent of PACS transfer, default protection, student ownership and instructor review locking/send-back. Hardware calibration/monitoring, automated queue execution and a grading rubric cannot be inferred from the video.
 
 This review changes references and candidate planning only. Application code, available controls, user-guide steps, screenshots and V 1.1.0 remain unchanged. See [reference decisions](REFERENCE_WORKFLOWS.md) and [milestone handoff](../MILESTONE_PLAN.md).
+
+
+Subsequent direction: the user adopted the phantom/physics/generated-raw-data approach in [MRI-ENGINE-001](REALTIME_MRI_ENGINE_PLAN.md). Use that deferred engine plan for architecture, backend, fidelity, capacity and implementation sequencing; the candidates here remain the interface/learning backlog.

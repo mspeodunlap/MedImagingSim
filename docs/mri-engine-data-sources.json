@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "plan_id": "MRI-ENGINE-001",
+  "reviewed_on": "2026-11-23",
+  "index": "docs/MRI_ENGINE_DATA_SOURCES.md",
+  "status": "candidate_catalog_only",
+  "assets_imported": false,
+  "agreements_accepted": false,
+  "candidates": [
+    {
+      "id": "D01",
+      "name": "BrainWeb / McGill BIC",
+      "category": "tissue_memberships",
+      "supplied_url": "https://brainweb.bic.mni.mcgill.ca/",
+      "supporting_primary_urls": [
+        "https://brainweb.bic.mni.mcgill.ca/brainweb/anatomic_normal.html",
+        "https://brainweb.bic.mni.mcgill.ca/brainweb/tissue_mr_parameters.txt"
+      ],
+      "source_version_or_scope": "Original normal/MS resources; release-specific labels",
+      "terms_observation": "Product redistribution not established; historical tissue table is separate.",
+      "evidence_limit": "Fuzzy/discrete anatomy plus explicit reviewed tissue/species assignment.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D02",
+      "name": "MRiLab",
+      "category": "structured_virtual_objects",
+      "supplied_url": "https://github.com/leoliuf/MRiLab",
+      "supporting_primary_urls": [
+        "https://leoliuf.github.io/MRiLab/manual/MRiLab_User_Guide_v1_3/MRiLab_User_Guidech3.html",
+        "https://github.com/leoliuf/MRiLab/blob/master/License.txt"
+      ],
+      "source_version_or_scope": "v1.3 manual; repository moving master",
+      "terms_observation": "BSD-2-Clause software text inspected; each phantom/data provenance still needs review.",
+      "evidence_limit": "Virtual-object format/properties verified; individual brain/heart/flow asset inventory not inspected.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D03",
+      "name": "XCAT 3.0",
+      "category": "segmented_anatomy",
+      "supplied_url": "https://cvit.duke.edu/resource/xcat-3-0-personalized-phantom-library/",
+      "supporting_primary_urls": [
+        "https://xcat-3.github.io/"
+      ],
+      "source_version_or_scope": "XCAT-3 project/library",
+      "terms_observation": "Request-based phantom access; specific asset/code terms not established.",
+      "evidence_limit": "CT-derived voxel/surface anatomy; MRI properties and validated motion fields need separate assignment.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D04",
+      "name": "TotalSegmentator MRI",
+      "category": "segmented_anatomy",
+      "supplied_url": "https://github.com/wasserth/TotalSegmentator",
+      "supporting_primary_urls": [
+        "https://zenodo.org/records/22688334",
+        "https://zenodo.org/api/records/22688334"
+      ],
+      "source_version_or_scope": "Dataset 3.0.0, 2026-09-10; DOI 10.5281/zenodo.22688334",
+      "terms_observation": "Zenodo record metadata cc-by-4.0; selected archive/source-specific terms pending. Software/task weights are separate.",
+      "evidence_limit": "1296 MR images, 50 structures in selected record; older dataset counts/licenses must not be conflated.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D05",
+      "name": "AMOS",
+      "category": "segmented_anatomy",
+      "supplied_url": "https://amos22.grand-challenge.org/",
+      "supporting_primary_urls": [
+        "https://zenodo.org/records/7262581",
+        "https://zenodo.org/api/records/7262581"
+      ],
+      "source_version_or_scope": "Author Zenodo record 7262581, published 2022-11-28",
+      "terms_observation": "Zenodo record metadata cc-by-4.0; archive/dataset.json terms not inspected.",
+      "evidence_limit": "500 CT and 100 MRI, 15 organs per author record; direct challenge page returned 403.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D06",
+      "name": "ACDC",
+      "category": "cardiac_images_and_masks",
+      "supplied_url": "https://www.creatis.insa-lyon.fr/Challenge/acdc/",
+      "supporting_primary_urls": [
+        "https://www.creatis.insa-lyon.fr/Challenge/acdc/databases.html",
+        "https://www.creatis.insa-lyon.fr/Challenge/acdc/databasesTraining.html"
+      ],
+      "source_version_or_scope": "Challenge overview/training documentation",
+      "terms_observation": "Citation requirement observed; download/access terms not established or accepted.",
+      "evidence_limit": "150 total exams, 100 training; cine/ED-ES segmentation does not supply dense material trajectories or tissue maps.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D07",
+      "name": "MuscleMap",
+      "category": "segmentation_software_and_models",
+      "supplied_url": "https://github.com/MuscleMap/MuscleMap",
+      "supporting_primary_urls": [],
+      "source_version_or_scope": "Moving repository README",
+      "terms_observation": "MIT software declaration observed; weights/templates/input-data rights require separate review.",
+      "evidence_limit": "113 muscles/bones in default segmentation model; not proof of a complete quantitative phantom atlas.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D08",
+      "name": "Visible Human Project",
+      "category": "anatomical_images",
+      "supplied_url": "https://www.nlm.nih.gov/research/visible/visible_human.html",
+      "supporting_primary_urls": [],
+      "source_version_or_scope": "NLM project description; no access license since 2019",
+      "terms_observation": "NLM describes original VHP images as public domain; derivative assets need separate review.",
+      "evidence_limit": "Cadaver cryosection/CT/MRI anatomy; not automatically segmented quantitative tissue/field maps.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D09",
+      "name": "MedSAM dataset list",
+      "category": "discovery_directory",
+      "supplied_url": "https://medsam-datasetlist.github.io/",
+      "supporting_primary_urls": [],
+      "source_version_or_scope": "Directory page; row inventory not fully exposed",
+      "terms_observation": "Per-original-dataset terms; directory is not a blanket data license.",
+      "evidence_limit": "Discovery only; BraTS/CHAOS/CrossMoDA remain unevaluated leads.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D10",
+      "name": "Awesome Medical Image Segmentation Dataset",
+      "category": "discovery_directory",
+      "supplied_url": "https://github.com/ziyangwang007/Awesome-Medical-Image-Segmentation-Dataset",
+      "supporting_primary_urls": [],
+      "source_version_or_scope": "Moving community list",
+      "terms_observation": "Original dataset owners/releases determine asset terms.",
+      "evidence_limit": "Discovery index only; linked datasets not recursively evaluated.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D11",
+      "name": "NYU fastMRI",
+      "category": "acquired_raw_kspace",
+      "supplied_url": "https://fastmri.med.nyu.edu/",
+      "supporting_primary_urls": [],
+      "source_version_or_scope": "NYU current access page and Data Sharing Agreement",
+      "terms_observation": "Application/agreement; internal research/education with redistribution/monetization restrictions. No agreement accepted.",
+      "evidence_limit": "Reconstruction benchmark candidate; cannot regenerate arbitrary new anatomy/sequence physics.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D12",
+      "name": "OCMR",
+      "category": "acquired_raw_kspace",
+      "supplied_url": "https://ocmr.info/",
+      "supporting_primary_urls": [
+        "https://github.com/MRIOSU/OCMR",
+        "https://registry.opendata.aws/ocmr_data/"
+      ],
+      "source_version_or_scope": "Repository v1.0 description and owner-managed registry",
+      "terms_observation": "CC BY-NC 4.0 in registry; site-specific terms still need checking before access.",
+      "evidence_limit": "Multi-coil cardiac ISMRMRD/HDF5; described systems Siemens. Direct supplied site inaccessible.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    },
+    {
+      "id": "D13",
+      "name": "Yale Zubal",
+      "category": "segmented_anatomy",
+      "supplied_url": "https://noodle.med.yale.edu/zubal/",
+      "supporting_primary_urls": [],
+      "source_version_or_scope": "Owner search-indexed description only; direct 502",
+      "terms_observation": "Unresolved; no source/license/asset approval.",
+      "evidence_limit": "Separate candidate; do not assert Visible-Human derivation. Full primary-page review pending.",
+      "adoption_status": "not_adopted",
+      "asset_contents_inspected": false
+    }
+  ]
+}

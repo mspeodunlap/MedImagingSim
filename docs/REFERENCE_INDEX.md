@@ -123,3 +123,23 @@ The user designated [Principles of MRI](https://larsonlab.github.io/MRI-educatio
 | Instructor analytics, grading and cohorts | V11 | C08; project requirements needed before implementation. |
 
 Use this video as an observational workflow/teaching reference. Its commercial accuracy and scanner-equivalence claims are not independently validated. Read the relevant primary physics source before dependent changes. The user explicitly prohibited copying the interface: implement original screens/interactions and do not import competitor layouts, assets, examples or code. All candidates remain proposed; this reference task leaves V 1.1.0 behavior unchanged.
+
+
+## Deferred real-time MRI engine: MRI-ENGINE-001
+
+The user selected a phantom/physics/generated-k-space/reconstruction direction. Start with [REALTIME_MRI_ENGINE_PLAN.md](REALTIME_MRI_ENGINE_PLAN.md) when asked to pursue it. It records the accepted direction, necessary physics qualifications, current code seams, hybrid/Bloch backend contract, 30-plus-user job isolation, data/licensing gates, proposed performance/error budgets, phases E0–E6 and exact restart steps. All phases are deferred; no new runtime behavior is implied.
+
+| Future question | Plan section / primary routing |
+| --- | --- |
+| Anatomy/tissue maps, fractions, fields, motion and spatial convergence | Computational contracts; BrainWeb anatomy/FAQ/parameter table; LARSON L02/L07/L13/L18. |
+| Bloch versus hybrid, EPG/FSE, CPU/GPU and dependency choice | Decision, corrections, backend/cost gates; KomaMRI docs, coreMRI paper, JEMRIS license, Weigel EPG abstract. |
+| Signal normalization, phase/density double-counting, k-space and noise | Two consistent signal formulations; sampling/noise/reconstruction; LARSON L07/L17/L19/L20/L24 with caveats. |
+| Durable jobs, stale results, 30-user capacity, old images and rollback | Existing seams, classroom architecture, phase and verification tables; current source code and lifecycle rules. |
+| Begin implementation / resume saved strategy | Resume procedure; start E0 and refresh hardware, budget, asset rights and pinned dependency evidence. |
+
+Research source identities/review scopes are registered in reference-sources.json under ENGINE-COREMRI, ENGINE-KOMA, ENGINE-JEMRIS, PHANTOM-BRAINWEB and ENGINE-EPG; existing LARSON metadata remains authoritative for the teaching course. The added k-space-viewer video is marked awaiting review, not relied-upon evidence.
+
+
+### MRI engine data and phantom preparation
+
+[MRI_ENGINE_DATA_SOURCES.md](MRI_ENGINE_DATA_SOURCES.md) and [mri-engine-data-sources.json](mri-engine-data-sources.json) catalog D01–D13: BrainWeb/MRiLab structured inputs, XCAT/TotalSegmentator/AMOS/ACDC/MuscleMap/Visible Human/Zubal anatomy candidates, discovery directories, and fastMRI/OCMR acquired raw benchmarks. Start here for dataset choice, exact-release rights, property assignment, coordinate conversion, tissue mixtures and optional smoothing. This supplement is part of MRI-ENGINE-001 E0; it adds no imported/approved assets or implemented anatomy. Keep separate tissue compartments/complex signals instead of generally averaging relaxation constants; morphology and motion/field truth require explicit evidence.
